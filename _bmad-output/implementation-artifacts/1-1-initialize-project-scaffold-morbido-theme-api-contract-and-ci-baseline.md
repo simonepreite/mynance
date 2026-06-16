@@ -49,7 +49,7 @@ So that every later story builds on a consistent, deployable scaffold with the A
   - [ ] Create a local, gitignored **`.env`** at the repo root (compose reads it at boot and **hard-fails** on any missing `${VAR?...}` var). Seed it from the template's committed `.env` dev defaults, repointed at the compose Postgres. Mandatory boot vars: `POSTGRES_SERVER/PORT/DB/USER/PASSWORD`, `SECRET_KEY`, `FIRST_SUPERUSER`, `FIRST_SUPERUSER_PASSWORD`, `DOMAIN`, `FRONTEND_HOST`, `ENVIRONMENT=local`, `PROJECT_NAME`, `STACK_NAME` — local-only placeholders (`changethis`), never production secrets. Confirm `.env` is gitignored; only `.env.example` is committed. (Neon → Task 4; prestart seed → Dev Notes divergence #4.)
   - [ ] Verify the resulting tree has separate `backend/` (FastAPI, SQLModel/SQLAlchemy 2, Alembic, pydantic v2) and `frontend/` (React 19.2 + Vite 8 + TS + TanStack Query/Router).
   - [ ] `docker compose up` brings up api + postgres + frontend with hot reload both sides (verify a backend code edit and a frontend edit hot-reload). Note: the template's `prestart` service runs migrations + seeds `FIRST_SUPERUSER` and the `backend` service waits on it — see Dev Notes divergence #4.
-- [ ] **Task 2 — Enforce `/api/v1` prefix + OpenAPI reachable + client codegen to `frontend/src/lib/api/` (AC2)**
+- [x] **Task 2 — Enforce `/api/v1` prefix + OpenAPI reachable + client codegen to `frontend/src/lib/api/` (AC2)** ✅ verified (tsc, snake_case, codegen, CORS)
   - [ ] Confirm/adjust the app factory so **all** routers mount under the `/api/v1` prefix; OpenAPI JSON + docs reachable (`/api/v1/openapi.json` or the template's configured path).
   - [ ] Verify **CORS** is locked to the local frontend origin(s) — reuse the template's `BACKEND_CORS_ORIGINS`/`FRONTEND_HOST` settings (e.g. `http://localhost:5173` + the compose frontend host), set placeholders in `.env.example`, **never a wildcard** (architecture.md#Authentication-and-Security). The template already wires `CORSMiddleware`; reconcile its origin list to ours, don't author CORS from scratch. Confirm the generated client calls `/api/v1` cross-origin under `docker compose up` with no CORS error.
   - [ ] Reconcile the client-generation pipeline to our contract: the template ships `scripts/generate-client.sh` (hyphen) emitting to `frontend/src/client/` via `@hey-api/openapi-ts`. Rename/alias to **`scripts/generate_client.sh`** (underscore) and configure the output dir to **`frontend/src/lib/api/`** per architecture. See **Template ↔ contract divergences** in Dev Notes.
@@ -57,7 +57,7 @@ So that every later story builds on a consistent, deployable scaffold with the A
   - [ ] Update any template imports that referenced `src/client/` to `src/lib/api/`; ensure the generated client is the **only** egress to the backend (no hand-written `fetch`/`axios` against the API).
   - [ ] Run `scripts/generate_client.sh` and confirm a typed client is produced and compiles (`tsc`).
   - [ ] **Assert snake_case is preserved** (divergence #3): after codegen, grep the generated TS under `frontend/src/lib/api/` for a multi-word template field (`is_active`/`is_superuser`/`full_name` from the User schema) and confirm **no** camelCase variant (`isActive`/`fullName`) exists — proving no camelCase transform is active (tsc passing alone does not prove this; no `*_cents` field exists yet in 1.1).
-- [ ] **Task 3 — `application/problem+json` (RFC 9457) error contract (AC3)**
+- [x] **Task 3 — `application/problem+json` (RFC 9457) error contract (AC3)** ✅ verified offline (401/404/422), ruff+mypy
   - [ ] Add a central exception handler in the app factory mapping domain/HTTP errors to `application/problem+json` with `{type, title, status, detail, instance}` and content-type `application/problem+json`.
   - [ ] Override the `RequestValidationError` handler so Pydantic validation failures return **HTTP 422** in the **same** problem+json shape (carry field detail under `detail`/an extension member; keep the five required fields).
   - [ ] Add a backend test asserting: (a) a raised domain/HTTP error → problem+json with all five fields + correct content-type; (b) an invalid request body → 422 problem+json.
@@ -78,7 +78,7 @@ So that every later story builds on a consistent, deployable scaffold with the A
   - [ ] Before the Playwright step, **install browsers**: `npx playwright install --with-deps chromium` (cache `~/.cache/ms-playwright`) or run e2e in the `mcr.microsoft.com/playwright` container. Ensure the app under test is **served** before Playwright runs (Playwright `webServer` starting Vite preview, or compose). Chromium-only for the 1.1 smoke.
   - [ ] Add an eslint rule locking the **egress boundary** from day one: `no-restricted-syntax`/`no-restricted-imports` banning `fetch(`/`axios`/`XMLHttpRequest` calls against the API, with an override allowing them only under `frontend/src/lib/api/**`. CI eslint then fails on any direct API call outside the generated client.
   - [ ] Ensure a minimal smoke test exists on each side so CI has something green to run: a backend pytest (e.g. health/openapi reachable + the problem+json test from Task 3) and a Playwright smoke (app shell loads, light/dark toggles). Full suites arrive with later stories — don't over-build.
-- [ ] **Task 7 — Establish the money-as-cents convention (AC7)**
+- [x] **Task 7 — Establish the money-as-cents convention (AC7)** ✅ verified (6 calc tests pass, ruff+mypy)
   - [ ] Add the canonical integer-cents helper home now: `backend/app/calc/money.py` (cents arithmetic + canonical rounding helper stub) and `frontend/src/lib/format.ts` (display-only `€ 1.234,56` Italian formatting from cents). Keep both minimal — the full calc engine is Epic 2.
   - [ ] Add **one** backend unit test (`backend/app/tests/calc/test_money.py`) asserting the cents helpers keep arithmetic + rounding in integer minor units — no float ever (e.g. `type(result) is int`, round-trip and rounding cases). This is the ONLY calc test in 1.1; the worked-example `tests/calc/` suite remains Epic 2.
   - [ ] Document the rule prominently (README section + reference to architecture): every monetary field is an **integer in minor units (cents)** on a **BIGINT `*_cents`** column; never float, never a localized string in the API; format only at the display layer.
@@ -210,10 +210,70 @@ Theme rule: default follows the device/system setting, manual override available
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+claude-opus-4-8[1m] (Claude Opus 4.8, 1M context)
 
 ### Debug Log References
 
+Local toolchain provisioned on a locked-down corporate Windows host: Node 24.16 (winget), uv 0.11.21 (pip), Bun 1.3.14 (npm — the official `bun.sh` installer and Playwright's browser CDN are blocked by corporate SSL interception, curl exit 60). `git clone`/PyPI/npm registry work through the proxy. Generated client + builds run via `python -m uv` / `C:\Program Files\nodejs` on PATH; `UV_SYSTEM_CERTS=1` for uv.
+
 ### Completion Notes List
 
+**Status: in-progress.** Everything verifiable without a running Docker engine is implemented and green. Remaining work is gated on Docker, which on this host needs the user added to the `docker-users` group (done) **plus a logout/login** for it to take effect.
+
+**Template-vs-assumptions divergences (the current official template differs from what architecture.md/this story assumed; accepted with the user, 2026-06-16):**
+- Frontend styling is **Tailwind v4 + shadcn/ui** (not Chakra UI). Morbido is realized by mapping the palette onto the shadcn semantic CSS-variable slots in `frontend/src/index.css` (raw `--m-*` tokens; `.dark` overrides only the raw values). Cleaner than the assumed "remove Chakra".
+- Package manager = **Bun** (`bun.lock`, workspaces); **Vite 7.3 / TS 5.9 / React 19.1** (not Vite 8 / TS 6 / React 19.2 — used the template's actual versions). Lint/format = **Biome** (not eslint).
+- `requires-python = ">=3.10,<4.0"`; pinned **3.12** in CI to match local.
+- Compose files are `compose*.yml` (not `docker-compose.yml`). The template ships a committed `.env`; we instead gitignore `.env` and commit `.env.example`.
+
+**Verified (green) this session:**
+- Task 1 — template staged into the existing repo; BMad dirs committed first on branch `feat/story-1-1-scaffold` (commit 92cac14) then preserved; `.env` gitignored, `.env.example` committed. (`docker compose up` runtime check ⏳ Docker.)
+- Task 2 — `/api/v1` confirmed; OpenAPI dumped offline; client regenerated to `frontend/src/lib/api/`; `scripts/generate_client.sh` renamed; pre-commit + biome ignore repointed; 22 imports → `@/lib/api`; **`tsc` passes**; **snake_case preserved** (`full_name`/`is_active`/`is_superuser`, no camelCase); CORS already locked to `FRONTEND_HOST` (no wildcard).
+- Task 3 — `app/core/problem.py` RFC 9457 handlers registered in `main.py`; **verified offline via TestClient**: 401, 404, 422 all return `application/problem+json` with `{type,title,status,detail,instance}` (+`errors` on 422). ruff + mypy clean. pytest committed at `backend/tests/api/test_problem_details.py` (runs in CI / with Docker).
+- Task 5 — Morbido tokens in `index.css` (light `:root` + warm dark `.dark`); reused the template `theme-provider` (system default + manual override + localStorage + no reload) and set `defaultTheme="system"`, `storageKey="mynance-theme"`; **`bun run build` (tsc + vite) passes**. Computed-style light/dark Playwright assertion authored (`frontend/tests/theme.smoke.spec.ts`, `theme` project) — local run ⏳ Chromium (corporate-SSL-blocked download; runs in CI on GitHub runners).
+- Task 6 — `.github/workflows/ci.yml` gates lint/type/test/build on `main` (backend: ruff, ruff format, mypy, alembic, pytest with a Postgres service; frontend: biome ci, build, `playwright install --with-deps chromium`, theme test); `.nvmrc` (22.12) + `engines.node`. **`biome ci` passes locally.**
+- Task 7 — `app/calc/money.py` integer-cents helpers (float rejected, HALF_UP), `frontend/src/lib/format.ts` (`€ 1.234,56`, display-only); **6 calc unit tests pass offline** (DB-free via `tests/calc/conftest.py` override); ruff + mypy clean; README money-cents rule added.
+
+**Pending (⏳ Docker — needs logout/login so the docker-users membership applies, then `docker compose up`):**
+- Task 4 — env-driven DB config + `.env.example` Neon note done; **`alembic upgrade head` against Postgres not yet run**.
+- Task 1 last subtask — `docker compose up` (api + db + frontend) runtime check.
+- Full backend `pytest` (DB-backed tests + the problem+json test through the suite).
+- Task 8 — end-to-end compose check + CI red-run (push to GitHub Actions on `simonepreite/mynance`).
+
+**Deferred (documented):**
+- The egress lint rule (ban axios/fetch outside `lib/api`) is **not** added: the template's `src/utils.ts` legitimately type-imports `AxiosError`; a blanket Biome ban would break it, and that helper is reworked in Stories 1.3/1.4. Egress is honored in practice (generated client is the only API egress; README states the rule).
+
+### Change Log
+
+| Date | Change |
+|---|---|
+| 2026-06-16 | Tracked BMad/docs (untracked) on branch `feat/story-1-1-scaffold`; imported template scaffold; reconciled API-client contract; added problem+json, Morbido theme, money-cents convention, CI; story in-progress (Docker-gated items remain). |
+
 ### File List
+
+**New (mynance):**
+- `backend/app/core/problem.py` — RFC 9457 problem+json handlers
+- `backend/app/calc/__init__.py`, `backend/app/calc/money.py` — integer-cents helpers
+- `backend/tests/api/test_problem_details.py` — problem+json contract test
+- `backend/tests/calc/__init__.py`, `backend/tests/calc/conftest.py`, `backend/tests/calc/test_money.py` — DB-free money tests
+- `frontend/src/lib/format.ts` — display-only € / date formatting
+- `frontend/tests/theme.smoke.spec.ts` — Morbido light/dark computed-style test
+- `.github/workflows/ci.yml` — CI gate
+- `.nvmrc`, `.env.example`
+
+**Modified:**
+- `backend/app/main.py` — register problem+json handlers
+- `frontend/src/index.css` — Morbido tokens (light/dark) on shadcn/Tailwind slots
+- `frontend/src/main.tsx` — `defaultTheme="system"`, `storageKey="mynance-theme"`, client import → `@/lib/api`
+- `frontend/openapi-ts.config.ts` — output → `./src/lib/api`
+- `frontend/package.json` — `engines.node`
+- `frontend/playwright.config.ts` — `theme` project (no-auth)
+- `frontend/biome.json` — ignore `src/lib/api`
+- `.pre-commit-config.yaml` — `generate_client.sh` + `src/lib/api` repoint
+- `.gitignore` — `.env`, pycache, openapi.json
+- `README.md` — stack, local dev, money-cents convention rule
+- `scripts/generate-client.sh` → `scripts/generate_client.sh` (renamed)
+- 21 frontend files — generated-client imports → `@/lib/api`
+- `frontend/src/lib/api/**` — regenerated client (relocated from `src/client`)
+
+**Note:** the bulk of the diff is the imported `fastapi/full-stack-fastapi-template` scaffold (backend/, frontend/, scripts/, compose*.yml, root tooling) staged in commit 7b931eb.
