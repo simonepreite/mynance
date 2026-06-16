@@ -1,6 +1,10 @@
+---
+baseline_commit: 92cac144856eef93494da82366d0da8726e1ce98
+---
+
 # Story 1.1: Initialize project scaffold, Morbido theme, API contract, and CI baseline (AR-Init)
 
-Status: ready-for-dev
+Status: in-progress
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
