@@ -23,9 +23,13 @@ class _DemoOwned(SQLModel, table=True):
 
 
 @pytest.fixture(autouse=True)
-def demo_table() -> Generator[None, None, None]:
+def demo_table(db: Session) -> Generator[None, None, None]:
     _DemoOwned.__table__.create(engine, checkfirst=True)
     yield
+    # Release any AccessShareLock the shared session still holds from the test's
+    # reads, otherwise DROP TABLE (AccessExclusiveLock) blocks until the job
+    # times out.
+    db.rollback()
     _DemoOwned.__table__.drop(engine, checkfirst=True)
 
 
