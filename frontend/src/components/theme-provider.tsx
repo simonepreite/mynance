@@ -28,6 +28,24 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
+// Guarded localStorage access — throws in private-mode / disabled-storage / SSR
+// would otherwise crash the whole render.
+function readStoredTheme(storageKey: string): Theme | null {
+  try {
+    return localStorage.getItem(storageKey) as Theme | null
+  } catch {
+    return null
+  }
+}
+
+function writeStoredTheme(storageKey: string, theme: Theme): void {
+  try {
+    localStorage.setItem(storageKey, theme)
+  } catch {
+    /* no-op — storage unavailable; theme still applies for this session */
+  }
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "system",
@@ -35,7 +53,7 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+    () => readStoredTheme(storageKey) || defaultTheme,
   )
 
   const getResolvedTheme = useCallback((theme: Theme): "dark" | "light" => {
@@ -93,7 +111,7 @@ export function ThemeProvider({
     theme,
     resolvedTheme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
+      writeStoredTheme(storageKey, theme)
       setTheme(theme)
     },
   }

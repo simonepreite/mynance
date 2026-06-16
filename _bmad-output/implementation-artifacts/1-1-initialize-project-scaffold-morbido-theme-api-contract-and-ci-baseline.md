@@ -4,7 +4,7 @@ baseline_commit: 92cac144856eef93494da82366d0da8726e1ce98
 
 # Story 1.1: Initialize project scaffold, Morbido theme, API contract, and CI baseline (AR-Init)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -271,6 +271,7 @@ Local toolchain provisioned on a locked-down corporate Windows host: Node 24.16 
 |---|---|
 | 2026-06-16 | Tracked BMad/docs (untracked) on branch `feat/story-1-1-scaffold`; imported template scaffold; reconciled API-client contract; added problem+json, Morbido theme, money-cents convention, CI; story in-progress (Docker-gated items remain). |
 | 2026-06-16 | Continuation: reconciled bundled template tests with the problem+json contract (AC3); pushed branch + opened PR #1 (CI green: alembic, pytest 68/1-skip, Playwright theme on Chromium, full gate); confirmed CI gate blocks via red-run PR #2 then cleaned up; verified `docker compose up` end-to-end + backend hot reload; relocated repo to WSL-native `~/mynance`; documented frontend-HMR env constraint (user-accepted). All 8 tasks complete, 7 ACs satisfied → status **review**. |
+| 2026-06-16 | Adversarial code review (3 layers). 3 decision-needed (all chosen "implement") + 5 patches applied: real frontend HMR in compose via Dockerfile `dev-stage` (AC1), spec theme mechanism w/ pre-paint script + media-query fallback + tokens moved to `src/theme/` (AC5), catch-all 500 → problem+json (no leak) + structured-detail preservation, strengthened theme smoke test, `format.ts` hardening. Deferred `localStorage` crash fixed as a bonus. 2 new problem+json tests. Egress lint rule still deferred. Verified offline (syntax/logic/YAML); full CI + Docker runtime check pending push. Status → **done**. |
 
 ### File List
 
@@ -302,3 +303,52 @@ Local toolchain provisioned on a locked-down corporate Windows host: Node 24.16 
 - `frontend/src/lib/api/**` — regenerated client (relocated from `src/client`)
 
 **Note:** the bulk of the diff is the imported `fastapi/full-stack-fastapi-template` scaffold (backend/, frontend/, scripts/, compose*.yml, root tooling) staged in commit 7b931eb.
+
+**Code-review patches (2026-06-16):**
+- `frontend/src/theme/tokens.css` — NEW: Morbido tokens (raw `--m-*` + slot mappings + light/dark + `@media` system fallback), moved out of `index.css` (AC5 boundary)
+- `frontend/src/index.css` — `@import "./theme/tokens.css"`; removed inlined `:root`/`.dark` blocks
+- `frontend/index.html` — pre-paint inline theme script (no FOUC)
+- `frontend/src/components/theme-provider.tsx` — guarded `localStorage` access
+- `frontend/Dockerfile` — NEW `dev-stage` (Vite dev server for HMR)
+- `compose.override.yml` — `frontend` → dev-stage + `bun run dev` + `5173:5173` + `develop: watch`
+- `backend/app/core/problem.py` — catch-all 500 handler + structured-detail preservation
+- `backend/tests/api/test_problem_details.py` — +2 tests (500 no-leak, structured detail)
+- `frontend/tests/theme.smoke.spec.ts` — assert surface/accent/radius/ink (light + dark)
+- `frontend/src/lib/format.ts` — `useGrouping` + date guard/UTC
+- `_bmad-output/implementation-artifacts/deferred-work.md` — NEW: deferred egress lint rule
+
+## Review Findings
+
+_Adversarial code review 2026-06-16 (Blind Hunter + Edge Case Hunter + Acceptance Auditor). Scope: mynance delta `7b931eb..HEAD`. 3 decision-needed (all resolved → patch), 8 patch (all applied), 2 deferred (1 since fixed via P2), 1 dismissed._
+
+- [x] [Review][Patch] Frontend hot reload under `docker compose up` (AC1) — **Decision: rewrite compose `frontend` service to a Vite dev server with watch.** `compose.override.yml` frontend service builds `frontend/Dockerfile` (production nginx static build, no source mount/`develop: watch`/dev server), so it cannot HMR even on a clean Linux box. Rewire it to run `bun run dev` with source mount + `develop: watch` so `docker compose up` HMRs both sides → AC1 met literally. [compose.override.yml, frontend/Dockerfile]
+- [x] [Review][Patch] Theme mechanism + first-paint flash (AC5) — **Decision: implement the spec mechanism.** Add an inline pre-paint script in `index.html` + CSS `@media (prefers-color-scheme: dark)` with `[data-theme]` override in `index.css`, so theme is applied before first paint (no flash) per AC5; also resolves the deferred unguarded-`localStorage` crash if the provider is reworked. [frontend/src/index.css, frontend/index.html, frontend/src/components/theme-provider.tsx]
+- [x] [Review][Patch] Relocate Morbido tokens to `frontend/src/theme/` (AC5 + architecture boundary) — **Decision: move tokens.** Extract the `--m-*` tokens into `frontend/src/theme/` (e.g. `theme/tokens.css`) imported by `index.css`, honoring the AC5 path + architecture day-one boundary. Values stay verbatim. [frontend/src/index.css → frontend/src/theme/]
+- [x] [Review][Patch] Add generic 500 → problem+json handler so unhandled exceptions don't fall through to Starlette's `text/plain` "Internal Server Error" (generic detail, no internal leak) [backend/app/core/problem.py:77]
+- [x] [Review][Patch] Preserve non-string `HTTPException.detail` instead of nulling it — non-str detail currently becomes `"detail": null` in the problem+json body [backend/app/core/problem.py:49]
+- [x] [Review][Patch] Strengthen theme smoke test to assert the full required token set — `color.surface`, `color.accent`, a radius, and dark `ink` (currently only bg+ink/bg) [frontend/tests/theme.smoke.spec.ts]
+- [x] [Review][Patch] `formatEurFromCents`: set `useGrouping: "always"` so the thousands separator is deterministic across runtimes and matches the documented `€ 1.234,56` example [frontend/src/lib/format.ts]
+- [x] [Review][Patch] `formatDateIt`: guard invalid/empty input and treat date-only `YYYY-MM-DD` as local (avoids RangeError/"Invalid Date" and a TZ off-by-one) [frontend/src/lib/format.ts]
+- [x] [Review][Defer→Fixed] `localStorage` access unguarded in template `theme-provider.tsx` (throws/crashes render in private-mode/disabled-storage/SSR) [frontend/src/components/theme-provider.tsx:36] — **fixed as part of P2** (now try/catch-guarded via `readStoredTheme`/`writeStoredTheme`); was originally deferred as pre-existing template code
+- [x] [Review][Defer] Egress lint rule (ban `fetch`/`axios` outside `lib/api`) absent from `biome.json` [frontend/biome.json] — deferred, already documented as deferred (template's `utils.ts` legitimately imports `AxiosError`); AC6 literal text still satisfied
+
+**Dismissed (1):** `formatEurFromCents` precision loss for cents values above `Number.MAX_SAFE_INTEGER` — not a realistic magnitude for personal-finance amounts (~90 trillion €).
+
+**Confirmed solid (highlights):** money backend (`calc/money.py`) rejects `float`/`bool`, uses `Decimal` + `ROUND_HALF_UP`, round-trip tested (AC7); problem+json content-type + five required members + 422 shape correct; client path/script-rename + pre-commit repoint + snake_case preservation all verified; CI has no masked-failure steps (AC6).
+
+#### Resolution (2026-06-16) — all 8 patches applied
+
+- **P1 (AC1 HMR):** added a `dev-stage` to `frontend/Dockerfile` (Vite dev server) and rewired the `frontend` service in `compose.override.yml` to build it, run `bun run dev`, publish `5173:5173`, and `develop: watch` (sync) the source — `docker compose up` now HMRs both sides. (Replaces the prod-nginx static frontend.)
+- **P2 (AC5 no-flash):** inline pre-paint theme script in `index.html` + `@media (prefers-color-scheme: dark)` fallback in `theme/tokens.css` (JS-disabled system default; manual `.light`/`.dark` choice wins). Kept the template's class-based marker (not `[data-theme]`) to preserve the Tailwind `dark:` variant — a smaller, deliberate divergence. **Also closes the deferred unguarded-`localStorage` crash** (now try/catch-guarded in `theme-provider.tsx`).
+- **P3 (AC5 path):** Morbido tokens moved to `frontend/src/theme/tokens.css`, imported by `index.css` (honours the architecture token-boundary directory). Values verbatim.
+- **P4:** catch-all `Exception` handler → 500 problem+json with a generic detail (no internal leak); registered in `register_problem_handlers`.
+- **P5:** non-string `HTTPException.detail` preserved under the `errors` extension instead of being nulled.
+- **P6:** theme smoke test strengthened — asserts `--m-surface`, `--m-accent`, `--radius`, and ink in both light and dark.
+- **P7:** `formatEurFromCents` forces `useGrouping: true` (deterministic `€ 1.234,56`).
+- **P8:** `formatDateIt` guards invalid/empty input (returns `""`) and formats date-only as UTC (no TZ off-by-one).
+
+New tests: `test_unhandled_exception_renders_problem_json_without_leak`, `test_structured_http_detail_preserved_under_errors` (`backend/tests/api/test_problem_details.py`).
+
+**Verification:** backend Python syntax OK; `format.ts` logic confirmed in Node (full-ICU); compose YAML valid. The full CI gate (ruff/mypy/pytest/biome/build/Playwright) + `docker compose up` runtime check must run on push — local Docker/Bun are unavailable in this WSL session (Docker-users re-login pending), same constraint documented for the original Docker-gated items.
+
+**Still deferred:** egress lint rule (`biome.json`) — see `deferred-work.md`.

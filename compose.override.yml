@@ -96,13 +96,40 @@ services:
   frontend:
     restart: "no"
     ports:
-      - "5173:80"
+      - "5173:5173"
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      target: dev-stage
       args:
         - VITE_API_URL=http://localhost:8000
         - NODE_ENV=development
+    command:
+      - bun
+      - run
+      - dev
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5173"
+    # `docker compose watch` syncs source changes into the container fs (not a
+    # bind mount), so Vite's file watcher fires and HMR works even where Docker
+    # Desktop bind mounts don't propagate inotify.
+    develop:
+      watch:
+        - path: ./frontend/src
+          action: sync
+          target: /app/frontend/src
+        - path: ./frontend/index.html
+          action: sync
+          target: /app/frontend/index.html
+        - path: ./frontend/public
+          action: sync
+          target: /app/frontend/public
+        - path: ./frontend/package.json
+          action: rebuild
+        - path: ./frontend/vite.config.ts
+          action: rebuild
 
   playwright:
     build:

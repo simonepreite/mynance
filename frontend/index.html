@@ -6,6 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Full Stack FastAPI Project</title>
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png" />
+    <script>
+      // Apply the resolved theme to <html> before first paint to avoid a flash
+      // of the wrong theme (Story 1.1, AC5). Keep the storageKey in sync with
+      // the ThemeProvider in src/main.tsx ("mynance-theme"). Guarded so a
+      // disabled/unavailable localStorage falls back to the CSS media query.
+      (function () {
+        try {
+          var stored = localStorage.getItem("mynance-theme")
+          var resolved =
+            !stored || stored === "system"
+              ? window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light"
+              : stored
+          document.documentElement.classList.add(resolved)
+        } catch (e) {
+          /* no-op — CSS @media (prefers-color-scheme) handles the fallback */
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

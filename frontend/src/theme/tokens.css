@@ -1,0 +1,118 @@
+/*
+ * "Morbido" design tokens (Story 1.1, AC5) — the visual-token boundary
+ * (architecture.md: `theme/` owns all visual tokens). Imported by index.css.
+ *
+ * Raw Morbido palette = the --m-* tokens (values verbatim from DESIGN.md).
+ * The shadcn/ui semantic slots (--background, --primary, …) map onto them on
+ * :root, so the whole template UI renders in Morbido instead of the default
+ * neutral theme. Dark mode overrides ONLY the raw --m-* values; the slot
+ * mappings resolve var(--m-*) dynamically.
+ *
+ * Theme selection (no flash): an inline script in index.html applies the
+ * resolved theme class to <html> before first paint. The @media block below is
+ * the JS-disabled fallback so a system-dark user still gets dark colours when
+ * no explicit .light/.dark class is set. A manual choice (.light/.dark class)
+ * always beats the system preference.
+ *
+ * Full token set + component library + a11y floor = Story 1.2.
+ */
+
+/* ===== Morbido — LIGHT (default) ===== */
+:root {
+  --radius: 1.125rem; /* 18px — Morbido control radius */
+  --radius-card-base: 2.125rem; /* 34px — Morbido card radius */
+
+  /* Raw Morbido palette (light) — verbatim from DESIGN.md */
+  --m-bg: #f4f1ea;
+  --m-surface: #fbfaf6;
+  --m-surface-2: #efeae0;
+  --m-ink: #3a3a38;
+  --m-ink-soft: #6d6a63;
+  --m-accent: #7fa99b;
+  --m-accent-ink: #527a6d;
+  --m-accent-soft: #dde8e2;
+  --m-positive: #6b9b7c;
+  --m-positive-ink: #4d725a;
+  --m-negative: #a05c43;
+  --m-honesty: #8b6237;
+  --m-honesty-bg: #f6e9d8;
+  --m-bar-track: #eae4d8;
+  --m-focus: #527a6d;
+
+  /* shadcn/ui semantic slots mapped onto Morbido */
+  --background: var(--m-bg);
+  --foreground: var(--m-ink);
+  --card: var(--m-surface);
+  --card-foreground: var(--m-ink);
+  --popover: var(--m-surface);
+  --popover-foreground: var(--m-ink);
+  --primary: var(--m-accent-ink);
+  --primary-foreground: var(--m-surface);
+  --secondary: var(--m-surface-2);
+  --secondary-foreground: var(--m-ink);
+  --muted: var(--m-surface-2);
+  --muted-foreground: var(--m-ink-soft);
+  --accent: var(--m-accent-soft);
+  --accent-foreground: var(--m-ink);
+  --destructive: var(--m-negative);
+  --border: var(--m-bar-track);
+  --input: var(--m-bar-track);
+  --ring: var(--m-focus);
+  --chart-1: var(--m-accent);
+  --chart-2: var(--m-positive);
+  --chart-3: var(--m-honesty);
+  --chart-4: var(--m-negative);
+  --chart-5: var(--m-accent-ink);
+  --sidebar: var(--m-surface);
+  --sidebar-foreground: var(--m-ink);
+  --sidebar-primary: var(--m-accent-ink);
+  --sidebar-primary-foreground: var(--m-surface);
+  --sidebar-accent: var(--m-accent-soft);
+  --sidebar-accent-foreground: var(--m-ink);
+  --sidebar-border: var(--m-bar-track);
+  --sidebar-ring: var(--m-focus);
+}
+
+/* ===== Morbido — DARK (warm brown, never cold black) ===== */
+/* Only the raw --m-* values change; the slot mappings above resolve them. */
+
+/* System preference, when the user has made no manual choice (JS-disabled
+   fallback; the inline pre-paint script sets the class when JS is available). */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not(.dark) {
+    --m-bg: #21201d;
+    --m-surface: #2c2a27;
+    --m-surface-2: #353230;
+    --m-ink: #ece7dd;
+    --m-ink-soft: #a29d92;
+    --m-accent: #9cc4b5;
+    --m-accent-ink: #9cc4b5;
+    --m-accent-soft: #38463f;
+    --m-positive: #93c4a0;
+    --m-positive-ink: #93c4a0;
+    --m-negative: #d89479;
+    --m-honesty: #e0b080;
+    --m-honesty-bg: #423526;
+    --m-bar-track: #3a3733;
+    --m-focus: #9cc4b5;
+  }
+}
+
+/* Manual choice — always wins over the system preference. */
+.dark {
+  --m-bg: #21201d;
+  --m-surface: #2c2a27;
+  --m-surface-2: #353230;
+  --m-ink: #ece7dd;
+  --m-ink-soft: #a29d92;
+  --m-accent: #9cc4b5;
+  --m-accent-ink: #9cc4b5;
+  --m-accent-soft: #38463f;
+  --m-positive: #93c4a0;
+  --m-positive-ink: #93c4a0;
+  --m-negative: #d89479;
+  --m-honesty: #e0b080;
+  --m-honesty-bg: #423526;
+  --m-bar-track: #3a3733;
+  --m-focus: #9cc4b5;
+}
