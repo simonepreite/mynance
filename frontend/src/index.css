@@ -73,9 +73,64 @@
   }
   body {
     @apply bg-background text-foreground;
+    font: var(--type-body);
   }
   button,
   [role="button"] {
     cursor: pointer;
+  }
+
+  /* Reduce Motion (Story 1.2, AC6): skip animations/transitions and jump to
+     the end state immediately for users who request it. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Morbido typography utilities (Story 1.2, AC1/AC2) — type carried solely from
+   tokens, no inlined fonts. */
+@layer components {
+  .type-display {
+    font: var(--type-display);
+    letter-spacing: var(--tracking-display);
+  }
+  .type-h1 {
+    font: var(--type-h1);
+    letter-spacing: var(--tracking-h1);
+  }
+  .type-h2 {
+    font: var(--type-h2);
+  }
+  .type-body {
+    font: var(--type-body);
+  }
+  .type-caption {
+    font: var(--type-caption);
+  }
+  .type-eyebrow {
+    font: var(--type-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--m-ink-soft);
+  }
+}
+
+/* Subtle entrance for surfaced-truth components; neutralized under the
+   prefers-reduced-motion rule above (Story 1.2, AC6). */
+@keyframes m-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

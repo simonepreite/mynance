@@ -100,6 +100,6 @@ jobs:
       - name: Install Playwright browser
         run: bunx playwright install --with-deps chromium
         working-directory: frontend
-      - name: Theme smoke test (Morbido tokens, light/dark)
+      - name: Morbido smoke tests (theme tokens + component library)
         run: bunx playwright test --project=theme
         working-directory: frontend

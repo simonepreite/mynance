@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Morbido — Component Gallery (dev)</title>
+    <script>
+      // Apply the resolved theme before first paint (same as index.html).
+      (() => {
+        try {
+          const stored = localStorage.getItem("mynance-theme")
+          const mql = window.matchMedia("(prefers-color-scheme: dark)")
+          let theme = stored
+          if (!theme || theme === "system") {
+            theme = mql.matches ? "dark" : "light"
+          }
+          document.documentElement.classList.add(theme)
+        } catch {
+          // localStorage unavailable — CSS @media handles the fallback
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/dev/morbido-gallery.tsx"></script>
+  </body>
+</html>
