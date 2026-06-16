@@ -122,6 +122,7 @@ class Token(SQLModel):
 # Contents of JWT token
 class TokenPayload(SQLModel):
     sub: str | None = None
+    jti: str | None = None
 
 
 class NewPassword(SQLModel):
@@ -139,6 +140,12 @@ class NewPassword(SQLModel):
 
 # Properties received on registration
 class UtenteRegister(SQLModel):
+    username: str = Field(min_length=3, max_length=255)
+    password: str = Field(min_length=8, max_length=128)
+
+
+# Properties received on login
+class UtenteLogin(SQLModel):
     username: str = Field(min_length=3, max_length=255)
     password: str = Field(min_length=8, max_length=128)
 

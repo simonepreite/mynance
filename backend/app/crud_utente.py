@@ -9,9 +9,17 @@ from app.core.security import (
     generate_recovery_code,
     get_password_hash,
     hash_recovery_code,
+    verify_password,
     verify_recovery_code,
 )
 from app.models import Utente, get_datetime_utc
+
+# Argon2 hash of a random value, used for constant-time password checks when the
+# username does not exist (mirrors crud.authenticate; avoids existence leaks).
+DUMMY_PASSWORD_HASH = (
+    "$argon2id$v=19$m=65536,t=3,p=4$MjQyZWE1MzBjYjJlZTI0Yw$"
+    "YTU4NGM5ZTZmYjE2NzZlZjY0ZWY3ZGRkY2U2OWFjNjk"
+)
 
 # Argon2 hash of a random value, used for constant-time recovery checks when the
 # username does not exist (avoids revealing account existence via timing).
@@ -24,6 +32,23 @@ DUMMY_RECOVERY_HASH = (
 def get_utente_by_username(*, session: Session, username: str) -> Utente | None:
     statement = select(Utente).where(Utente.username == username)
     return session.exec(statement).first()
+
+
+def authenticate(*, session: Session, username: str, password: str) -> Utente | None:
+    """Return the Utente iff username+password match; constant-time on miss."""
+    utente = get_utente_by_username(session=session, username=username)
+    if utente is None or utente.deleted_at is not None:
+        verify_password(password, DUMMY_PASSWORD_HASH)
+        return None
+    verified, updated_hash = verify_password(password, utente.password_hash)
+    if not verified:
+        return None
+    if updated_hash:
+        utente.password_hash = updated_hash
+        session.add(utente)
+        session.commit()
+        session.refresh(utente)
+    return utente
 
 
 def create_utente(
