@@ -44,7 +44,7 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   # Epic 1 — Account & Access (Foundation)
   epic-1: in-progress
-  1-1-initialize-project-scaffold-morbido-theme-api-contract-and-ci-baseline: in-progress
+  1-1-initialize-project-scaffold-morbido-theme-api-contract-and-ci-baseline: review
   1-2-base-shared-component-library-and-theme-tokens-with-accessibility-floor: backlog
   1-3-self-service-registration-with-one-time-recovery-code: backlog
   1-4-login-30-day-session-and-logout: backlog
