@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -7,6 +8,10 @@ from pwdlib.hashers.argon2 import Argon2Hasher
 from pwdlib.hashers.bcrypt import BcryptHasher
 
 from app.core.config import settings
+
+# Unambiguous alphabet (no 0/O/1/I) for a human-transcribable recovery code.
+_RECOVERY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+_RECOVERY_LENGTH = 20  # ~100 bits of entropy
 
 password_hash = PasswordHash(
     (
@@ -34,3 +39,19 @@ def verify_password(
 
 def get_password_hash(password: str) -> str:
     return password_hash.hash(password)
+
+
+def generate_recovery_code() -> str:
+    """A one-time recovery code, grouped for human transcription (FR-3)."""
+    raw = "".join(secrets.choice(_RECOVERY_ALPHABET) for _ in range(_RECOVERY_LENGTH))
+    return "-".join(raw[i : i + 5] for i in range(0, _RECOVERY_LENGTH, 5))
+
+
+def hash_recovery_code(code: str) -> str:
+    """Salted hash of a recovery code — plaintext is never persisted."""
+    return password_hash.hash(code)
+
+
+def verify_recovery_code(code: str, code_hash: str) -> bool:
+    valid, _ = password_hash.verify_and_update(code, code_hash)
+    return valid

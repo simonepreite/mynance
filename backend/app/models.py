@@ -127,3 +127,63 @@ class TokenPayload(SQLModel):
 class NewPassword(SQLModel):
     token: str
     new_password: str = Field(min_length=8, max_length=128)
+
+
+# ---------------------------------------------------------------------------
+# mynance — Utente domain (FR-1 registration, FR-3 one-time recovery code).
+# Distinct from the template's email-based ``User`` (reused only for the seeded
+# superuser / template tests). Italian domain noun + plural table per
+# architecture.md. Money is not involved here; later stories add the rest.
+# ---------------------------------------------------------------------------
+
+
+# Properties received on registration
+class UtenteRegister(SQLModel):
+    username: str = Field(min_length=3, max_length=255)
+    password: str = Field(min_length=8, max_length=128)
+
+
+# Properties received on recovery (regain access via the one-time code)
+class UtenteRecover(SQLModel):
+    username: str = Field(min_length=3, max_length=255)
+    recovery_code: str = Field(min_length=1, max_length=255)
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+# Database model — table ``utenti``
+class Utente(SQLModel, table=True):
+    __tablename__ = "utenti"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    username: str = Field(unique=True, index=True, max_length=255)
+    # argon2 salted hashes — plaintext is never persisted or logged
+    password_hash: str
+    recovery_code_hash: str
+    session_timeout_days: int = Field(default=30)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+# Safe public projection — never includes either hash
+class UtentePublic(SQLModel):
+    id: uuid.UUID
+    username: str
+    session_timeout_days: int
+    created_at: datetime | None = None
+
+
+# Registration response — carries the one-time recovery code, shown EXACTLY
+# once. The plaintext lives only in this response; it is never retrievable.
+class UtenteRegisterResponse(SQLModel):
+    utente: UtentePublic
+    recovery_code: str

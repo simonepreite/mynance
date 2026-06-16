@@ -46,7 +46,7 @@ development_status:
   epic-1: in-progress
   1-1-initialize-project-scaffold-morbido-theme-api-contract-and-ci-baseline: done
   1-2-base-shared-component-library-and-theme-tokens-with-accessibility-floor: done
-  1-3-self-service-registration-with-one-time-recovery-code: backlog
+  1-3-self-service-registration-with-one-time-recovery-code: in-progress
   1-4-login-30-day-session-and-logout: backlog
   1-5-per-utente-authorization-choke-point-and-data-isolation: backlog
   1-6-minimal-onboarding-shell-and-empty-themed-home: backlog
