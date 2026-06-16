@@ -53,8 +53,8 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2 — Track my money (the daily loop)
-  epic-2: backlog
-  2-1-typed-categorie-crud: backlog
+  epic-2: in-progress
+  2-1-typed-categorie-crud: in-progress
   2-2-set-liquidita-iniziale-once-with-re-baseline-audit: backlog
   2-3-pure-derived-on-read-calc-engine-for-liquidita-with-worked-example-tests: backlog
   2-4-derived-liquidita-read-endpoint: backlog

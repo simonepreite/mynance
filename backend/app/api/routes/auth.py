@@ -12,7 +12,7 @@ import jwt
 from fastapi import APIRouter, HTTPException, Request
 from jwt.exceptions import InvalidTokenError
 
-from app import crud_utente
+from app import crud_categoria, crud_utente
 from app.api.deps import CurrentUtente, SessionDep, UtenteTokenDep
 from app.core import security
 from app.core.auth_state import revoke_token, too_many_attempts
@@ -58,6 +58,8 @@ def register(body: UtenteRegister, session: SessionDep) -> UtenteRegisterRespons
     utente, recovery_code = crud_utente.create_utente(
         session=session, username=body.username, password=body.password
     )
+    # Provision the per-tipo starter Categorie for the new account (Story 2.1).
+    crud_categoria.provision_starter_categorie(session=session, utente_id=utente.id)
     return UtenteRegisterResponse(utente=_public(utente), recovery_code=recovery_code)
 
 

@@ -1,3 +1,4 @@
+import enum
 import uuid
 from datetime import datetime, timezone
 
@@ -194,3 +195,57 @@ class UtentePublic(SQLModel):
 class UtenteRegisterResponse(SQLModel):
     utente: UtentePublic
     recovery_code: str
+
+
+# ---------------------------------------------------------------------------
+# mynance — Categoria (FR-7). Typed (Spesa/Entrata) and per-Utente scoped.
+# ---------------------------------------------------------------------------
+
+
+class CategoriaTipo(str, enum.Enum):
+    spesa = "spesa"
+    entrata = "entrata"
+
+
+class CategoriaCreate(SQLModel):
+    nome: str = Field(min_length=1, max_length=255)
+    tipo: CategoriaTipo
+
+
+class CategoriaUpdate(SQLModel):
+    # Only a rename is allowed; tipo is a fixed, distinct space.
+    nome: str = Field(min_length=1, max_length=255)
+
+
+class Categoria(SQLModel, table=True):
+    __tablename__ = "categorie"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    nome: str = Field(max_length=255)
+    tipo: str = Field(max_length=16, index=True)  # "spesa" | "entrata"
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class CategoriaPublic(SQLModel):
+    id: uuid.UUID
+    nome: str
+    tipo: str
+    created_at: datetime | None = None
+
+
+# Categorie split by tipo (Spesa and Entrata are distinct spaces, not a filter)
+class CategorieList(SQLModel):
+    spesa: list[CategoriaPublic]
+    entrata: list[CategoriaPublic]
