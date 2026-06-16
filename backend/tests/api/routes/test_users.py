@@ -84,7 +84,12 @@ def test_get_non_existing_user_as_superuser(
         headers=superuser_token_headers,
     )
     assert r.status_code == 404
-    assert r.json() == {"detail": "User not found"}
+    # Story 1.1 AC3: errors are application/problem+json (RFC 9457). The
+    # endpoint's specific detail is preserved alongside the problem fields.
+    problem = r.json()
+    assert problem["detail"] == "User not found"
+    assert problem["status"] == 404
+    assert problem["title"] == "Not Found"
 
 
 def test_get_existing_user_current_user(client: TestClient, db: Session) -> None:
@@ -126,7 +131,11 @@ def test_get_existing_user_permissions_error(
         headers=normal_user_token_headers,
     )
     assert r.status_code == 403
-    assert r.json() == {"detail": "The user doesn't have enough privileges"}
+    # Story 1.1 AC3: problem+json (RFC 9457), specific detail preserved.
+    problem = r.json()
+    assert problem["detail"] == "The user doesn't have enough privileges"
+    assert problem["status"] == 403
+    assert problem["title"] == "Forbidden"
 
 
 def test_get_non_existing_user_permissions_error(
@@ -140,7 +149,11 @@ def test_get_non_existing_user_permissions_error(
         headers=normal_user_token_headers,
     )
     assert r.status_code == 403
-    assert r.json() == {"detail": "The user doesn't have enough privileges"}
+    # Story 1.1 AC3: problem+json (RFC 9457), specific detail preserved.
+    problem = r.json()
+    assert problem["detail"] == "The user doesn't have enough privileges"
+    assert problem["status"] == 403
+    assert problem["title"] == "Forbidden"
 
 
 def test_create_user_existing_username(
