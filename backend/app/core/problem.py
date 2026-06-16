@@ -65,7 +65,8 @@ async def http_exception_handler(
 
 
 async def unhandled_exception_handler(
-    request: Request, exc: Exception
+    request: Request,
+    exc: Exception,  # noqa: ARG001 — required by the handler signature, body must not leak it
 ) -> JSONResponse:
     # Catch-all so unhandled exceptions surface as problem+json instead of
     # Starlette's default text/plain "Internal Server Error". The detail is
