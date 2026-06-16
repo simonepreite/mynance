@@ -4,7 +4,7 @@ baseline_commit: 2238780
 
 # Story 1.5: Per-Utente authorization choke point and data isolation (FR-4, AR-AuthZ)
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -40,6 +40,7 @@ _Repository + isolation tests implemented; ruff check + `ruff format --check` cl
 | Date | Change |
 |---|---|
 | 2026-06-16 | UserScopedRepository choke point + per-Utente isolation tests (cross-Utente/missing parity, forced ownership, soft-delete). |
+| 2026-06-16 | Fixed an isolation-test hang (shared-session lock vs DROP TABLE → 10-min timeout). **CI green** (run `6855d64`). Status → done. |
 
 ### File List
 
