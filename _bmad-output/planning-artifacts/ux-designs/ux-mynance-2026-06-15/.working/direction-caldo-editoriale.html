@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mynance — Direzione "Caldo editoriale"</title>
+<style>
+/* ============================================================
+   DIREZIONE 2 — "CALDO EDITORIALE"
+   Personalità: toni carta calda, personalità tipografica forte
+   (serif humanist Georgia per titoli e numeri grandi), calore
+   terracotta/ambra. Umano, magazine-like, comunque non affollato.
+
+   PALETTE — LIGHT
+     --e-bg          #F3EBDD  carta calda
+     --e-surface     #FBF6EC  pagina avorio
+     --e-surface-2   #EDE2CF  superficie incassata sabbia
+     --e-line        #E0D2BB  linee sottili (regole editoriali)
+     --e-ink         #2E2722  inchiostro bruno (NON nero)
+     --e-ink-soft    #847661  testo secondario seppia
+     --e-accent      #B85C38  terracotta (accento brand)
+     --e-accent-2    #C98A3E  ambra (secondario / serif numbers)
+     --e-accent-soft #F0DBC6  riempimento terracotta tenue
+     --e-pos         #6E8A4E  oliva positivo
+     --e-warn        #A8642A  ambra-bruciata honesty (NON rosso)
+     --e-warn-bg     #F4E2C9
+   PALETTE — DARK
+     --e-bg          #211C18  bruno espresso (NON nero)
+     --e-surface     #2B241E  carta scura
+     --e-surface-2   #352C24  superficie incassata
+     --e-line        #423629
+     --e-ink         #F0E6D6  crema
+     --e-ink-soft    #A99A85
+     --e-accent      #DB8359  terracotta chiarita
+     --e-accent-2    #E0AF63  ambra chiarita
+     --e-accent-soft #4A3424
+     --e-pos         #9DB872
+     --e-warn        #E0A463
+     --e-warn-bg     #3D2F1D
+   ============================================================ */
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:#E8DECB;color:#2E2722;line-height:1.45;
+}
+/* serif "editoriale" stack for headings + hero numbers */
+.serif{font-family:Georgia,"Iowan Old Style","Palatino Linotype","Times New Roman",serif;}
+.page-wrap{max-width:1180px;margin:0 auto;padding:40px 24px 80px;}
+.page-head h1{font-size:30px;font-weight:700;letter-spacing:-.01em;color:#2E2722;}
+.page-head h1 .pill{font-family:-apple-system,sans-serif;display:inline-block;margin-left:10px;font-size:13px;font-weight:700;color:#B85C38;background:#F0DBC6;padding:4px 14px;border-radius:8px;vertical-align:middle;letter-spacing:0;}
+.rationale{
+  background:#FBF6EC;border:1px solid #E0D2BB;border-radius:6px;
+  padding:20px 26px;margin:18px 0 34px;max-width:880px;
+  font-size:15.5px;color:#5A4F42;line-height:1.62;
+}
+.rationale strong{color:#B85C38;}
+.rationale .serif{font-style:italic;}
+
+.frames{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;}
+.frame-col{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.frame-label{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#847661;}
+
+.phone{
+  width:332px;height:712px;border-radius:50px;padding:12px;background:#D7C9AF;
+  box-shadow:0 30px 60px -22px rgba(46,39,34,.5), inset 0 0 0 2px rgba(255,255,255,.35);
+  position:relative;
+}
+.phone.dark{background:#14110D;box-shadow:0 30px 60px -22px rgba(0,0,0,.7), inset 0 0 0 2px rgba(255,255,255,.05);}
+.screen{width:100%;height:100%;border-radius:40px;overflow:hidden;position:relative;
+  background:var(--e-bg);color:var(--e-ink);display:flex;flex-direction:column;}
+.notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:108px;height:26px;border-radius:14px;background:rgba(0,0,0,.14);z-index:40;}
+.dark .notch{background:rgba(0,0,0,.5);}
+
+.screen.light{
+  --e-bg:#F3EBDD; --e-surface:#FBF6EC; --e-surface-2:#EDE2CF; --e-line:#E0D2BB;
+  --e-ink:#2E2722; --e-ink-soft:#847661; --e-accent:#B85C38; --e-accent-2:#C98A3E;
+  --e-accent-soft:#F0DBC6; --e-pos:#6E8A4E; --e-warn:#A8642A; --e-warn-bg:#F4E2C9;
+  --e-warn-bd:#E7CFA4; --e-track:#E6D8C0;
+}
+.screen.darkmode{
+  --e-bg:#211C18; --e-surface:#2B241E; --e-surface-2:#352C24; --e-line:#423629;
+  --e-ink:#F0E6D6; --e-ink-soft:#A99A85; --e-accent:#DB8359; --e-accent-2:#E0AF63;
+  --e-accent-soft:#4A3424; --e-pos:#9DB872; --e-warn:#E0A463; --e-warn-bg:#3D2F1D;
+  --e-warn-bd:#5A4326; --e-track:#3A3026;
+}
+
+.scr-scroll{flex:1;overflow:hidden;padding:32px 20px 12px;display:flex;flex-direction:column;gap:18px;}
+
+.period{display:flex;border:1px solid var(--e-line);border-radius:8px;overflow:hidden;}
+.period button{flex:1;border:none;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--e-ink-soft);padding:10px 0;cursor:default;border-right:1px solid var(--e-line);}
+.period button:last-child{border-right:none;}
+.period button.active{background:var(--e-accent);color:#FBF6EC;font-weight:700;}
+.darkmode .period button.active{color:#211C18;}
+.navrow{display:flex;align-items:center;justify-content:space-between;padding:0 2px;}
+.navrow .month{font-size:18px;font-weight:600;display:flex;align-items:center;gap:14px;color:var(--e-ink);letter-spacing:.01em;}
+.navrow .arrow{color:var(--e-accent);font-size:18px;}
+.profile{width:36px;height:36px;border-radius:50%;background:var(--e-accent-soft);color:var(--e-accent);display:flex;align-items:center;justify-content:center;font-size:17px;}
+
+.honesty{display:flex;align-items:flex-start;gap:12px;background:var(--e-warn-bg);border-left:4px solid var(--e-warn);border-radius:4px;padding:14px 16px;}
+.honesty .ic{font-size:18px;line-height:1.2;}
+.honesty .tx{flex:1;font-size:14px;color:var(--e-warn);font-weight:600;line-height:1.45;}
+.honesty .tx small{display:block;font-weight:500;opacity:.85;font-size:12.5px;margin-top:2px;}
+.honesty .go{color:var(--e-warn);font-size:18px;align-self:center;}
+
+/* balance — editorial masthead style */
+.balance{border-top:2px solid var(--e-ink);border-bottom:1px solid var(--e-line);padding:18px 4px 20px;}
+.balance .lbl{font-size:11px;font-weight:800;letter-spacing:.22em;color:var(--e-ink-soft);text-transform:uppercase;}
+.balance .net{font-size:56px;font-weight:700;letter-spacing:-.02em;color:var(--e-pos);margin:6px 0 4px;line-height:1;}
+.balance .splitline{display:flex;gap:18px;margin-top:14px;}
+.balance .splitline .cell{flex:1;}
+.balance .splitline .k{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--e-ink-soft);text-transform:uppercase;}
+.balance .splitline .v{font-size:24px;font-weight:600;margin-top:2px;}
+.balance .splitline .cell+.cell{border-left:1px solid var(--e-line);padding-left:18px;}
+
+.cats h3{font-size:16px;font-weight:700;color:var(--e-ink);margin-bottom:4px;}
+.cats .kicker{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--e-accent);text-transform:uppercase;margin-bottom:14px;}
+.cat{padding:12px 0;border-bottom:1px solid var(--e-line);}
+.cat:last-child{border-bottom:none;}
+.cat .top{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
+.cat .emoji{font-size:17px;}
+.cat .name{flex:1;font-size:15px;font-weight:600;color:var(--e-ink);}
+.cat .badge{font-size:9.5px;font-weight:800;letter-spacing:.06em;color:var(--e-accent);border:1px solid var(--e-accent);padding:2px 7px;border-radius:4px;text-transform:uppercase;}
+.cat .amt{font-size:18px;font-weight:600;color:var(--e-ink);}
+.cat .track{height:6px;background:var(--e-track);border-radius:2px;overflow:hidden;}
+.cat .fill{height:100%;background:var(--e-accent);border-radius:2px;}
+.cat:nth-child(3) .fill,.cat:nth-child(4) .fill{background:var(--e-accent-2);}
+
+.bottomnav{display:flex;justify-content:space-around;align-items:center;background:var(--e-surface);border-top:1px solid var(--e-line);padding:10px 8px 15px;}
+.navitem{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--e-ink-soft);font-weight:600;width:54px;}
+.navitem .gi{font-size:20px;}
+.navitem.on{color:var(--e-accent);}
+.navadd{width:54px;height:54px;margin-top:-24px;border-radius:14px;background:var(--e-accent);color:#FBF6EC;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:300;box-shadow:0 9px 20px -6px rgba(184,92,56,.75);}
+.darkmode .navadd{color:#211C18;}
+.navlabel-add{font-size:10.5px;font-weight:700;color:var(--e-accent);margin-top:3px;}
+
+/* QUICK ADD */
+.qa-section{margin-top:60px;}
+.qa-section h2{font-size:20px;font-weight:700;color:#2E2722;margin-bottom:22px;}
+.sheet-screen .scr-scroll{padding:0;justify-content:flex-end;}
+.dim{flex:1;background:rgba(33,28,24,.3);}
+.darkmode .dim{background:rgba(0,0,0,.5);}
+.sheet{background:var(--e-surface);border-radius:18px 18px 0 0;padding:16px 20px 22px;border-top:3px solid var(--e-accent);display:flex;flex-direction:column;gap:16px;box-shadow:0 -16px 40px -18px rgba(0,0,0,.4);}
+.grip{width:46px;height:5px;border-radius:999px;background:var(--e-surface-2);margin:0 auto 2px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;}
+.seg{display:flex;border:1px solid var(--e-line);border-radius:8px;overflow:hidden;}
+.seg button{border:none;background:transparent;font:inherit;font-size:13px;font-weight:700;color:var(--e-ink-soft);padding:9px 22px;cursor:default;border-right:1px solid var(--e-line);}
+.seg button:last-child{border-right:none;}
+.seg button.active{background:var(--e-accent);color:#FBF6EC;}
+.darkmode .seg button.active{color:#211C18;}
+.qa-close{width:34px;height:34px;border-radius:50%;background:var(--e-surface-2);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--e-ink-soft);}
+.amount{text-align:center;font-size:58px;font-weight:700;letter-spacing:-.02em;color:var(--e-ink);padding:4px 0;}
+.amount .cur{color:var(--e-ink-soft);font-weight:600;}
+.field-lbl{font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--e-accent);text-transform:uppercase;}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:8px;}
+.chip{font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid var(--e-line);background:var(--e-surface);color:var(--e-ink);}
+.chip.sel{background:var(--e-accent-soft);border-color:var(--e-accent);color:var(--e-accent);font-weight:700;}
+.chip.more{color:var(--e-ink-soft);}
+.meta{display:flex;gap:0;border:1px solid var(--e-line);border-radius:8px;overflow:hidden;}
+.meta .m{flex:1;padding:11px 8px;text-align:center;font-size:12.5px;font-weight:600;color:var(--e-ink);border-right:1px solid var(--e-line);}
+.meta .m:last-child{border-right:none;}
+.meta .m small{display:block;font-size:9.5px;color:var(--e-ink-soft);font-weight:700;letter-spacing:.1em;margin-bottom:2px;text-transform:uppercase;}
+.salva{background:var(--e-accent);color:#FBF6EC;border-radius:10px;padding:16px;text-align:center;font-size:16px;font-weight:700;letter-spacing:.02em;}
+.darkmode .salva{color:#211C18;}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.key{background:var(--e-surface-2);border-radius:10px;padding:14px 0;text-align:center;font-size:21px;font-weight:600;color:var(--e-ink);}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+  <div class="page-head">
+    <h1 class="serif">mynance — Direzione "Caldo editoriale"<span class="pill">magazine · terracotta</span></h1>
+  </div>
+  <div class="rationale">
+    <strong>Caldo editoriale</strong> tratta il bilancio come una <span class="serif">pagina di rivista</span>: serif humanist per titoli e numeri-protagonista, regole tipografiche sottili al posto delle ombre, e calore <strong>terracotta + ambra</strong> su toni di carta. Densità maggiore ma ariosa, mai affollata; le note di honesty diventano un richiamo a margine in ambra bruciata, ferme ma calde.
+  </div>
+
+  <div class="frames">
+
+    <!-- HOME LIGHT -->
+    <div class="frame-col">
+      <div class="frame-label">Home "Mese" · Light</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen light">
+          <div class="scr-scroll">
+            <div class="period">
+              <button>Giorno</button><button>Sett.</button><button class="active">Mese</button><button>Anno</button>
+            </div>
+            <div class="navrow">
+              <div class="month serif"><span class="arrow">‹</span> Giugno 2026 <span class="arrow">›</span></div>
+              <div class="profile">👤</div>
+            </div>
+            <div class="honesty">
+              <span class="ic">⚠️</span>
+              <span class="tx">È ora di riconciliare<small>ultima volta: 12 gg fa</small></span>
+              <span class="go">›</span>
+            </div>
+            <div class="balance">
+              <div class="lbl">Bilancio · Giugno</div>
+              <div class="net serif">+ 480 €</div>
+              <div class="splitline">
+                <div class="cell"><div class="k">Entrate</div><div class="v serif" style="color:var(--e-pos)">2.100 €</div></div>
+                <div class="cell"><div class="k">Spese</div><div class="v serif">1.620 €</div></div>
+              </div>
+            </div>
+            <div class="cats">
+              <div class="kicker">Spese per categoria</div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🎟</span><span class="name">Assicurazioni</span><span class="badge">Secchiello</span><span class="amt serif">620 €</span></div>
+                <div class="track"><div class="fill" style="width:100%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🛒</span><span class="name">Alimentari</span><span class="amt serif">540 €</span></div>
+                <div class="track"><div class="fill" style="width:87%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">⛽</span><span class="name">Trasporti</span><span class="amt serif">280 €</span></div>
+                <div class="track"><div class="fill" style="width:45%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🍔</span><span class="name">Ristoranti</span><span class="amt serif">180 €</span></div>
+                <div class="track"><div class="fill" style="width:29%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem on"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOME DARK -->
+    <div class="frame-col">
+      <div class="frame-label">Home "Mese" · Dark</div>
+      <div class="phone dark">
+        <div class="notch"></div>
+        <div class="screen darkmode">
+          <div class="scr-scroll">
+            <div class="period">
+              <button>Giorno</button><button>Sett.</button><button class="active">Mese</button><button>Anno</button>
+            </div>
+            <div class="navrow">
+              <div class="month serif"><span class="arrow">‹</span> Giugno 2026 <span class="arrow">›</span></div>
+              <div class="profile">👤</div>
+            </div>
+            <div class="honesty">
+              <span class="ic">⚠️</span>
+              <span class="tx">È ora di riconciliare<small>ultima volta: 12 gg fa</small></span>
+              <span class="go">›</span>
+            </div>
+            <div class="balance">
+              <div class="lbl">Bilancio · Giugno</div>
+              <div class="net serif">+ 480 €</div>
+              <div class="splitline">
+                <div class="cell"><div class="k">Entrate</div><div class="v serif" style="color:var(--e-pos)">2.100 €</div></div>
+                <div class="cell"><div class="k">Spese</div><div class="v serif">1.620 €</div></div>
+              </div>
+            </div>
+            <div class="cats">
+              <div class="kicker">Spese per categoria</div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🎟</span><span class="name">Assicurazioni</span><span class="badge">Secchiello</span><span class="amt serif">620 €</span></div>
+                <div class="track"><div class="fill" style="width:100%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🛒</span><span class="name">Alimentari</span><span class="amt serif">540 €</span></div>
+                <div class="track"><div class="fill" style="width:87%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">⛽</span><span class="name">Trasporti</span><span class="amt serif">280 €</span></div>
+                <div class="track"><div class="fill" style="width:45%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🍔</span><span class="name">Ristoranti</span><span class="amt serif">180 €</span></div>
+                <div class="track"><div class="fill" style="width:29%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem on"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ADD LIGHT -->
+    <div class="frame-col">
+      <div class="frame-label">Quick-add · Light</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen light sheet-screen">
+          <div class="scr-scroll">
+            <div class="dim"></div>
+            <div class="sheet">
+              <div class="grip"></div>
+              <div class="toggle-row">
+                <div class="seg"><button class="active">Spesa</button><button>Entrata</button></div>
+                <div class="qa-close">✕</div>
+              </div>
+              <div class="amount serif"><span class="cur"> </span>45,00 <span class="cur">€</span></div>
+              <div>
+                <div class="field-lbl">Categoria</div>
+                <div class="chips">
+                  <span class="chip sel">⛽ Trasporti</span>
+                  <span class="chip">🛒 Alimentari</span>
+                  <span class="chip">🍔 Ristoranti</span>
+                  <span class="chip more">＋ altre…</span>
+                </div>
+              </div>
+              <div class="meta">
+                <div class="m"><small>Data</small>📅 Oggi</div>
+                <div class="m"><small>Nota</small>📝 Aggiungi</div>
+                <div class="m"><small>Secchiello</small>🎟 —</div>
+              </div>
+              <div class="salva">Salva</div>
+              <div class="keypad">
+                <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+                <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+                <div class="key">7</div><div class="key">8</div><div class="key">9</div>
+                <div class="key">,</div><div class="key">0</div><div class="key">⌫</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ADD DARK + Secchiello warning -->
+    <div class="frame-col">
+      <div class="frame-label">Quick-add · Dark · Secchiello sotto-finanziato</div>
+      <div class="phone dark">
+        <div class="notch"></div>
+        <div class="screen darkmode sheet-screen">
+          <div class="scr-scroll">
+            <div class="dim"></div>
+            <div class="sheet">
+              <div class="grip"></div>
+              <div class="toggle-row">
+                <div class="seg"><button class="active">Spesa</button><button>Entrata</button></div>
+                <div class="qa-close">✕</div>
+              </div>
+              <div class="amount serif"><span class="cur"> </span>45,00 <span class="cur">€</span></div>
+              <div class="honesty">
+                <span class="ic">🪣</span>
+                <span class="tx">Secchiello "Assicurazioni" in rosso<small>Saldo −38 € · conviene rimpolparlo prima di prelevare</small></span>
+              </div>
+              <div>
+                <div class="field-lbl">Categoria</div>
+                <div class="chips">
+                  <span class="chip sel">🎟 Assicurazioni</span>
+                  <span class="chip">🛒 Alimentari</span>
+                  <span class="chip more">＋ altre…</span>
+                </div>
+              </div>
+              <div class="meta">
+                <div class="m"><small>Data</small>📅 Oggi</div>
+                <div class="m"><small>Nota</small>📝 Aggiungi</div>
+                <div class="m"><small>Secchiello</small>🎟 Assic.</div>
+              </div>
+              <div class="salva">Salva</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

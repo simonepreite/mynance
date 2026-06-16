@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mynance — Statistiche (Morbido)</title>
+<style>
+/* ============================================================
+   mynance — schermata STATISTICHE — direzione "Morbido"
+   Solo grafici (nessuna lista). Stile/tokens ripresi 1:1 da
+   .working/direction-morbido.html + DESIGN.md. Grafici disegnati in CSS.
+
+   PALETTE — LIGHT
+     --m-bg #F4F1EA · --m-surface #FBFAF6 · --m-surface-2 #EFEAE0
+     --m-ink #3A3A38 · --m-ink-soft #807C74 · --m-accent #7FA99B
+     --m-accent-soft #DDE8E2 · --m-pos #6B9B7C · --m-warn #B07C45
+     --m-warn-bg #F6E9D8 · --m-bar-track #EAE4D8
+   PALETTE — DARK
+     --m-bg #21201D · --m-surface #2C2A27 · --m-surface-2 #353230
+     --m-ink #ECE7DD · --m-ink-soft #A29D92 · --m-accent #9CC4B5
+     --m-accent-soft #38463F · --m-pos #93C4A0 · --m-warn #E0B080
+     --m-warn-bg #423526 · --m-bar-track #3A3733
+   Serie grafici: Spese = ambra calda --m-warn · Entrate = verde --m-pos ·
+                  Netto = sage accent --m-accent. RADII: card 34 · panel 24.
+
+   Torta Spese giugno (totale 1.620 €):
+     Assicurazioni 620 (38,3% → 0–138°)  · accent
+     Alimentari    540 (33,3% → 138–258°) · pos
+     Trasporti     280 (17,3% → 258–320°) · warn
+     Ristoranti    180 (11,1% → 320–360°) · ink-soft
+   ============================================================ */
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:#E8E3D8;color:#3A3A38;line-height:1.45;
+}
+.page-wrap{max-width:1180px;margin:0 auto;padding:40px 24px 80px;}
+.page-head h1{font-size:30px;font-weight:800;letter-spacing:-.02em;color:#3A3A38;}
+.page-head .pill{display:inline-block;margin-left:10px;font-size:13px;font-weight:700;color:#54756A;background:#DDE8E2;padding:4px 14px;border-radius:999px;vertical-align:middle;}
+.rationale{
+  background:#FBFAF6;border:1px solid #E4DFD4;border-radius:24px;
+  padding:20px 26px;margin:18px 0 34px;max-width:980px;
+  font-size:15.5px;color:#5C584F;line-height:1.6;
+}
+.rationale strong{color:#54756A;}
+
+.frames{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;}
+.frame-col{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.frame-label{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#807C74;}
+
+/* ---- PHONE FRAME ---- */
+.phone{
+  width:332px;height:712px;border-radius:54px;
+  padding:12px;background:#D8D2C6;
+  box-shadow:0 30px 60px -22px rgba(60,55,45,.5), inset 0 0 0 2px rgba(255,255,255,.4);
+  position:relative;
+}
+.phone.dark{background:#15140F;box-shadow:0 30px 60px -22px rgba(0,0,0,.7), inset 0 0 0 2px rgba(255,255,255,.06);}
+.screen{
+  width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative;
+  background:var(--m-bg);color:var(--m-ink);display:flex;flex-direction:column;
+}
+.notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:108px;height:26px;border-radius:14px;background:rgba(0,0,0,.16);z-index:40;}
+.dark .notch{background:rgba(0,0,0,.5);}
+
+/* THEME TOKENS — LIGHT */
+.screen.light{
+  --m-bg:#F4F1EA; --m-surface:#FBFAF6; --m-surface-2:#EFEAE0;
+  --m-ink:#3A3A38; --m-ink-soft:#807C74; --m-accent:#7FA99B;
+  --m-accent-soft:#DDE8E2; --m-pos:#6B9B7C; --m-warn:#B07C45;
+  --m-warn-bg:#F6E9D8; --m-warn-bd:#E8D4B8; --m-bar-track:#EAE4D8;
+  --grid:#E4DECF;
+}
+/* THEME TOKENS — DARK */
+.screen.darkmode{
+  --m-bg:#21201D; --m-surface:#2C2A27; --m-surface-2:#353230;
+  --m-ink:#ECE7DD; --m-ink-soft:#A29D92; --m-accent:#9CC4B5;
+  --m-accent-soft:#38463F; --m-pos:#93C4A0; --m-warn:#E0B080;
+  --m-warn-bg:#423526; --m-warn-bd:#574429; --m-bar-track:#3A3733;
+  --grid:#3A3733;
+}
+
+.scr-scroll{flex:1;overflow:hidden;padding:34px 18px 12px;display:flex;flex-direction:column;gap:16px;}
+
+/* screen title */
+.scr-title{display:flex;align-items:center;justify-content:space-between;padding:2px 4px;}
+.scr-title h2{font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--m-ink);}
+.profile{width:38px;height:38px;border-radius:50%;background:var(--m-accent-soft);display:flex;align-items:center;justify-content:center;font-size:18px;}
+
+/* period selector (reused from Home) */
+.period{display:flex;background:var(--m-surface-2);border-radius:22px;padding:5px;gap:2px;}
+.period button{
+  flex:1;border:none;background:transparent;font:inherit;font-size:13.5px;font-weight:600;
+  color:var(--m-ink-soft);padding:9px 0;border-radius:17px;cursor:default;
+}
+.period button.active{background:var(--m-surface);color:var(--m-ink);font-weight:800;box-shadow:0 4px 10px -4px rgba(0,0,0,.18);}
+.navrow{display:flex;align-items:center;justify-content:space-between;padding:0 4px 2px;}
+.navrow .month{font-size:15px;font-weight:700;display:flex;align-items:center;gap:12px;color:var(--m-ink);}
+.navrow .arrow{color:var(--m-accent);font-size:18px;font-weight:700;}
+
+/* chart card */
+.chartcard{
+  background:var(--m-surface);border-radius:34px;padding:20px 20px 18px;
+  box-shadow:0 12px 28px -16px rgba(60,55,45,.3);
+}
+.dark .chartcard,.darkmode .chartcard{box-shadow:0 12px 28px -16px rgba(0,0,0,.5);}
+.chartcard h3{font-size:14.5px;font-weight:800;color:var(--m-ink);margin-bottom:3px;}
+.chartcard .csub{font-size:11.5px;font-weight:600;color:var(--m-ink-soft);margin-bottom:14px;}
+
+/* chart legend (shared) */
+.legend{display:flex;flex-wrap:wrap;gap:13px;margin-bottom:14px;}
+.legend .li{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--m-ink-soft);}
+.legend .sw{width:11px;height:11px;border-radius:3px;}
+.legend .sw.line{border-radius:999px;height:4px;width:16px;}
+
+/* ===== CSS LINE/AREA CHART ===== */
+.plot{position:relative;height:150px;margin:2px 0 4px;}
+.gridline{position:absolute;left:0;right:0;border-top:1px dashed var(--grid);}
+/* an SVG-free polyline drawn with absolutely-positioned segments would be heavy;
+   we use inline SVG markup (no script, no network) — pure vector, theme-aware via currentColor vars */
+.plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.xaxis{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;font-weight:700;color:var(--m-ink-soft);letter-spacing:.02em;}
+.ycap{position:absolute;left:0;font-size:9.5px;font-weight:700;color:var(--m-ink-soft);transform:translateY(-50%);}
+
+/* ===== CONIC PIE ===== */
+.pie-wrap{display:flex;align-items:center;gap:20px;}
+.pie{
+  width:128px;height:128px;border-radius:50%;flex-shrink:0;
+  background:conic-gradient(
+    var(--m-accent)   0deg 138deg,   /* Assicurazioni 38,3% */
+    var(--m-pos)    138deg 258deg,   /* Alimentari   33,3% */
+    var(--m-warn)   258deg 320deg,   /* Trasporti    17,3% */
+    var(--m-ink-soft) 320deg 360deg  /* Ristoranti   11,1% */
+  );
+  position:relative;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);
+}
+.pie::after{
+  content:"";position:absolute;inset:30px;border-radius:50%;
+  background:var(--m-surface);
+  display:flex;
+}
+.pie .center{
+  position:absolute;inset:30px;border-radius:50%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:2;text-align:center;
+}
+.pie .center .c-amt{font-size:18px;font-weight:800;color:var(--m-ink);line-height:1;}
+.pie .center .c-lbl{font-size:8.5px;font-weight:700;letter-spacing:.08em;color:var(--m-ink-soft);margin-top:3px;}
+.pie-legend{display:flex;flex-direction:column;gap:9px;flex:1;}
+.pie-legend .pl{display:flex;align-items:center;gap:8px;}
+.pie-legend .sw{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+.pie-legend .nm{flex:1;font-size:12px;font-weight:600;color:var(--m-ink);}
+.pie-legend .pc{font-size:12px;font-weight:800;color:var(--m-ink-soft);}
+.pie-legend .am{font-size:12px;font-weight:800;color:var(--m-ink);min-width:42px;text-align:right;}
+
+/* bottom nav */
+.bottomnav{
+  display:flex;justify-content:space-around;align-items:center;
+  background:var(--m-surface);border-top:1px solid var(--m-surface-2);
+  padding:11px 8px 16px;
+}
+.navitem{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--m-ink-soft);font-weight:600;width:54px;}
+.navitem .gi{font-size:21px;}
+.navitem.on{color:var(--m-accent);}
+.navadd{
+  width:58px;height:58px;margin-top:-26px;border-radius:50%;
+  background:var(--m-accent);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:300;box-shadow:0 10px 22px -6px rgba(127,169,155,.85);
+}
+.darkmode .navadd{color:#1c2521;box-shadow:0 10px 22px -6px rgba(156,196,181,.5);}
+.navlabel-add{font-size:10.5px;font-weight:700;color:var(--m-accent);margin-top:3px;}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+  <div class="page-head">
+    <h1>mynance — Statistiche<span class="pill">Morbido · solo grafici</span></h1>
+  </div>
+  <div class="rationale">
+    La schermata <strong>Statistiche</strong> mostra come si muovono le cose nel tempo — <strong>nessuna lista</strong> (quella è il compito della Home). In alto lo stesso <strong>period-selector</strong> della Home imposta il periodo di riferimento. Tre livelli, tutti disegnati in CSS/SVG: un <strong>trend Spese / Entrate / Netto</strong> su 6 mesi (area + linee), un <strong>trend Risparmio libero vs Cuscinetto di sicurezza</strong>, e una <strong>torta conic-gradient</strong> della quota di Spese per Categoria del periodo (giugno 2026), con piccola legenda. Le serie usano l'ambra calda per le Spese, il verde per le Entrate e il sage per il Netto — mai colori squillanti.
+  </div>
+
+  <div class="frames">
+
+    <!-- ===================== STATISTICHE · LIGHT ===================== -->
+    <div class="frame-col">
+      <div class="frame-label">Statistiche · Light</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen light">
+          <div class="scr-scroll">
+            <div class="scr-title"><h2>📊 Statistiche</h2><div class="profile">👤</div></div>
+            <div class="period">
+              <button>Giorno</button><button>Sett.</button>
+              <button class="active">Mese</button><button>Anno</button>
+            </div>
+            <div class="navrow">
+              <div class="month"><span class="arrow">‹</span> Gen — Giu 2026 <span class="arrow">›</span></div>
+            </div>
+
+            <!-- TREND Spese / Entrate / Netto -->
+            <div class="chartcard">
+              <h3>Andamento mensile</h3>
+              <div class="csub">Spese · Entrate · Netto — ultimi 6 mesi</div>
+              <div class="legend">
+                <span class="li"><span class="sw line" style="background:var(--m-warn)"></span>Spese</span>
+                <span class="li"><span class="sw line" style="background:var(--m-pos)"></span>Entrate</span>
+                <span class="li"><span class="sw line" style="background:var(--m-accent)"></span>Netto</span>
+              </div>
+              <div class="plot">
+                <div class="gridline" style="top:0%"></div>
+                <div class="gridline" style="top:33%"></div>
+                <div class="gridline" style="top:66%"></div>
+                <div class="gridline" style="top:100%"></div>
+                <span class="ycap" style="top:2%">2,4k</span>
+                <span class="ycap" style="top:50%">1,2k</span>
+                <span class="ycap" style="top:99%">0</span>
+                <!-- viewBox 0..300 x, 0..150 y. y=0 top(2,4k) y=150 bottom(0).
+                     scale: value/2400*150 from bottom => y=150-(v/2400*150)
+                     months x: 15,72,129,186,243,285 (right padding for labels)
+                     Entrate: 1950,2000,1880,2050,2020,2100
+                     Spese:   1480,1700,1380,1820,1540,1620
+                     Netto:    470, 300, 500, 230, 480, 480 -->
+                <svg viewBox="0 0 300 150" preserveAspectRatio="none">
+                  <!-- Entrate area -->
+                  <polygon points="15,28 72,25 129,32 186,22 243,24 285,19 285,150 15,150"
+                    fill="var(--m-pos)" opacity="0.10"/>
+                  <!-- Spese area -->
+                  <polygon points="15,57 72,44 129,64 186,36 243,54 285,49 285,150 15,150"
+                    fill="var(--m-warn)" opacity="0.13"/>
+                  <!-- Entrate line -->
+                  <polyline points="15,28 72,25 129,32 186,22 243,24 285,19"
+                    fill="none" stroke="var(--m-pos)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <!-- Spese line -->
+                  <polyline points="15,57 72,44 129,64 186,36 243,54 285,49"
+                    fill="none" stroke="var(--m-warn)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <!-- Netto line (dashed, sage) -->
+                  <polyline points="15,121 72,131 129,119 186,136 243,120 285,120"
+                    fill="none" stroke="var(--m-accent)" stroke-width="2.2" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <!-- end dots -->
+                  <circle cx="285" cy="19" r="3.4" fill="var(--m-pos)"/>
+                  <circle cx="285" cy="49" r="3.4" fill="var(--m-warn)"/>
+                  <circle cx="285" cy="120" r="3.2" fill="var(--m-accent)"/>
+                </svg>
+              </div>
+              <div class="xaxis"><span>gen</span><span>feb</span><span>mar</span><span>apr</span><span>mag</span><span>giu</span></div>
+            </div>
+
+            <!-- TREND Risparmio libero vs Cuscinetto -->
+            <div class="chartcard">
+              <h3>Risparmio libero vs Cuscinetto</h3>
+              <div class="csub">Il libero resta sotto il target di 6 mesi</div>
+              <div class="legend">
+                <span class="li"><span class="sw line" style="background:var(--m-pos)"></span>Risparmio libero</span>
+                <span class="li"><span class="sw line" style="background:var(--m-warn)"></span>Cuscinetto (target)</span>
+              </div>
+              <div class="plot" style="height:120px">
+                <div class="gridline" style="top:0%"></div>
+                <div class="gridline" style="top:50%"></div>
+                <div class="gridline" style="top:100%"></div>
+                <span class="ycap" style="top:2%">12k</span>
+                <span class="ycap" style="top:99%">0</span>
+                <!-- scale value/12000*120 ; y=120-(v/12000*120)
+                     Cuscinetto target flat ~9720 -> y=120-(9720/12000*120)=120-97.2=22.8 ~ slight rise (spesa media cresce)
+                     target: 9300,9420,9500,9600,9660,9720 -> y:27,25.8,25,24,23.4,22.8
+                     libero:  3900,3700,4000,4100,4300,4460 -> y:81,83,80,79,77,75.4 -->
+                <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+                  <!-- gap shading between libero and target -->
+                  <polygon points="15,27 72,25.8 129,25 186,24 243,23.4 285,22.8 285,75.4 243,77 186,79 129,80 72,83 15,81"
+                    fill="var(--m-warn)" opacity="0.10"/>
+                  <polyline points="15,27 72,25.8 129,25 186,24 243,23.4 285,22.8"
+                    fill="none" stroke="var(--m-warn)" stroke-width="2.4" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="15,81 72,83 129,80 186,79 243,77 285,75.4"
+                    fill="none" stroke="var(--m-pos)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="285" cy="22.8" r="3.2" fill="var(--m-warn)"/>
+                  <circle cx="285" cy="75.4" r="3.4" fill="var(--m-pos)"/>
+                </svg>
+              </div>
+              <div class="xaxis"><span>gen</span><span>feb</span><span>mar</span><span>apr</span><span>mag</span><span>giu</span></div>
+            </div>
+
+            <!-- PIE Spese per categoria -->
+            <div class="chartcard">
+              <h3>Spese per categoria · giugno</h3>
+              <div class="csub">Quota sul totale di 1.620 €</div>
+              <div class="pie-wrap">
+                <div class="pie">
+                  <div class="center"><div class="c-amt">1.620 €</div><div class="c-lbl">SPESE GIU</div></div>
+                </div>
+                <div class="pie-legend">
+                  <div class="pl"><span class="sw" style="background:var(--m-accent)"></span><span class="nm">Assicurazioni</span><span class="pc">38%</span><span class="am">620 €</span></div>
+                  <div class="pl"><span class="sw" style="background:var(--m-pos)"></span><span class="nm">Alimentari</span><span class="pc">33%</span><span class="am">540 €</span></div>
+                  <div class="pl"><span class="sw" style="background:var(--m-warn)"></span><span class="nm">Trasporti</span><span class="pc">17%</span><span class="am">280 €</span></div>
+                  <div class="pl"><span class="sw" style="background:var(--m-ink-soft)"></span><span class="nm">Ristoranti</span><span class="pc">11%</span><span class="am">180 €</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem on"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== STATISTICHE · DARK ===================== -->
+    <div class="frame-col">
+      <div class="frame-label">Statistiche · Dark</div>
+      <div class="phone dark">
+        <div class="notch"></div>
+        <div class="screen darkmode">
+          <div class="scr-scroll">
+            <div class="scr-title"><h2>📊 Statistiche</h2><div class="profile">👤</div></div>
+            <div class="period">
+              <button>Giorno</button><button>Sett.</button>
+              <button class="active">Mese</button><button>Anno</button>
+            </div>
+            <div class="navrow">
+              <div class="month"><span class="arrow">‹</span> Gen — Giu 2026 <span class="arrow">›</span></div>
+            </div>
+
+            <div class="chartcard">
+              <h3>Andamento mensile</h3>
+              <div class="csub">Spese · Entrate · Netto — ultimi 6 mesi</div>
+              <div class="legend">
+                <span class="li"><span class="sw line" style="background:var(--m-warn)"></span>Spese</span>
+                <span class="li"><span class="sw line" style="background:var(--m-pos)"></span>Entrate</span>
+                <span class="li"><span class="sw line" style="background:var(--m-accent)"></span>Netto</span>
+              </div>
+              <div class="plot">
+                <div class="gridline" style="top:0%"></div>
+                <div class="gridline" style="top:33%"></div>
+                <div class="gridline" style="top:66%"></div>
+                <div class="gridline" style="top:100%"></div>
+                <span class="ycap" style="top:2%">2,4k</span>
+                <span class="ycap" style="top:50%">1,2k</span>
+                <span class="ycap" style="top:99%">0</span>
+                <svg viewBox="0 0 300 150" preserveAspectRatio="none">
+                  <polygon points="15,28 72,25 129,32 186,22 243,24 285,19 285,150 15,150"
+                    fill="var(--m-pos)" opacity="0.14"/>
+                  <polygon points="15,57 72,44 129,64 186,36 243,54 285,49 285,150 15,150"
+                    fill="var(--m-warn)" opacity="0.16"/>
+                  <polyline points="15,28 72,25 129,32 186,22 243,24 285,19"
+                    fill="none" stroke="var(--m-pos)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="15,57 72,44 129,64 186,36 243,54 285,49"
+                    fill="none" stroke="var(--m-warn)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="15,121 72,131 129,119 186,136 243,120 285,120"
+                    fill="none" stroke="var(--m-accent)" stroke-width="2.2" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="285" cy="19" r="3.4" fill="var(--m-pos)"/>
+                  <circle cx="285" cy="49" r="3.4" fill="var(--m-warn)"/>
+                  <circle cx="285" cy="120" r="3.2" fill="var(--m-accent)"/>
+                </svg>
+              </div>
+              <div class="xaxis"><span>gen</span><span>feb</span><span>mar</span><span>apr</span><span>mag</span><span>giu</span></div>
+            </div>
+
+            <div class="chartcard">
+              <h3>Risparmio libero vs Cuscinetto</h3>
+              <div class="csub">Il libero resta sotto il target di 6 mesi</div>
+              <div class="legend">
+                <span class="li"><span class="sw line" style="background:var(--m-pos)"></span>Risparmio libero</span>
+                <span class="li"><span class="sw line" style="background:var(--m-warn)"></span>Cuscinetto (target)</span>
+              </div>
+              <div class="plot" style="height:120px">
+                <div class="gridline" style="top:0%"></div>
+                <div class="gridline" style="top:50%"></div>
+                <div class="gridline" style="top:100%"></div>
+                <span class="ycap" style="top:2%">12k</span>
+                <span class="ycap" style="top:99%">0</span>
+                <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+                  <polygon points="15,27 72,25.8 129,25 186,24 243,23.4 285,22.8 285,75.4 243,77 186,79 129,80 72,83 15,81"
+                    fill="var(--m-warn)" opacity="0.14"/>
+                  <polyline points="15,27 72,25.8 129,25 186,24 243,23.4 285,22.8"
+                    fill="none" stroke="var(--m-warn)" stroke-width="2.4" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="15,81 72,83 129,80 186,79 243,77 285,75.4"
+                    fill="none" stroke="var(--m-pos)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="285" cy="22.8" r="3.2" fill="var(--m-warn)"/>
+                  <circle cx="285" cy="75.4" r="3.4" fill="var(--m-pos)"/>
+                </svg>
+              </div>
+              <div class="xaxis"><span>gen</span><span>feb</span><span>mar</span><span>apr</span><span>mag</span><span>giu</span></div>
+            </div>
+
+            <div class="chartcard">
+              <h3>Spese per categoria · giugno</h3>
+              <div class="csub">Quota sul totale di 1.620 €</div>
+              <div class="pie-wrap">
+                <div class="pie">
+                  <div class="center"><div class="c-amt">1.620 €</div><div class="c-lbl">SPESE GIU</div></div>
+                </div>
+                <div class="pie-legend">
+                  <div class="pl"><span class="sw" style="background:var(--m-accent)"></span><span class="nm">Assicurazioni</span><span class="pc">38%</span><span class="am">620 €</span></div>
+                  <div class="pl"><span class="sw" style="background:var(--m-pos)"></span><span class="nm">Alimentari</span><span class="pc">33%</span><span class="am">540 €</span></div>
+                  <div class="pl"><span class="sw" style="background:var(--m-warn)"></span><span class="nm">Trasporti</span><span class="pc">17%</span><span class="am">280 €</span></div>
+                  <div class="pl"><span class="sw" style="background:var(--m-ink-soft)"></span><span class="nm">Ristoranti</span><span class="pc">11%</span><span class="am">180 €</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem on"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

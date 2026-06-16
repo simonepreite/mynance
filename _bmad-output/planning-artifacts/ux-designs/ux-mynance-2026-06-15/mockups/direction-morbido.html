@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mynance — Direzione "Morbido"</title>
+<style>
+/* ============================================================
+   DIREZIONE 1 — "MORBIDO"
+   Personalità: pillowy, cards molto arrotondate, spaziatura ariosa,
+   accento muted sage/teal, sans grande e amichevole. Massima coziness.
+
+   PALETTE — LIGHT
+     --m-bg          #F4F1EA  sfondo caldo avorio
+     --m-surface     #FBFAF6  card panna
+     --m-surface-2   #EFEAE0  superficie incassata
+     --m-ink         #3A3A38  testo principale (NON nero puro — caldo)
+     --m-ink-soft    #807C74  testo secondario
+     --m-accent      #7FA99B  sage/teal muted (accento brand)
+     --m-accent-soft #DDE8E2  riempimento sage tenue
+     --m-pos         #6B9B7C  verde netto positivo
+     --m-warn        #C99A6A  ambra calda per honesty (NON rosso allarme)
+     --m-warn-bg     #F6E9D8  fondo banner ambra
+   PALETTE — DARK
+     --m-bg          #21201D  bruno scuro caldo (NON nero)
+     --m-surface     #2C2A27  card scura calda
+     --m-surface-2   #353230  superficie incassata
+     --m-ink         #ECE7DD  testo crema
+     --m-ink-soft    #A29D92  testo secondario
+     --m-accent      #9CC4B5  sage chiarito per dark
+     --m-accent-soft #38463F  riempimento sage scuro
+     --m-pos         #93C4A0
+     --m-warn        #E0B080
+     --m-warn-bg     #423526
+   ============================================================ */
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:#E8E3D8;color:#3A3A38;line-height:1.45;
+}
+.page-wrap{max-width:1180px;margin:0 auto;padding:40px 24px 80px;}
+.page-head{margin-bottom:8px;}
+.page-head h1{font-size:30px;font-weight:800;letter-spacing:-.02em;color:#3A3A38;}
+.page-head .pill{display:inline-block;margin-left:10px;font-size:13px;font-weight:700;color:#54756A;background:#DDE8E2;padding:4px 14px;border-radius:999px;vertical-align:middle;}
+.rationale{
+  background:#FBFAF6;border:1px solid #E4DFD4;border-radius:24px;
+  padding:20px 26px;margin:18px 0 34px;max-width:880px;
+  font-size:15.5px;color:#5C584F;line-height:1.6;
+}
+.rationale strong{color:#54756A;}
+
+.frames{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;}
+.frame-col{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.frame-label{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#807C74;}
+
+/* ---- PHONE FRAME ---- */
+.phone{
+  width:332px;height:712px;border-radius:54px;
+  padding:12px;background:#D8D2C6;
+  box-shadow:0 30px 60px -22px rgba(60,55,45,.5), inset 0 0 0 2px rgba(255,255,255,.4);
+  position:relative;
+}
+.phone.dark{background:#15140F;box-shadow:0 30px 60px -22px rgba(0,0,0,.7), inset 0 0 0 2px rgba(255,255,255,.06);}
+.screen{
+  width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative;
+  background:var(--m-bg);color:var(--m-ink);display:flex;flex-direction:column;
+}
+/* notch */
+.notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:108px;height:26px;border-radius:14px;background:rgba(0,0,0,.16);z-index:40;}
+.dark .notch{background:rgba(0,0,0,.5);}
+
+/* THEME TOKENS — LIGHT */
+.screen.light{
+  --m-bg:#F4F1EA; --m-surface:#FBFAF6; --m-surface-2:#EFEAE0;
+  --m-ink:#3A3A38; --m-ink-soft:#807C74; --m-accent:#7FA99B;
+  --m-accent-soft:#DDE8E2; --m-pos:#6B9B7C; --m-warn:#B07C45;
+  --m-warn-bg:#F6E9D8; --m-warn-bd:#E8D4B8; --m-bar-track:#EAE4D8;
+}
+/* THEME TOKENS — DARK */
+.screen.darkmode{
+  --m-bg:#21201D; --m-surface:#2C2A27; --m-surface-2:#353230;
+  --m-ink:#ECE7DD; --m-ink-soft:#A29D92; --m-accent:#9CC4B5;
+  --m-accent-soft:#38463F; --m-pos:#93C4A0; --m-warn:#E0B080;
+  --m-warn-bg:#423526; --m-warn-bd:#574429; --m-bar-track:#3A3733;
+}
+
+.scr-scroll{flex:1;overflow:hidden;padding:34px 18px 12px;display:flex;flex-direction:column;gap:16px;}
+
+/* period selector */
+.period{display:flex;background:var(--m-surface-2);border-radius:22px;padding:5px;gap:2px;}
+.period button{
+  flex:1;border:none;background:transparent;font:inherit;font-size:13.5px;font-weight:600;
+  color:var(--m-ink-soft);padding:9px 0;border-radius:17px;cursor:default;
+}
+.period button.active{background:var(--m-surface);color:var(--m-ink);font-weight:800;box-shadow:0 4px 10px -4px rgba(0,0,0,.18);}
+.navrow{display:flex;align-items:center;justify-content:space-between;padding:2px 4px;}
+.navrow .month{font-size:16px;font-weight:700;display:flex;align-items:center;gap:14px;color:var(--m-ink);}
+.navrow .arrow{color:var(--m-accent);font-size:19px;font-weight:700;}
+.profile{width:38px;height:38px;border-radius:50%;background:var(--m-accent-soft);display:flex;align-items:center;justify-content:center;font-size:18px;}
+
+/* honesty banner */
+.honesty{
+  background:var(--m-warn-bg);border:1px solid var(--m-warn-bd);border-radius:24px;
+  padding:15px 18px;display:flex;align-items:center;gap:13px;
+}
+.honesty .ic{font-size:19px;}
+.honesty .tx{flex:1;font-size:13.5px;color:var(--m-warn);font-weight:600;line-height:1.4;}
+.honesty .tx small{display:block;font-weight:500;opacity:.8;font-size:12px;margin-top:1px;}
+.honesty .go{font-size:19px;color:var(--m-warn);font-weight:700;}
+
+/* balance block */
+.balance{
+  background:var(--m-surface);border-radius:34px;padding:26px 24px 24px;text-align:center;
+  box-shadow:0 12px 28px -16px rgba(60,55,45,.35);
+}
+.dark .balance,.darkmode .balance{box-shadow:0 12px 28px -16px rgba(0,0,0,.55);}
+.balance .lbl{font-size:11.5px;font-weight:800;letter-spacing:.14em;color:var(--m-ink-soft);}
+.balance .net{font-size:46px;font-weight:800;letter-spacing:-.03em;color:var(--m-pos);margin:8px 0 18px;line-height:1;}
+.balance .split{display:flex;gap:12px;}
+.balance .split .cell{flex:1;background:var(--m-surface-2);border-radius:20px;padding:13px 8px;}
+.balance .split .cell .k{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--m-ink-soft);}
+.balance .split .cell .v{font-size:17.5px;font-weight:800;margin-top:3px;}
+
+/* categorie */
+.cats{background:var(--m-surface);border-radius:34px;padding:22px 22px 24px;box-shadow:0 12px 28px -16px rgba(60,55,45,.3);}
+.dark .cats,.darkmode .cats{box-shadow:0 12px 28px -16px rgba(0,0,0,.5);}
+.cats h3{font-size:15px;font-weight:800;color:var(--m-ink);margin-bottom:16px;}
+.cat{margin-bottom:16px;}
+.cat:last-child{margin-bottom:0;}
+.cat .top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.cat .emoji{font-size:18px;}
+.cat .name{flex:1;font-size:14.5px;font-weight:600;color:var(--m-ink);}
+.cat .badge{font-size:10px;font-weight:800;letter-spacing:.04em;color:var(--m-accent);background:var(--m-accent-soft);padding:3px 9px;border-radius:999px;}
+.cat .amt{font-size:14.5px;font-weight:800;color:var(--m-ink);}
+.cat .track{height:11px;border-radius:999px;background:var(--m-bar-track);overflow:hidden;}
+.cat .fill{height:100%;border-radius:999px;background:var(--m-accent);}
+
+/* bottom nav */
+.bottomnav{
+  display:flex;justify-content:space-around;align-items:center;
+  background:var(--m-surface);border-top:1px solid var(--m-surface-2);
+  padding:11px 8px 16px;
+}
+.navitem{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--m-ink-soft);font-weight:600;width:54px;}
+.navitem .gi{font-size:21px;}
+.navitem.on{color:var(--m-accent);}
+.navadd{
+  width:58px;height:58px;margin-top:-26px;border-radius:50%;
+  background:var(--m-accent);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:300;box-shadow:0 10px 22px -6px rgba(127,169,155,.85);
+}
+.darkmode .navadd{color:#1c2521;box-shadow:0 10px 22px -6px rgba(156,196,181,.5);}
+.navlabel-add{font-size:10.5px;font-weight:700;color:var(--m-accent);margin-top:3px;}
+
+/* ================= QUICK ADD SHEET ================= */
+.qa-section{margin-top:60px;}
+.qa-section h2{font-size:20px;font-weight:800;color:#3A3A38;margin-bottom:6px;}
+.qa-section p.sub{color:#807C74;font-size:14.5px;margin-bottom:22px;max-width:560px;}
+.sheet-screen .scr-scroll{padding:0;justify-content:flex-end;}
+.dim{flex:1;background:rgba(40,38,32,.28);}
+.darkmode .dim{background:rgba(0,0,0,.45);}
+.sheet{
+  background:var(--m-surface);border-radius:38px 38px 0 0;padding:18px 20px 22px;
+  box-shadow:0 -16px 40px -18px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:16px;
+}
+.grip{width:48px;height:5px;border-radius:999px;background:var(--m-surface-2);margin:0 auto 4px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;}
+.seg{display:flex;background:var(--m-surface-2);border-radius:20px;padding:5px;gap:2px;}
+.seg button{border:none;background:transparent;font:inherit;font-size:13.5px;font-weight:700;color:var(--m-ink-soft);padding:9px 22px;border-radius:15px;cursor:default;}
+.seg button.active{background:var(--m-accent);color:#fff;box-shadow:0 5px 12px -4px rgba(127,169,155,.7);}
+.darkmode .seg button.active{color:#1c2521;}
+.qa-close{width:36px;height:36px;border-radius:50%;background:var(--m-surface-2);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--m-ink-soft);}
+.amount{text-align:center;font-size:54px;font-weight:800;letter-spacing:-.03em;color:var(--m-ink);padding:6px 0 2px;}
+.amount .cur{color:var(--m-ink-soft);font-weight:600;}
+.field-lbl{font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--m-ink-soft);}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:8px;}
+.chip{font-size:13px;font-weight:600;padding:9px 15px;border-radius:999px;background:var(--m-surface-2);color:var(--m-ink);}
+.chip.sel{background:var(--m-accent-soft);color:var(--m-accent);font-weight:800;box-shadow:inset 0 0 0 2px var(--m-accent);}
+.chip.more{color:var(--m-ink-soft);}
+.meta{display:flex;gap:10px;}
+.meta .m{flex:1;background:var(--m-surface-2);border-radius:18px;padding:11px 10px;text-align:center;font-size:12.5px;font-weight:600;color:var(--m-ink);}
+.meta .m small{display:block;font-size:10px;color:var(--m-ink-soft);font-weight:700;letter-spacing:.06em;margin-bottom:2px;}
+.salva{background:var(--m-accent);color:#fff;border-radius:22px;padding:16px;text-align:center;font-size:16px;font-weight:800;box-shadow:0 12px 26px -8px rgba(127,169,155,.8);}
+.darkmode .salva{color:#1c2521;}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.key{background:var(--m-surface-2);border-radius:18px;padding:14px 0;text-align:center;font-size:21px;font-weight:700;color:var(--m-ink);}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+  <div class="page-head">
+    <h1>mynance — Direzione "Morbido"<span class="pill">cozy · pillowy</span></h1>
+  </div>
+  <div class="rationale">
+    <strong>Morbido</strong> punta tutto sulla coziness: card pillow molto arrotondate (fino a 34&nbsp;px), spaziatura ariosa e un accento <strong>sage/teal muted</strong> mai squillante. La tipografia è una sans grande e amichevole con grassetti generosi — accogliente, mai bancaria. Le verità scomode (riconciliazione, sotto-finanziamento) compaiono in ambra calda, chiare ma senza allarme rosso.
+  </div>
+
+  <div class="frames">
+
+    <!-- ===================== HOME LIGHT ===================== -->
+    <div class="frame-col">
+      <div class="frame-label">Home "Mese" · Light</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen light">
+          <div class="scr-scroll">
+            <div class="period">
+              <button>Giorno</button><button>Sett.</button>
+              <button class="active">Mese</button><button>Anno</button>
+            </div>
+            <div class="navrow">
+              <div class="month"><span class="arrow">‹</span> Giugno 2026 <span class="arrow">›</span></div>
+              <div class="profile">👤</div>
+            </div>
+            <div class="honesty">
+              <span class="ic">⚠️</span>
+              <span class="tx">È ora di riconciliare<small>ultima volta: 12 gg fa</small></span>
+              <span class="go">›</span>
+            </div>
+            <div class="balance">
+              <div class="lbl">BILANCIO · GIUGNO</div>
+              <div class="net">+ 480 €</div>
+              <div class="split">
+                <div class="cell"><div class="k">Entrate</div><div class="v" style="color:var(--m-pos)">2.100 €</div></div>
+                <div class="cell"><div class="k">Spese</div><div class="v">1.620 €</div></div>
+              </div>
+            </div>
+            <div class="cats">
+              <h3>Spese per categoria</h3>
+              <div class="cat">
+                <div class="top"><span class="emoji">🎟</span><span class="name">Assicurazioni</span><span class="badge">SECCHIELLO</span><span class="amt">620 €</span></div>
+                <div class="track"><div class="fill" style="width:100%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🛒</span><span class="name">Alimentari</span><span class="amt">540 €</span></div>
+                <div class="track"><div class="fill" style="width:87%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">⛽</span><span class="name">Trasporti</span><span class="amt">280 €</span></div>
+                <div class="track"><div class="fill" style="width:45%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🍔</span><span class="name">Ristoranti</span><span class="amt">180 €</span></div>
+                <div class="track"><div class="fill" style="width:29%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem on"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== HOME DARK ===================== -->
+    <div class="frame-col">
+      <div class="frame-label">Home "Mese" · Dark</div>
+      <div class="phone dark">
+        <div class="notch"></div>
+        <div class="screen darkmode">
+          <div class="scr-scroll">
+            <div class="period">
+              <button>Giorno</button><button>Sett.</button>
+              <button class="active">Mese</button><button>Anno</button>
+            </div>
+            <div class="navrow">
+              <div class="month"><span class="arrow">‹</span> Giugno 2026 <span class="arrow">›</span></div>
+              <div class="profile">👤</div>
+            </div>
+            <div class="honesty">
+              <span class="ic">⚠️</span>
+              <span class="tx">È ora di riconciliare<small>ultima volta: 12 gg fa</small></span>
+              <span class="go">›</span>
+            </div>
+            <div class="balance">
+              <div class="lbl">BILANCIO · GIUGNO</div>
+              <div class="net">+ 480 €</div>
+              <div class="split">
+                <div class="cell"><div class="k">Entrate</div><div class="v" style="color:var(--m-pos)">2.100 €</div></div>
+                <div class="cell"><div class="k">Spese</div><div class="v">1.620 €</div></div>
+              </div>
+            </div>
+            <div class="cats">
+              <h3>Spese per categoria</h3>
+              <div class="cat">
+                <div class="top"><span class="emoji">🎟</span><span class="name">Assicurazioni</span><span class="badge">SECCHIELLO</span><span class="amt">620 €</span></div>
+                <div class="track"><div class="fill" style="width:100%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🛒</span><span class="name">Alimentari</span><span class="amt">540 €</span></div>
+                <div class="track"><div class="fill" style="width:87%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">⛽</span><span class="name">Trasporti</span><span class="amt">280 €</span></div>
+                <div class="track"><div class="fill" style="width:45%"></div></div>
+              </div>
+              <div class="cat">
+                <div class="top"><span class="emoji">🍔</span><span class="name">Ristoranti</span><span class="amt">180 €</span></div>
+                <div class="track"><div class="fill" style="width:29%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem on"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== QUICK ADD (secondary) ===================== -->
+    <div class="frame-col">
+      <div class="frame-label">Quick-add · Light</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen light sheet-screen">
+          <div class="scr-scroll">
+            <div class="dim"></div>
+            <div class="sheet">
+              <div class="grip"></div>
+              <div class="toggle-row">
+                <div class="seg"><button class="active">Spesa</button><button>Entrata</button></div>
+                <div class="qa-close">✕</div>
+              </div>
+              <div class="amount"><span class="cur"> </span>45,00 <span class="cur">€</span></div>
+              <div>
+                <div class="field-lbl">CATEGORIA</div>
+                <div class="chips">
+                  <span class="chip sel">⛽ Trasporti</span>
+                  <span class="chip">🛒 Alimentari</span>
+                  <span class="chip">🍔 Ristoranti</span>
+                  <span class="chip more">＋ altre…</span>
+                </div>
+              </div>
+              <div class="meta">
+                <div class="m"><small>DATA</small>📅 Oggi</div>
+                <div class="m"><small>NOTA</small>📝 Aggiungi</div>
+                <div class="m"><small>SECCHIELLO</small>🎟 —</div>
+              </div>
+              <div class="salva">Salva</div>
+              <div class="keypad">
+                <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+                <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+                <div class="key">7</div><div class="key">8</div><div class="key">9</div>
+                <div class="key">,</div><div class="key">0</div><div class="key">⌫</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== QUICK ADD DARK + Secchiello warning ===================== -->
+    <div class="frame-col">
+      <div class="frame-label">Quick-add · Dark · Secchiello sotto-finanziato</div>
+      <div class="phone dark">
+        <div class="notch"></div>
+        <div class="screen darkmode sheet-screen">
+          <div class="scr-scroll">
+            <div class="dim"></div>
+            <div class="sheet">
+              <div class="grip"></div>
+              <div class="toggle-row">
+                <div class="seg"><button class="active">Spesa</button><button>Entrata</button></div>
+                <div class="qa-close">✕</div>
+              </div>
+              <div class="amount"><span class="cur"> </span>45,00 <span class="cur">€</span></div>
+              <!-- honesty: secchiello sotto-finanziato, warm not alarming -->
+              <div class="honesty" style="border-radius:20px;">
+                <span class="ic">🪣</span>
+                <span class="tx">Secchiello "Assicurazioni" in rosso<small>Saldo −38 € · serve un rinforzo prima del prelievo</small></span>
+              </div>
+              <div>
+                <div class="field-lbl">CATEGORIA</div>
+                <div class="chips">
+                  <span class="chip sel">🎟 Assicurazioni</span>
+                  <span class="chip">🛒 Alimentari</span>
+                  <span class="chip more">＋ altre…</span>
+                </div>
+              </div>
+              <div class="meta">
+                <div class="m"><small>DATA</small>📅 Oggi</div>
+                <div class="m"><small>NOTA</small>📝 Aggiungi</div>
+                <div class="m"><small>SECCHIELLO</small>🎟 Assic.</div>
+              </div>
+              <div class="salva">Salva</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
