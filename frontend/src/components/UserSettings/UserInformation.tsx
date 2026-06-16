@@ -3,8 +3,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
-import { UsersService, type UserUpdateMe } from "@/client"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -18,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { LoadingButton } from "@/components/ui/loading-button"
 import useAuth from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
+import { UsersService, type UserUpdateMe } from "@/lib/api"
 import { cn } from "@/lib/utils"
 import { handleError } from "@/utils"
 

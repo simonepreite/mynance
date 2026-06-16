@@ -2,8 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
-import { type UpdatePassword, UsersService } from "@/client"
 import {
   Form,
   FormControl,
@@ -15,6 +13,7 @@ import {
 import { LoadingButton } from "@/components/ui/loading-button"
 import { PasswordInput } from "@/components/ui/password-input"
 import useCustomToast from "@/hooks/useCustomToast"
+import { type UpdatePassword, UsersService } from "@/lib/api"
 import { handleError } from "@/utils"
 
 const formSchema = z

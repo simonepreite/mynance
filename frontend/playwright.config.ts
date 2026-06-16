@@ -35,7 +35,15 @@ export default defineConfig({
     { name: 'setup', testMatch: /.*\.setup\.ts/ },
 
     {
+      // Morbido theme smoke test (Story 1.1, AC5) — no auth/backend needed.
+      name: 'theme',
+      testMatch: /theme\.smoke\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
       name: 'chromium',
+      testIgnore: /theme\.smoke\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',

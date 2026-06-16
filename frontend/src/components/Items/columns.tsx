@@ -1,9 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { Check, Copy } from "lucide-react"
-
-import type { ItemPublic } from "@/client"
 import { Button } from "@/components/ui/button"
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard"
+import type { ItemPublic } from "@/lib/api"
 import { cn } from "@/lib/utils"
 import { ItemActionsMenu } from "./ItemActionsMenu"
 
