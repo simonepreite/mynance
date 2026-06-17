@@ -4,7 +4,7 @@ baseline_commit: dcb3408
 
 # Story 1.3: Self-service registration with one-time recovery code (FR-1, FR-3)
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -28,7 +28,7 @@ So that I get an isolated, empty dataset and a way to regain access if I forget 
 - [x] **Backend — security (AC2, AC4):** `generate_recovery_code` (unambiguous alphabet, grouped, ~100 bits), `hash_recovery_code`/`verify_recovery_code` (argon2 via pwdlib, reused). [backend/app/core/security.py]
 - [x] **Backend — service + endpoints (AC2–AC6):** `crud_utente` (`get_utente_by_username`, `create_utente` → returns one-time code, `recover_utente` with constant-time miss); `POST /api/v1/auth/register` (201, returns code once), `POST /api/v1/auth/recover` (generic non-revealing error); wired into `api/main.py`. Errors as problem+json (Italian). [backend/app/crud_utente.py, backend/app/api/routes/auth.py, backend/app/api/main.py]
 - [x] **Backend — tests:** register + hashes-not-plaintext, duplicate→409 problem+json, recover happy path, wrong code→generic 400, unknown username→same generic 400. [backend/tests/api/test_auth.py]
-- [ ] **Frontend — registration + recovery screens (AC4 framing, AC5, AC7 lost-code state):** registration form, one-time recovery-code reveal ("save this now"), recovery form, and the lost-recovery-code "cannot be recovered" message. **Pending** — requires the generated TS client regen (new `/auth` endpoints) + TanStack route additions; deferred for a follow-up with the auth UI of Story 1.4 (login/session), since both share the auth feature surface and the client regen.
+- [x] **Frontend — registration + recovery screens (AC4 framing, AC5, AC7 lost-code state):** username/password registration form; one-time recovery-code reveal panel with "lo vedrai solo questa volta" framing, copy-to-clipboard, and a "Ho salvato il codice" gate before continuing; recovery form (username + recovery code + new password); and an explicit "senza il codice non è recuperabile" (AC7) note on the recovery screen. [frontend/src/routes/signup.tsx, frontend/src/routes/recover-password.tsx]
 
 ## Dev Notes
 
@@ -39,15 +39,18 @@ So that I get an isolated, empty dataset and a way to regain access if I forget 
 
 ### Completion Notes List
 
-_Backend implemented; local verification: ruff check + `ruff format --check` clean (0.15.16), syntax OK. mypy/alembic/pytest verified in CI. Frontend auth UI pending (see task 5)._
+_Backend implemented; local verification: ruff check + `ruff format --check` clean (0.15.16), syntax OK. mypy/alembic/pytest verified in CI._
+
+_Frontend completed 2026-06-17 (env restored: native uv + Node 22/npm toolchain, OpenAPI client regenerated). Verified locally: `biome ci .` clean, `tsc` + `vite build` green, and a live end-to-end smoke test against the running backend (register → one-time recovery code shown → login → recover with code → 422 on bad input). One-time-code reveal, copy + "ho salvato" gate, and AC7 lost-code message all in place._
 
 ### Change Log
 
 | Date | Change |
 |---|---|
 | 2026-06-16 | Backend: Utente model + utenti migration + recovery-code security + register/recover endpoints + problem+json + tests. Frontend auth UI deferred. |
+| 2026-06-17 | Frontend: registration form (username/password), one-time recovery-code reveal panel (copy + "ho salvato" gate), recovery form (username + code + new password), AC7 "non recuperabile" note. Story done. |
 
 ### File List
 
 **Added:** `backend/app/crud_utente.py`, `backend/app/api/routes/auth.py`, `backend/app/alembic/versions/c1d2e3f4a5b6_add_utenti_table.py`, `backend/tests/api/test_auth.py`
-**Modified:** `backend/app/models.py` (Utente domain), `backend/app/core/security.py` (recovery-code helpers), `backend/app/api/main.py` (auth router), `_bmad-output/implementation-artifacts/sprint-status.yaml`
+**Modified:** `backend/app/models.py` (Utente domain), `backend/app/core/security.py` (recovery-code helpers), `backend/app/api/main.py` (auth router), `frontend/src/routes/signup.tsx` (registration + one-time recovery-code panel), `frontend/src/routes/recover-password.tsx` (recovery flow + AC7 note), `_bmad-output/implementation-artifacts/sprint-status.yaml`

@@ -4,7 +4,7 @@ baseline_commit: df5d591
 
 # Story 2.1: Typed Categorie CRUD (FR-7)
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -25,7 +25,7 @@ As an Utente, I want to create, rename, and reuse my own type-scoped Categorie, 
 - [x] **Starter set (AC3):** `provision_starter_categorie` (7 Spesa + 3 Entrata, Italian) invoked on register. [backend/app/crud_categoria.py, backend/app/api/routes/auth.py]
 - [x] **Tests:** starter set per tipo, create+list split, invalid tipo→422, rename, delete, cross-Utente→404. [backend/tests/api/test_categorie.py]
 - [ ] **Delete-in-use reassignment (AC4):** deferred to Story 2.5 (no Movimenti table yet); current delete is a scoped soft-delete.
-- [ ] **Frontend — Categorie management UI:** deferred (env-blocked: OpenAPI client regen + routes).
+- [x] **Frontend — Categorie management UI:** authenticated `/categorie` route — list split into Spese / Entrate, create dialog (nome + tipo Select), inline rename dialog, delete confirm dialog, empty-state per tipo, query invalidation on mutate; "Categorie" added to the sidebar nav. [frontend/src/routes/_layout/categorie.tsx, frontend/src/components/Sidebar/AppSidebar.tsx]
 
 ## Dev Notes
 
@@ -35,15 +35,18 @@ As an Utente, I want to create, rename, and reuse my own type-scoped Categorie, 
 
 ### Completion Notes List
 
-_Backend implemented; ruff check + `ruff format --check` clean locally; mypy/alembic/pytest in CI. Delete-in-use guard pends Movimenti (2.5); Categorie UI env-blocked._
+_Backend implemented; ruff check + `ruff format --check` clean locally; mypy/alembic/pytest in CI (89 passed, 1 skipped re-verified locally 2026-06-17 against Docker Postgres). Delete-in-use guard still pends Movimenti (2.5); current delete is a scoped soft-delete._
+
+_Frontend completed 2026-06-17: `/categorie` management route (list split per tipo, create/rename/delete via the regenerated `CategorieService`), sidebar nav entry. Verified locally: `biome ci .` clean, `tsc` + `vite build` green, and a live smoke test against the backend (starter set 7 Spese / 3 Entrate provisioned on register; create → rename → delete; invalid tipo → 422)._
 
 ### Change Log
 
 | Date | Change |
 |---|---|
 | 2026-06-16 | Backend: Categoria model + categorie migration + CRUD via UserScopedRepository + per-tipo starter set on register + isolation tests. |
+| 2026-06-17 | Frontend: `/categorie` route (split Spese/Entrate, create/rename/delete dialogs, empty states) + sidebar nav. Story done. |
 
 ### File List
 
-**Added:** `backend/app/crud_categoria.py`, `backend/app/api/routes/categorie.py`, `backend/app/alembic/versions/d2e3f4a5b6c7_add_categorie_table.py`, `backend/tests/api/test_categorie.py`
-**Modified:** `backend/app/models.py` (Categoria domain), `backend/app/api/main.py` (categorie router), `backend/app/api/routes/auth.py` (starter provisioning), `_bmad-output/implementation-artifacts/sprint-status.yaml`
+**Added:** `backend/app/crud_categoria.py`, `backend/app/api/routes/categorie.py`, `backend/app/alembic/versions/d2e3f4a5b6c7_add_categorie_table.py`, `backend/tests/api/test_categorie.py`, `frontend/src/routes/_layout/categorie.tsx`
+**Modified:** `backend/app/models.py` (Categoria domain), `backend/app/api/main.py` (categorie router), `backend/app/api/routes/auth.py` (starter provisioning), `frontend/src/components/Sidebar/AppSidebar.tsx` (Categorie nav), `_bmad-output/implementation-artifacts/sprint-status.yaml`

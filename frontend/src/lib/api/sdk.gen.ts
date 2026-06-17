@@ -3,7 +3,171 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieRenameCategoriaData, CategorieRenameCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+
+export class AuthService {
+    /**
+     * Register
+     * Create an Utente and return the one-time recovery code (shown once).
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns UtenteRegisterResponse Successful Response
+     * @throws ApiError
+     */
+    public static register(data: AuthRegisterData): CancelablePromise<AuthRegisterResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/auth/register',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Login
+     * Authenticate and issue a JWT valid for the Utente's session window.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns Token Successful Response
+     * @throws ApiError
+     */
+    public static login(data: AuthLoginData): CancelablePromise<AuthLoginResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/auth/login',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Read Me
+     * The authenticated Utente (protected — proves a valid session).
+     * @returns UtentePublic Successful Response
+     * @throws ApiError
+     */
+    public static readMe(): CancelablePromise<AuthReadMeResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/auth/me'
+        });
+    }
+    
+    /**
+     * Logout
+     * End the session immediately by revoking the token (denylist).
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static logout(): CancelablePromise<AuthLogoutResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/auth/logout'
+        });
+    }
+    
+    /**
+     * Recover
+     * Regain access with username + recovery code, setting a new password.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static recover(data: AuthRecoverData): CancelablePromise<AuthRecoverResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/auth/recover',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class CategorieService {
+    /**
+     * List Categorie
+     * @returns CategorieList Successful Response
+     * @throws ApiError
+     */
+    public static listCategorie(): CancelablePromise<CategorieListCategorieResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/categorie/'
+        });
+    }
+    
+    /**
+     * Create Categoria
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns CategoriaPublic Successful Response
+     * @throws ApiError
+     */
+    public static createCategoria(data: CategorieCreateCategoriaData): CancelablePromise<CategorieCreateCategoriaResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/categorie/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Rename Categoria
+     * @param data The data for the request.
+     * @param data.categoriaId
+     * @param data.requestBody
+     * @returns CategoriaPublic Successful Response
+     * @throws ApiError
+     */
+    public static renameCategoria(data: CategorieRenameCategoriaData): CancelablePromise<CategorieRenameCategoriaResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/categorie/{categoria_id}',
+            path: {
+                categoria_id: data.categoriaId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Categoria
+     * @param data The data for the request.
+     * @param data.categoriaId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteCategoria(data: CategorieDeleteCategoriaData): CancelablePromise<CategorieDeleteCategoriaResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/categorie/{categoria_id}',
+            path: {
+                categoria_id: data.categoriaId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
 
 export class ItemsService {
     /**

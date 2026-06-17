@@ -4,7 +4,7 @@ baseline_commit: cd898b8
 
 # Story 1.4: Login, 30-day session, and logout (FR-2)
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -26,7 +26,7 @@ As a registered Utente, I want to log in with my username and password and stay 
 - [x] **Backend — logout (AC4):** `POST /api/v1/auth/logout` revokes the token `jti` via an in-memory denylist; subsequent requests with that token → 401. [backend/app/core/auth_state.py]
 - [x] **Backend — rate limiting (AC6):** in-memory sliding-window limiter on login + recover (keyed by client host + username), → 429 over threshold. [backend/app/core/auth_state.py]
 - [x] **Backend — tests:** login→token + `/me`; wrong password→generic 400; `/me` without token→401 problem+json; logout→`/me` 401; rate-limit→429. [backend/tests/api/test_auth_login.py]
-- [ ] **Frontend — login screen + route guard + logout (AC1/AC4/AC5 UI):** **Pending/environment-blocked** — requires regenerating the typed client from OpenAPI (needs a running backend / Docker) and TanStack route additions (route-tree regen). Bundled with the deferred 1.3 auth UI.
+- [x] **Frontend — login screen + route guard + logout (AC1/AC4/AC5 UI):** `useAuth` rewired to `/auth/login` (JSON username+password → Bearer token in localStorage), `/auth/me` (`UtentePublic`), and `/auth/logout` (server revocation, then local clear + redirect); login form switched from email to username; the `_layout` `beforeLoad` guard redirects unauthenticated users to `/login` (AC5) and the global 401/403 handler clears the token and bounces to login. [frontend/src/hooks/useAuth.ts, frontend/src/routes/login.tsx, frontend/src/main.tsx, frontend/src/components/Sidebar/User.tsx]
 
 ## Dev Notes
 
@@ -36,15 +36,18 @@ As a registered Utente, I want to log in with my username and password and stay 
 
 ### Completion Notes List
 
-_Backend implemented and locally verified (ruff check + `ruff format --check` clean; syntax OK). mypy/pytest run in CI. Frontend login UI blocked by the local env (no Docker/Python to regen the OpenAPI client); to be completed alongside the 1.3 auth UI when Docker is available._
+_Backend implemented and locally verified (ruff check + `ruff format --check` clean; syntax OK). mypy/pytest run in CI._
+
+_Frontend completed 2026-06-17 once the env was restored (Docker DB + native uv; Node 22/npm toolchain since native bun is blocked by the corporate Cisco proxy on the github asset CDN — see story note). OpenAPI client regenerated against the live `/auth` + `/categorie` spec. Verified locally: `biome ci .` clean, `tsc` + `vite build` green, plus a live smoke test — login issues a 30-day Bearer token, `/auth/me` returns the Utente, logout revokes the token and a subsequent `/auth/me` with the same token returns 401 (AC4)._
 
 ### Change Log
 
 | Date | Change |
 |---|---|
 | 2026-06-16 | Backend: username login + JWT(jti) + session expiry + current_utente dep + /me + logout denylist + in-memory rate limiting + tests. Frontend login UI deferred (env-blocked). |
+| 2026-06-17 | Frontend: `useAuth` rewired to `/auth/login`/`/auth/me`/`/auth/logout`; login form username-based; route guard + 401 redirect confirmed. Live smoke test confirms 30-day token + logout revocation. Story done. |
 
 ### File List
 
 **Added:** `backend/app/core/auth_state.py`, `backend/tests/api/test_auth_login.py`
-**Modified:** `backend/app/api/routes/auth.py` (login/logout/me), `backend/app/api/deps.py` (current_utente), `backend/app/core/security.py` (jti), `backend/app/crud_utente.py` (authenticate), `backend/app/models.py` (UtenteLogin, TokenPayload.jti), `_bmad-output/implementation-artifacts/sprint-status.yaml`
+**Modified:** `backend/app/api/routes/auth.py` (login/logout/me), `backend/app/api/deps.py` (current_utente), `backend/app/core/security.py` (jti), `backend/app/crud_utente.py` (authenticate), `backend/app/models.py` (UtenteLogin, TokenPayload.jti), `frontend/src/hooks/useAuth.ts` (auth wiring), `frontend/src/routes/login.tsx` (username login), `frontend/src/components/Sidebar/User.tsx` (username display + logout), `_bmad-output/implementation-artifacts/sprint-status.yaml`

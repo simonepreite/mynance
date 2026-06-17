@@ -9,6 +9,29 @@ export type Body_login_login_access_token = {
     client_secret?: (string | null);
 };
 
+export type CategoriaCreate = {
+    nome: string;
+    tipo: CategoriaTipo;
+};
+
+export type CategoriaPublic = {
+    id: string;
+    nome: string;
+    tipo: string;
+    created_at?: (string | null);
+};
+
+export type CategoriaTipo = 'spesa' | 'entrata';
+
+export type CategoriaUpdate = {
+    nome: string;
+};
+
+export type CategorieList = {
+    spesa: Array<CategoriaPublic>;
+    entrata: Array<CategoriaPublic>;
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -103,6 +126,34 @@ export type UserUpdateMe = {
     email?: (string | null);
 };
 
+export type UtenteLogin = {
+    username: string;
+    password: string;
+};
+
+export type UtentePublic = {
+    id: string;
+    username: string;
+    session_timeout_days: number;
+    created_at?: (string | null);
+};
+
+export type UtenteRecover = {
+    username: string;
+    recovery_code: string;
+    new_password: string;
+};
+
+export type UtenteRegister = {
+    username: string;
+    password: string;
+};
+
+export type UtenteRegisterResponse = {
+    utente: UtentePublic;
+    recovery_code: string;
+};
+
 export type ValidationError = {
     loc: Array<(string | number)>;
     msg: string;
@@ -112,6 +163,49 @@ export type ValidationError = {
         [key: string]: unknown;
     };
 };
+
+export type AuthRegisterData = {
+    requestBody: UtenteRegister;
+};
+
+export type AuthRegisterResponse = (UtenteRegisterResponse);
+
+export type AuthLoginData = {
+    requestBody: UtenteLogin;
+};
+
+export type AuthLoginResponse = (Token);
+
+export type AuthReadMeResponse = (UtentePublic);
+
+export type AuthLogoutResponse = (Message);
+
+export type AuthRecoverData = {
+    requestBody: UtenteRecover;
+};
+
+export type AuthRecoverResponse = (Message);
+
+export type CategorieListCategorieResponse = (CategorieList);
+
+export type CategorieCreateCategoriaData = {
+    requestBody: CategoriaCreate;
+};
+
+export type CategorieCreateCategoriaResponse = (CategoriaPublic);
+
+export type CategorieRenameCategoriaData = {
+    categoriaId: string;
+    requestBody: CategoriaUpdate;
+};
+
+export type CategorieRenameCategoriaResponse = (CategoriaPublic);
+
+export type CategorieDeleteCategoriaData = {
+    categoriaId: string;
+};
+
+export type CategorieDeleteCategoriaResponse = (Message);
 
 export type ItemsReadItemsData = {
     limit?: number;

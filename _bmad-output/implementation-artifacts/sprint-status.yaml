@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-16 (story 1-1 → done via code review)
+# last_updated: 2026-06-17 (frontend auth + categorie UI done; 1-3/1-4/2-1 → done)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-16 (story 1-1 → done via code review)
+last_updated: 2026-06-17 (frontend auth + categorie UI done; 1-3/1-4/2-1 → done)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -46,15 +46,15 @@ development_status:
   epic-1: in-progress
   1-1-initialize-project-scaffold-morbido-theme-api-contract-and-ci-baseline: done
   1-2-base-shared-component-library-and-theme-tokens-with-accessibility-floor: done
-  1-3-self-service-registration-with-one-time-recovery-code: in-progress
-  1-4-login-30-day-session-and-logout: in-progress
+  1-3-self-service-registration-with-one-time-recovery-code: done
+  1-4-login-30-day-session-and-logout: done
   1-5-per-utente-authorization-choke-point-and-data-isolation: done
   1-6-minimal-onboarding-shell-and-empty-themed-home: backlog
   epic-1-retrospective: optional
 
   # Epic 2 — Track my money (the daily loop)
   epic-2: in-progress
-  2-1-typed-categorie-crud: in-progress
+  2-1-typed-categorie-crud: done
   2-2-set-liquidita-iniziale-once-with-re-baseline-audit: backlog
   2-3-pure-derived-on-read-calc-engine-for-liquidita-with-worked-example-tests: backlog
   2-4-derived-liquidita-read-endpoint: backlog

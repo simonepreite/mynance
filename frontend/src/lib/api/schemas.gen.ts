@@ -57,6 +57,98 @@ export const Body_login_login_access_tokenSchema = {
     title: 'Body_login-login_access_token'
 } as const;
 
+export const CategoriaCreateSchema = {
+    properties: {
+        nome: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Nome'
+        },
+        tipo: {
+            '$ref': '#/components/schemas/CategoriaTipo'
+        }
+    },
+    type: 'object',
+    required: ['nome', 'tipo'],
+    title: 'CategoriaCreate'
+} as const;
+
+export const CategoriaPublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        nome: {
+            type: 'string',
+            title: 'Nome'
+        },
+        tipo: {
+            type: 'string',
+            title: 'Tipo'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'nome', 'tipo'],
+    title: 'CategoriaPublic'
+} as const;
+
+export const CategoriaTipoSchema = {
+    type: 'string',
+    enum: ['spesa', 'entrata'],
+    title: 'CategoriaTipo'
+} as const;
+
+export const CategoriaUpdateSchema = {
+    properties: {
+        nome: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Nome'
+        }
+    },
+    type: 'object',
+    required: ['nome'],
+    title: 'CategoriaUpdate'
+} as const;
+
+export const CategorieListSchema = {
+    properties: {
+        spesa: {
+            items: {
+                '$ref': '#/components/schemas/CategoriaPublic'
+            },
+            type: 'array',
+            title: 'Spesa'
+        },
+        entrata: {
+            items: {
+                '$ref': '#/components/schemas/CategoriaPublic'
+            },
+            type: 'array',
+            title: 'Entrata'
+        }
+    },
+    type: 'object',
+    required: ['spesa', 'entrata'],
+    title: 'CategorieList'
+} as const;
+
 export const HTTPValidationErrorSchema = {
     properties: {
         detail: {
@@ -519,6 +611,120 @@ export const UsersPublicSchema = {
     type: 'object',
     required: ['data', 'count'],
     title: 'UsersPublic'
+} as const;
+
+export const UtenteLoginSchema = {
+    properties: {
+        username: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 3,
+            title: 'Username'
+        },
+        password: {
+            type: 'string',
+            maxLength: 128,
+            minLength: 8,
+            title: 'Password'
+        }
+    },
+    type: 'object',
+    required: ['username', 'password'],
+    title: 'UtenteLogin'
+} as const;
+
+export const UtentePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        username: {
+            type: 'string',
+            title: 'Username'
+        },
+        session_timeout_days: {
+            type: 'integer',
+            title: 'Session Timeout Days'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'username', 'session_timeout_days'],
+    title: 'UtentePublic'
+} as const;
+
+export const UtenteRecoverSchema = {
+    properties: {
+        username: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 3,
+            title: 'Username'
+        },
+        recovery_code: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Recovery Code'
+        },
+        new_password: {
+            type: 'string',
+            maxLength: 128,
+            minLength: 8,
+            title: 'New Password'
+        }
+    },
+    type: 'object',
+    required: ['username', 'recovery_code', 'new_password'],
+    title: 'UtenteRecover'
+} as const;
+
+export const UtenteRegisterSchema = {
+    properties: {
+        username: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 3,
+            title: 'Username'
+        },
+        password: {
+            type: 'string',
+            maxLength: 128,
+            minLength: 8,
+            title: 'Password'
+        }
+    },
+    type: 'object',
+    required: ['username', 'password'],
+    title: 'UtenteRegister'
+} as const;
+
+export const UtenteRegisterResponseSchema = {
+    properties: {
+        utente: {
+            '$ref': '#/components/schemas/UtentePublic'
+        },
+        recovery_code: {
+            type: 'string',
+            title: 'Recovery Code'
+        }
+    },
+    type: 'object',
+    required: ['utente', 'recovery_code'],
+    title: 'UtenteRegisterResponse'
 } as const;
 
 export const ValidationErrorSchema = {

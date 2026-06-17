@@ -1,13 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 
-import {
-  type Body_login_login_access_token as AccessToken,
-  LoginService,
-  type UserPublic,
-  type UserRegister,
-  UsersService,
-} from "@/lib/api"
+import { AuthService, type UtenteLogin, type UtentePublic } from "@/lib/api"
 import { handleError } from "@/utils"
 import useCustomToast from "./useCustomToast"
 
@@ -20,28 +14,14 @@ const useAuth = () => {
   const queryClient = useQueryClient()
   const { showErrorToast } = useCustomToast()
 
-  const { data: user } = useQuery<UserPublic | null, Error>({
+  const { data: user } = useQuery<UtentePublic | null, Error>({
     queryKey: ["currentUser"],
-    queryFn: UsersService.readUserMe,
+    queryFn: AuthService.readMe,
     enabled: isLoggedIn(),
   })
 
-  const signUpMutation = useMutation({
-    mutationFn: (data: UserRegister) =>
-      UsersService.registerUser({ requestBody: data }),
-    onSuccess: () => {
-      navigate({ to: "/login" })
-    },
-    onError: handleError.bind(showErrorToast),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] })
-    },
-  })
-
-  const login = async (data: AccessToken) => {
-    const response = await LoginService.loginAccessToken({
-      formData: data,
-    })
+  const login = async (data: UtenteLogin) => {
+    const response = await AuthService.login({ requestBody: data })
     localStorage.setItem("access_token", response.access_token)
   }
 
@@ -53,13 +33,20 @@ const useAuth = () => {
     onError: handleError.bind(showErrorToast),
   })
 
-  const logout = () => {
+  const logout = async () => {
+    // Revoke the session server-side (FR-2); clear locally regardless of the
+    // network result so the device is always signed out.
+    try {
+      await AuthService.logout()
+    } catch {
+      // best-effort revocation
+    }
     localStorage.removeItem("access_token")
+    queryClient.removeQueries({ queryKey: ["currentUser"] })
     navigate({ to: "/login" })
   }
 
   return {
-    signUpMutation,
     loginMutation,
     logout,
     user,
