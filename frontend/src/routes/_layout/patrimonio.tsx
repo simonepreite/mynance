@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, Link as RouterLink } from "@tanstack/react-router"
-import { Plus, Trash2 } from "lucide-react"
+import { Pencil, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 
 import { BalanceBlock, Card } from "@/components/morbido"
@@ -252,6 +252,7 @@ function ImmobiliSection() {
   const invalidate = useInvalidatePatrimonio()
   const { showSuccessToast, showErrorToast } = useCustomToast()
   const [open, setOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [nome, setNome] = useState("")
   const [prezzo, setPrezzo] = useState("")
   const cents = parseEurToCents(prezzo)
@@ -261,13 +262,33 @@ function ImmobiliSection() {
     queryFn: () => PatrimonioService.listImmobili(),
   })
 
+  const openCreate = () => {
+    setEditingId(null)
+    setNome("")
+    setPrezzo("")
+    setOpen(true)
+  }
+  const openEdit = (b: { id: string; nome: string; prezzo_cents: number }) => {
+    setEditingId(b.id)
+    setNome(b.nome)
+    setPrezzo((b.prezzo_cents / 100).toFixed(2).replace(".", ","))
+    setOpen(true)
+  }
+
   const create = useMutation({
-    mutationFn: () =>
-      PatrimonioService.createImmobile({
-        requestBody: { nome, prezzo_cents: cents ?? 0 },
-      }),
+    mutationFn: () => {
+      const body = { nome, prezzo_cents: cents ?? 0 }
+      return editingId
+        ? PatrimonioService.updateImmobile({
+            beneId: editingId,
+            requestBody: body,
+          })
+        : PatrimonioService.createImmobile({ requestBody: body })
+    },
     onSuccess: () => {
-      showSuccessToast("Bene immobile registrato")
+      showSuccessToast(
+        editingId ? "Bene aggiornato" : "Bene immobile registrato",
+      )
       setNome("")
       setPrezzo("")
       setOpen(false)
@@ -287,7 +308,7 @@ function ImmobiliSection() {
     <section className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h2 className="type-eyebrow">Beni immobili</h2>
-        <Button variant="outline" onClick={() => setOpen(true)}>
+        <Button variant="outline" onClick={openCreate}>
           <Plus className="mr-1 h-4 w-4" />
           Aggiungi
         </Button>
@@ -305,6 +326,14 @@ function ImmobiliSection() {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label={`Modifica ${b.nome}`}
+                    onClick={() => openEdit(b)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     aria-label={`Elimina ${b.nome}`}
                     onClick={() => del.mutate(b.id)}
                   >
@@ -319,7 +348,9 @@ function ImmobiliSection() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="bottom" className="rounded-t-panel">
           <SheetHeader>
-            <SheetTitle>Nuovo bene immobile</SheetTitle>
+            <SheetTitle>
+              {editingId ? "Modifica bene immobile" : "Nuovo bene immobile"}
+            </SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-3 px-4 pb-6">
             <Input
@@ -356,10 +387,19 @@ const SVAL_PRESETS = [
   { label: "Moto (10%)", value: 10 },
 ]
 
+type MobilePatch = {
+  id: string
+  nome: string
+  prezzo_cents: number
+  data_acquisto: string
+  svalutazione_percentuale: number
+}
+
 function MobiliSection() {
   const invalidate = useInvalidatePatrimonio()
   const { showSuccessToast, showErrorToast } = useCustomToast()
   const [open, setOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [nome, setNome] = useState("")
   const [prezzo, setPrezzo] = useState("")
   const [data_acquisto, setData] = useState(todayIso())
@@ -373,18 +413,40 @@ function MobiliSection() {
     queryFn: () => PatrimonioService.listMobili(),
   })
 
+  const openCreate = () => {
+    setEditingId(null)
+    setNome("")
+    setPrezzo("")
+    setData(todayIso())
+    setSval("18")
+    setOpen(true)
+  }
+  const openEdit = (b: MobilePatch) => {
+    setEditingId(b.id)
+    setNome(b.nome)
+    setPrezzo((b.prezzo_cents / 100).toFixed(2).replace(".", ","))
+    setData(b.data_acquisto)
+    setSval(String(b.svalutazione_percentuale))
+    setOpen(true)
+  }
+
   const create = useMutation({
-    mutationFn: () =>
-      PatrimonioService.createMobile({
-        requestBody: {
-          nome,
-          prezzo_cents: cents ?? 0,
-          data_acquisto,
-          svalutazione_percentuale: svalNum,
-        },
-      }),
+    mutationFn: () => {
+      const body = {
+        nome,
+        prezzo_cents: cents ?? 0,
+        data_acquisto,
+        svalutazione_percentuale: svalNum,
+      }
+      return editingId
+        ? PatrimonioService.updateMobile({
+            beneId: editingId,
+            requestBody: body,
+          })
+        : PatrimonioService.createMobile({ requestBody: body })
+    },
     onSuccess: () => {
-      showSuccessToast("Bene mobile registrato")
+      showSuccessToast(editingId ? "Bene aggiornato" : "Bene mobile registrato")
       setNome("")
       setPrezzo("")
       setOpen(false)
@@ -403,7 +465,7 @@ function MobiliSection() {
     <section className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h2 className="type-eyebrow">Beni mobili</h2>
-        <Button variant="outline" onClick={() => setOpen(true)}>
+        <Button variant="outline" onClick={openCreate}>
           <Plus className="mr-1 h-4 w-4" />
           Aggiungi
         </Button>
@@ -427,6 +489,14 @@ function MobiliSection() {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label={`Modifica ${b.nome}`}
+                    onClick={() => openEdit(b)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     aria-label={`Elimina ${b.nome}`}
                     onClick={() => del.mutate(b.id)}
                   >
@@ -441,7 +511,9 @@ function MobiliSection() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="bottom" className="rounded-t-panel">
           <SheetHeader>
-            <SheetTitle>Nuovo bene mobile</SheetTitle>
+            <SheetTitle>
+              {editingId ? "Modifica bene mobile" : "Nuovo bene mobile"}
+            </SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-3 px-4 pb-6">
             <Input
