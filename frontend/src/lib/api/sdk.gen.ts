@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LiquiditaAllocazioneData, LiquiditaAllocazioneResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PrivateCreateUserData, PrivateCreateUserResponse, RiconciliazioneGetIntervalloResponse, RiconciliazioneSetIntervalloData, RiconciliazioneSetIntervalloResponse, RiconciliazionePromemoriaResponse, RiconciliazioneAnteprimaData, RiconciliazioneAnteprimaResponse, RiconciliazioneHistoryResponse, RiconciliazioneConfirmData, RiconciliazioneConfirmResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LiquiditaAllocazioneData, LiquiditaAllocazioneResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PatrimonioListInvestimentiResponse, PatrimonioCreateInvestimentoData, PatrimonioCreateInvestimentoResponse, PatrimonioUpdateInvestimentoData, PatrimonioUpdateInvestimentoResponse, PatrimonioDeleteInvestimentoData, PatrimonioDeleteInvestimentoResponse, PatrimonioCreateVersamentoData, PatrimonioCreateVersamentoResponse, PatrimonioListVersamentiData, PatrimonioListVersamentiResponse, PatrimonioUpdateVersamentoData, PatrimonioUpdateVersamentoResponse, PatrimonioDeleteVersamentoData, PatrimonioDeleteVersamentoResponse, PatrimonioListImmobiliResponse, PatrimonioCreateImmobileData, PatrimonioCreateImmobileResponse, PatrimonioUpdateImmobileData, PatrimonioUpdateImmobileResponse, PatrimonioDeleteImmobileData, PatrimonioDeleteImmobileResponse, PatrimonioListMobiliResponse, PatrimonioCreateMobileData, PatrimonioCreateMobileResponse, PatrimonioUpdateMobileData, PatrimonioUpdateMobileResponse, PatrimonioDeleteMobileData, PatrimonioDeleteMobileResponse, PatrimonioPatrimonioResponse, PrivateCreateUserData, PrivateCreateUserResponse, RiconciliazioneGetIntervalloResponse, RiconciliazioneSetIntervalloData, RiconciliazioneSetIntervalloResponse, RiconciliazionePromemoriaResponse, RiconciliazioneAnteprimaData, RiconciliazioneAnteprimaResponse, RiconciliazioneHistoryResponse, RiconciliazioneConfirmData, RiconciliazioneConfirmResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -540,6 +540,328 @@ export class MovimentiService {
             errors: {
                 422: 'Validation Error'
             }
+        });
+    }
+}
+
+export class PatrimonioService {
+    /**
+     * List Investimenti
+     * @returns InvestimentoPublic Successful Response
+     * @throws ApiError
+     */
+    public static listInvestimenti(): CancelablePromise<PatrimonioListInvestimentiResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/investimenti'
+        });
+    }
+    
+    /**
+     * Create Investimento
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns InvestimentoPublic Successful Response
+     * @throws ApiError
+     */
+    public static createInvestimento(data: PatrimonioCreateInvestimentoData): CancelablePromise<PatrimonioCreateInvestimentoResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/investimenti',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Investimento
+     * @param data The data for the request.
+     * @param data.investimentoId
+     * @param data.requestBody
+     * @returns InvestimentoPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateInvestimento(data: PatrimonioUpdateInvestimentoData): CancelablePromise<PatrimonioUpdateInvestimentoResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/investimenti/{investimento_id}',
+            path: {
+                investimento_id: data.investimentoId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Investimento
+     * @param data The data for the request.
+     * @param data.investimentoId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteInvestimento(data: PatrimonioDeleteInvestimentoData): CancelablePromise<PatrimonioDeleteInvestimentoResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/investimenti/{investimento_id}',
+            path: {
+                investimento_id: data.investimentoId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Versamento
+     * @param data The data for the request.
+     * @param data.investimentoId
+     * @param data.requestBody
+     * @returns VersamentoPacPublic Successful Response
+     * @throws ApiError
+     */
+    public static createVersamento(data: PatrimonioCreateVersamentoData): CancelablePromise<PatrimonioCreateVersamentoResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/investimenti/{investimento_id}/versamenti',
+            path: {
+                investimento_id: data.investimentoId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Versamenti
+     * @param data The data for the request.
+     * @param data.investimentoId
+     * @returns VersamentoPacPublic Successful Response
+     * @throws ApiError
+     */
+    public static listVersamenti(data: PatrimonioListVersamentiData): CancelablePromise<PatrimonioListVersamentiResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/investimenti/{investimento_id}/versamenti',
+            path: {
+                investimento_id: data.investimentoId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Versamento
+     * @param data The data for the request.
+     * @param data.versamentoId
+     * @param data.requestBody
+     * @returns VersamentoPacPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateVersamento(data: PatrimonioUpdateVersamentoData): CancelablePromise<PatrimonioUpdateVersamentoResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/versamenti/{versamento_id}',
+            path: {
+                versamento_id: data.versamentoId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Versamento
+     * @param data The data for the request.
+     * @param data.versamentoId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteVersamento(data: PatrimonioDeleteVersamentoData): CancelablePromise<PatrimonioDeleteVersamentoResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/versamenti/{versamento_id}',
+            path: {
+                versamento_id: data.versamentoId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Immobili
+     * @returns BeneImmobilePublic Successful Response
+     * @throws ApiError
+     */
+    public static listImmobili(): CancelablePromise<PatrimonioListImmobiliResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/beni-immobili'
+        });
+    }
+    
+    /**
+     * Create Immobile
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns BeneImmobilePublic Successful Response
+     * @throws ApiError
+     */
+    public static createImmobile(data: PatrimonioCreateImmobileData): CancelablePromise<PatrimonioCreateImmobileResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/beni-immobili',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Immobile
+     * @param data The data for the request.
+     * @param data.beneId
+     * @param data.requestBody
+     * @returns BeneImmobilePublic Successful Response
+     * @throws ApiError
+     */
+    public static updateImmobile(data: PatrimonioUpdateImmobileData): CancelablePromise<PatrimonioUpdateImmobileResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/beni-immobili/{bene_id}',
+            path: {
+                bene_id: data.beneId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Immobile
+     * @param data The data for the request.
+     * @param data.beneId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteImmobile(data: PatrimonioDeleteImmobileData): CancelablePromise<PatrimonioDeleteImmobileResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/beni-immobili/{bene_id}',
+            path: {
+                bene_id: data.beneId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Mobili
+     * @returns BeneMobilePublic Successful Response
+     * @throws ApiError
+     */
+    public static listMobili(): CancelablePromise<PatrimonioListMobiliResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/beni-mobili'
+        });
+    }
+    
+    /**
+     * Create Mobile
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns BeneMobilePublic Successful Response
+     * @throws ApiError
+     */
+    public static createMobile(data: PatrimonioCreateMobileData): CancelablePromise<PatrimonioCreateMobileResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/beni-mobili',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Mobile
+     * @param data The data for the request.
+     * @param data.beneId
+     * @param data.requestBody
+     * @returns BeneMobilePublic Successful Response
+     * @throws ApiError
+     */
+    public static updateMobile(data: PatrimonioUpdateMobileData): CancelablePromise<PatrimonioUpdateMobileResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/beni-mobili/{bene_id}',
+            path: {
+                bene_id: data.beneId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Mobile
+     * @param data The data for the request.
+     * @param data.beneId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteMobile(data: PatrimonioDeleteMobileData): CancelablePromise<PatrimonioDeleteMobileResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/beni-mobili/{bene_id}',
+            path: {
+                bene_id: data.beneId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Patrimonio
+     * @returns PatrimonioPublic Successful Response
+     * @throws ApiError
+     */
+    public static patrimonio(): CancelablePromise<PatrimonioPatrimonioResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/patrimonio'
         });
     }
 }

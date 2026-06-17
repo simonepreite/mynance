@@ -36,6 +36,223 @@ export const AllocazionePublicSchema = {
     title: 'AllocazionePublic'
 } as const;
 
+export const BeneImmobileCreateSchema = {
+    properties: {
+        nome: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Nome'
+        },
+        prezzo_cents: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            title: 'Prezzo Cents'
+        }
+    },
+    type: 'object',
+    required: ['nome', 'prezzo_cents'],
+    title: 'BeneImmobileCreate'
+} as const;
+
+export const BeneImmobilePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        nome: {
+            type: 'string',
+            title: 'Nome'
+        },
+        prezzo_cents: {
+            type: 'integer',
+            title: 'Prezzo Cents'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'nome', 'prezzo_cents'],
+    title: 'BeneImmobilePublic'
+} as const;
+
+export const BeneImmobileUpdateSchema = {
+    properties: {
+        nome: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Nome'
+        },
+        prezzo_cents: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Prezzo Cents'
+        }
+    },
+    type: 'object',
+    title: 'BeneImmobileUpdate'
+} as const;
+
+export const BeneMobileCreateSchema = {
+    properties: {
+        nome: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Nome'
+        },
+        prezzo_cents: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            title: 'Prezzo Cents'
+        },
+        data_acquisto: {
+            type: 'string',
+            format: 'date',
+            title: 'Data Acquisto'
+        },
+        svalutazione_percentuale: {
+            type: 'number',
+            maximum: 100,
+            minimum: 0,
+            title: 'Svalutazione Percentuale'
+        }
+    },
+    type: 'object',
+    required: ['nome', 'prezzo_cents', 'data_acquisto', 'svalutazione_percentuale'],
+    title: 'BeneMobileCreate'
+} as const;
+
+export const BeneMobilePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        nome: {
+            type: 'string',
+            title: 'Nome'
+        },
+        prezzo_cents: {
+            type: 'integer',
+            title: 'Prezzo Cents'
+        },
+        data_acquisto: {
+            type: 'string',
+            format: 'date',
+            title: 'Data Acquisto'
+        },
+        svalutazione_percentuale: {
+            type: 'number',
+            title: 'Svalutazione Percentuale'
+        },
+        valore_cents: {
+            type: 'integer',
+            title: 'Valore Cents'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'nome', 'prezzo_cents', 'data_acquisto', 'svalutazione_percentuale', 'valore_cents'],
+    title: 'BeneMobilePublic'
+} as const;
+
+export const BeneMobileUpdateSchema = {
+    properties: {
+        nome: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Nome'
+        },
+        prezzo_cents: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Prezzo Cents'
+        },
+        data_acquisto: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Data Acquisto'
+        },
+        svalutazione_percentuale: {
+            anyOf: [
+                {
+                    type: 'number',
+                    maximum: 100,
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Svalutazione Percentuale'
+        }
+    },
+    type: 'object',
+    title: 'BeneMobileUpdate'
+} as const;
+
 export const BilancioPeriodoSchema = {
     properties: {
         period: {
@@ -334,6 +551,73 @@ export const IntervalloUpdateSchema = {
     type: 'object',
     required: ['intervallo_riconciliazione_giorni'],
     title: 'IntervalloUpdate'
+} as const;
+
+export const InvestimentoCreateSchema = {
+    properties: {
+        nome: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Nome'
+        }
+    },
+    type: 'object',
+    required: ['nome'],
+    title: 'InvestimentoCreate'
+} as const;
+
+export const InvestimentoPublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        nome: {
+            type: 'string',
+            title: 'Nome'
+        },
+        capitale_versato_cents: {
+            type: 'integer',
+            title: 'Capitale Versato Cents'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'nome', 'capitale_versato_cents'],
+    title: 'InvestimentoPublic'
+} as const;
+
+export const InvestimentoUpdateSchema = {
+    properties: {
+        nome: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Nome'
+        }
+    },
+    type: 'object',
+    title: 'InvestimentoUpdate'
 } as const;
 
 export const ItemCreateSchema = {
@@ -745,6 +1029,57 @@ export const NewPasswordSchema = {
     type: 'object',
     required: ['token', 'new_password'],
     title: 'NewPassword'
+} as const;
+
+export const PatrimonioComponenteSchema = {
+    properties: {
+        chiave: {
+            type: 'string',
+            title: 'Chiave'
+        },
+        valore_cents: {
+            type: 'integer',
+            title: 'Valore Cents'
+        }
+    },
+    type: 'object',
+    required: ['chiave', 'valore_cents'],
+    title: 'PatrimonioComponente'
+} as const;
+
+export const PatrimonioPublicSchema = {
+    properties: {
+        totale_cents: {
+            type: 'integer',
+            title: 'Totale Cents'
+        },
+        liquidita_cents: {
+            type: 'integer',
+            title: 'Liquidita Cents'
+        },
+        capitale_versato_cents: {
+            type: 'integer',
+            title: 'Capitale Versato Cents'
+        },
+        beni_immobili_cents: {
+            type: 'integer',
+            title: 'Beni Immobili Cents'
+        },
+        beni_mobili_cents: {
+            type: 'integer',
+            title: 'Beni Mobili Cents'
+        },
+        componenti: {
+            items: {
+                '$ref': '#/components/schemas/PatrimonioComponente'
+            },
+            type: 'array',
+            title: 'Componenti'
+        }
+    },
+    type: 'object',
+    required: ['totale_cents', 'liquidita_cents', 'capitale_versato_cents', 'beni_immobili_cents', 'beni_mobili_cents', 'componenti'],
+    title: 'PatrimonioPublic'
 } as const;
 
 export const PeriodicitaSchema = {
@@ -1571,4 +1906,92 @@ export const ValidationErrorSchema = {
     type: 'object',
     required: ['loc', 'msg', 'type'],
     title: 'ValidationError'
+} as const;
+
+export const VersamentoPacCreateSchema = {
+    properties: {
+        importo_cents: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            title: 'Importo Cents'
+        },
+        data: {
+            type: 'string',
+            format: 'date',
+            title: 'Data'
+        }
+    },
+    type: 'object',
+    required: ['importo_cents', 'data'],
+    title: 'VersamentoPacCreate'
+} as const;
+
+export const VersamentoPacPublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        investimento_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Investimento Id'
+        },
+        importo_cents: {
+            type: 'integer',
+            title: 'Importo Cents'
+        },
+        data: {
+            type: 'string',
+            format: 'date',
+            title: 'Data'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'investimento_id', 'importo_cents', 'data'],
+    title: 'VersamentoPacPublic'
+} as const;
+
+export const VersamentoPacUpdateSchema = {
+    properties: {
+        importo_cents: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Importo Cents'
+        },
+        data: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Data'
+        }
+    },
+    type: 'object',
+    title: 'VersamentoPacUpdate'
 } as const;

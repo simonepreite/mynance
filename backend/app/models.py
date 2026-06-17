@@ -588,3 +588,188 @@ class RebaselineAudit(SQLModel, table=True):
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
+
+
+# ---------------------------------------------------------------------------
+# mynance — Patrimonio (Epic 5, FR-19/20/21/22). Net worth on the Utente's own
+# valuation terms: Investimenti at Capitale versato (never market value), Beni
+# immobili at price paid (static), Beni mobili with linear Svalutazione.
+# All money integer cents; component values derived on read.
+# ---------------------------------------------------------------------------
+
+
+class InvestimentoCreate(SQLModel):
+    nome: str = Field(min_length=1, max_length=255)
+
+
+class InvestimentoUpdate(SQLModel):
+    nome: str | None = Field(default=None, min_length=1, max_length=255)
+
+
+class Investimento(SQLModel, table=True):
+    __tablename__ = "investimenti"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    nome: str = Field(max_length=255)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class InvestimentoPublic(SQLModel):
+    id: uuid.UUID
+    nome: str
+    # Derived: Σ Versamenti PAC (Capitale versato) — never market value.
+    capitale_versato_cents: int
+    created_at: datetime | None = None
+
+
+class VersamentoPacCreate(SQLModel):
+    importo_cents: int = Field(gt=0)
+    data: date
+
+
+class VersamentoPacUpdate(SQLModel):
+    importo_cents: int | None = Field(default=None, gt=0)
+    data: date | None = None
+
+
+class VersamentoPac(SQLModel, table=True):
+    __tablename__ = "versamenti_pac"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    investimento_id: uuid.UUID = Field(
+        foreign_key="investimenti.id", nullable=False, index=True
+    )
+    importo_cents: int = Field(sa_type=BigInteger)
+    data: date
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class VersamentoPacPublic(SQLModel):
+    id: uuid.UUID
+    investimento_id: uuid.UUID
+    importo_cents: int
+    data: date
+    created_at: datetime | None = None
+
+
+class BeneImmobileCreate(SQLModel):
+    nome: str = Field(min_length=1, max_length=255)
+    prezzo_cents: int = Field(gt=0)
+
+
+class BeneImmobileUpdate(SQLModel):
+    nome: str | None = Field(default=None, min_length=1, max_length=255)
+    prezzo_cents: int | None = Field(default=None, gt=0)
+
+
+class BeneImmobile(SQLModel, table=True):
+    __tablename__ = "beni_immobili"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    nome: str = Field(max_length=255)
+    prezzo_cents: int = Field(sa_type=BigInteger)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class BeneImmobilePublic(SQLModel):
+    id: uuid.UUID
+    nome: str
+    prezzo_cents: int  # Valore = price paid (static)
+    created_at: datetime | None = None
+
+
+class BeneMobileCreate(SQLModel):
+    nome: str = Field(min_length=1, max_length=255)
+    prezzo_cents: int = Field(gt=0)
+    data_acquisto: date
+    svalutazione_percentuale: float = Field(ge=0, le=100)
+
+
+class BeneMobileUpdate(SQLModel):
+    nome: str | None = Field(default=None, min_length=1, max_length=255)
+    prezzo_cents: int | None = Field(default=None, gt=0)
+    data_acquisto: date | None = None
+    svalutazione_percentuale: float | None = Field(default=None, ge=0, le=100)
+
+
+class BeneMobile(SQLModel, table=True):
+    __tablename__ = "beni_mobili"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    nome: str = Field(max_length=255)
+    prezzo_cents: int = Field(sa_type=BigInteger)
+    data_acquisto: date
+    svalutazione_percentuale: float
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class BeneMobilePublic(SQLModel):
+    id: uuid.UUID
+    nome: str
+    prezzo_cents: int
+    data_acquisto: date
+    svalutazione_percentuale: float
+    valore_cents: int  # derived linear depreciation, floored at 0
+    created_at: datetime | None = None
+
+
+class PatrimonioComponente(SQLModel):
+    chiave: str  # "liquidita" | "investimenti" | "beni_immobili" | "beni_mobili"
+    valore_cents: int
+
+
+class PatrimonioPublic(SQLModel):
+    totale_cents: int
+    liquidita_cents: int
+    capitale_versato_cents: int
+    beni_immobili_cents: int
+    beni_mobili_cents: int
+    componenti: list[PatrimonioComponente]

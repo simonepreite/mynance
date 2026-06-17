@@ -10,6 +10,47 @@ export type AllocazionePublic = {
     sotto_cuscinetto: boolean;
 };
 
+export type BeneImmobileCreate = {
+    nome: string;
+    prezzo_cents: number;
+};
+
+export type BeneImmobilePublic = {
+    id: string;
+    nome: string;
+    prezzo_cents: number;
+    created_at?: (string | null);
+};
+
+export type BeneImmobileUpdate = {
+    nome?: (string | null);
+    prezzo_cents?: (number | null);
+};
+
+export type BeneMobileCreate = {
+    nome: string;
+    prezzo_cents: number;
+    data_acquisto: string;
+    svalutazione_percentuale: number;
+};
+
+export type BeneMobilePublic = {
+    id: string;
+    nome: string;
+    prezzo_cents: number;
+    data_acquisto: string;
+    svalutazione_percentuale: number;
+    valore_cents: number;
+    created_at?: (string | null);
+};
+
+export type BeneMobileUpdate = {
+    nome?: (string | null);
+    prezzo_cents?: (number | null);
+    data_acquisto?: (string | null);
+    svalutazione_percentuale?: (number | null);
+};
+
 export type BilancioPeriodo = {
     period: string;
     start: string;
@@ -73,6 +114,21 @@ export type HTTPValidationError = {
 
 export type IntervalloUpdate = {
     intervallo_riconciliazione_giorni: number;
+};
+
+export type InvestimentoCreate = {
+    nome: string;
+};
+
+export type InvestimentoPublic = {
+    id: string;
+    nome: string;
+    capitale_versato_cents: number;
+    created_at?: (string | null);
+};
+
+export type InvestimentoUpdate = {
+    nome?: (string | null);
 };
 
 export type ItemCreate = {
@@ -153,6 +209,20 @@ export type MovimentoUpdate = {
 export type NewPassword = {
     token: string;
     new_password: string;
+};
+
+export type PatrimonioComponente = {
+    chiave: string;
+    valore_cents: number;
+};
+
+export type PatrimonioPublic = {
+    totale_cents: number;
+    liquidita_cents: number;
+    capitale_versato_cents: number;
+    beni_immobili_cents: number;
+    beni_mobili_cents: number;
+    componenti: Array<PatrimonioComponente>;
 };
 
 export type Periodicita = 'monthly' | 'quarterly' | 'semiannual' | 'annual' | 'custom';
@@ -329,6 +399,24 @@ export type ValidationError = {
     };
 };
 
+export type VersamentoPacCreate = {
+    importo_cents: number;
+    data: string;
+};
+
+export type VersamentoPacPublic = {
+    id: string;
+    investimento_id: string;
+    importo_cents: number;
+    data: string;
+    created_at?: (string | null);
+};
+
+export type VersamentoPacUpdate = {
+    importo_cents?: (number | null);
+    data?: (string | null);
+};
+
 export type AuthRegisterData = {
     requestBody: UtenteRegister;
 };
@@ -472,6 +560,97 @@ export type MovimentiDeleteMovimentoData = {
 };
 
 export type MovimentiDeleteMovimentoResponse = (Message);
+
+export type PatrimonioListInvestimentiResponse = (Array<InvestimentoPublic>);
+
+export type PatrimonioCreateInvestimentoData = {
+    requestBody: InvestimentoCreate;
+};
+
+export type PatrimonioCreateInvestimentoResponse = (InvestimentoPublic);
+
+export type PatrimonioUpdateInvestimentoData = {
+    investimentoId: string;
+    requestBody: InvestimentoUpdate;
+};
+
+export type PatrimonioUpdateInvestimentoResponse = (InvestimentoPublic);
+
+export type PatrimonioDeleteInvestimentoData = {
+    investimentoId: string;
+};
+
+export type PatrimonioDeleteInvestimentoResponse = (Message);
+
+export type PatrimonioCreateVersamentoData = {
+    investimentoId: string;
+    requestBody: VersamentoPacCreate;
+};
+
+export type PatrimonioCreateVersamentoResponse = (VersamentoPacPublic);
+
+export type PatrimonioListVersamentiData = {
+    investimentoId: string;
+};
+
+export type PatrimonioListVersamentiResponse = (Array<VersamentoPacPublic>);
+
+export type PatrimonioUpdateVersamentoData = {
+    requestBody: VersamentoPacUpdate;
+    versamentoId: string;
+};
+
+export type PatrimonioUpdateVersamentoResponse = (VersamentoPacPublic);
+
+export type PatrimonioDeleteVersamentoData = {
+    versamentoId: string;
+};
+
+export type PatrimonioDeleteVersamentoResponse = (Message);
+
+export type PatrimonioListImmobiliResponse = (Array<BeneImmobilePublic>);
+
+export type PatrimonioCreateImmobileData = {
+    requestBody: BeneImmobileCreate;
+};
+
+export type PatrimonioCreateImmobileResponse = (BeneImmobilePublic);
+
+export type PatrimonioUpdateImmobileData = {
+    beneId: string;
+    requestBody: BeneImmobileUpdate;
+};
+
+export type PatrimonioUpdateImmobileResponse = (BeneImmobilePublic);
+
+export type PatrimonioDeleteImmobileData = {
+    beneId: string;
+};
+
+export type PatrimonioDeleteImmobileResponse = (Message);
+
+export type PatrimonioListMobiliResponse = (Array<BeneMobilePublic>);
+
+export type PatrimonioCreateMobileData = {
+    requestBody: BeneMobileCreate;
+};
+
+export type PatrimonioCreateMobileResponse = (BeneMobilePublic);
+
+export type PatrimonioUpdateMobileData = {
+    beneId: string;
+    requestBody: BeneMobileUpdate;
+};
+
+export type PatrimonioUpdateMobileResponse = (BeneMobilePublic);
+
+export type PatrimonioDeleteMobileData = {
+    beneId: string;
+};
+
+export type PatrimonioDeleteMobileResponse = (Message);
+
+export type PatrimonioPatrimonioResponse = (PatrimonioPublic);
 
 export type PrivateCreateUserData = {
     requestBody: PrivateUserCreate;

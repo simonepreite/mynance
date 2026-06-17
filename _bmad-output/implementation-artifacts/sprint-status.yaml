@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (Epic 4 complete: Riconciliazione + Drift + honesty banner; next: Epic 5 Patrimonio)
+# last_updated: 2026-06-17 (Epic 5 complete: Patrimonio — Investimenti/PAC, Beni immobili/mobili, net worth; next: Epic 6)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (Epic 4 complete: Riconciliazione + Drift + honesty banner; next: Epic 5 Patrimonio)
+last_updated: 2026-06-17 (Epic 5 complete: Patrimonio — Investimenti/PAC, Beni immobili/mobili, net worth; next: Epic 6)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -86,11 +86,11 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5 — My whole net worth (Patrimonio)
-  epic-5: backlog
-  5-1-create-an-investimento-and-record-versamenti-pac-at-capitale-versato: backlog
-  5-2-register-a-bene-immobile-at-price-paid: backlog
-  5-3-register-a-bene-mobile-with-linear-svalutazione-and-suggested-rates: backlog
-  5-4-patrimonio-screen-total-net-worth-and-per-component-breakdown: backlog
+  epic-5: done
+  5-1-create-an-investimento-and-record-versamenti-pac-at-capitale-versato: done
+  5-2-register-a-bene-immobile-at-price-paid: done
+  5-3-register-a-bene-mobile-with-linear-svalutazione-and-suggested-rates: done
+  5-4-patrimonio-screen-total-net-worth-and-per-component-breakdown: done
   epic-5-retrospective: optional
 
   # Epic 6 — Automate recurring money (Regole ricorrenti)

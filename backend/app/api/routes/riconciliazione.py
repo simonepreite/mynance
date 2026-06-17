@@ -11,9 +11,8 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException
 
-from app import crud_categoria
+from app import crud_categoria, crud_liquidita
 from app.api.deps import CurrentUtente, SessionDep
-from app.calc.liquidita import compute_liquidita
 from app.models import (
     CategoriaTipo,
     DriftPreview,
@@ -32,17 +31,8 @@ router = APIRouter(prefix="/riconciliazione", tags=["riconciliazione"])
 
 
 def _liquidita_calcolata(session: SessionDep, current_utente: CurrentUtente) -> int:
-    movimenti = UserScopedRepository(
-        session=session, model=Movimento, utente_id=current_utente.id
-    ).list()
-    entrate = [
-        m.amount_cents for m in movimenti if m.tipo == CategoriaTipo.entrata.value
-    ]
-    spese = [m.amount_cents for m in movimenti if m.tipo == CategoriaTipo.spesa.value]
-    return compute_liquidita(
-        iniziale_cents=current_utente.liquidita_iniziale_cents,
-        entrate_cents=entrate,
-        spese_cents=spese,
+    return crud_liquidita.compute_current_liquidita(
+        session=session, utente=current_utente
     )
 
 

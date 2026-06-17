@@ -18,7 +18,6 @@ from app.calc.allocazione import (
     risparmio_libero,
     spesa_media_mensile,
 )
-from app.calc.liquidita import compute_liquidita
 from app.calc.periodo import period_bounds
 from app.calc.secchiello import compute_saldo_quota
 from app.models import (
@@ -47,21 +46,13 @@ def read_liquidita(
     2.3). Capitale versato (Investimenti) arrives in Epic 5; empty for now.
     Negative values are returned with sign, never clamped.
     """
-    iniziale = current_utente.liquidita_iniziale_cents
-    repo = UserScopedRepository(
-        session=session, model=Movimento, utente_id=current_utente.id
+    value = crud_liquidita.compute_current_liquidita(
+        session=session, utente=current_utente
     )
-    movimenti = repo.list()
-    entrate = [
-        m.amount_cents for m in movimenti if m.tipo == CategoriaTipo.entrata.value
-    ]
-    spese = [m.amount_cents for m in movimenti if m.tipo == CategoriaTipo.spesa.value]
-    value = compute_liquidita(
-        iniziale_cents=iniziale,
-        entrate_cents=entrate,
-        spese_cents=spese,
+    return LiquiditaPublic(
+        value_cents=value,
+        iniziale_is_set=current_utente.liquidita_iniziale_cents is not None,
     )
-    return LiquiditaPublic(value_cents=value, iniziale_is_set=iniziale is not None)
 
 
 @router.get("/iniziale")
@@ -124,18 +115,12 @@ def allocazione(
 ) -> AllocazionePublic:
     """Allocation split + safety buffer, computed server-side (FR-14/FR-15)."""
     today = date.today()
-    iniziale = current_utente.liquidita_iniziale_cents
     movimenti = UserScopedRepository(
         session=session, model=Movimento, utente_id=current_utente.id
     ).list()
-    entrate = [
-        m.amount_cents for m in movimenti if m.tipo == CategoriaTipo.entrata.value
-    ]
     spese_mov = [m for m in movimenti if m.tipo == CategoriaTipo.spesa.value]
-    liquidita = compute_liquidita(
-        iniziale_cents=iniziale,
-        entrate_cents=entrate,
-        spese_cents=[m.amount_cents for m in spese_mov],
+    liquidita = crud_liquidita.compute_current_liquidita(
+        session=session, utente=current_utente
     )
 
     secchielli = UserScopedRepository(
