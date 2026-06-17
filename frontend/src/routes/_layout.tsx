@@ -1,12 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
-import { Footer } from "@/components/Common/Footer"
-import AppSidebar from "@/components/Sidebar/AppSidebar"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { AppBottomNav } from "@/components/Common/AppBottomNav"
+import { TopBar } from "@/components/Common/TopBar"
 import { isLoggedIn } from "@/hooks/useAuth"
 
 export const Route = createFileRoute("/_layout")({
@@ -22,20 +17,19 @@ export const Route = createFileRoute("/_layout")({
 
 function Layout() {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1 text-muted-foreground" />
-        </header>
-        <main className="flex-1 p-6 md:p-8">
-          <div className="mx-auto max-w-7xl">
-            <Outlet />
-          </div>
-        </main>
-        <Footer />
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex min-h-dvh flex-col bg-background">
+      <TopBar />
+      <main className="flex-1 px-4 pb-28 pt-6">
+        <div className="mx-auto w-full max-w-3xl">
+          <Outlet />
+        </div>
+      </main>
+      <div className="fixed inset-x-0 bottom-0 z-10 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2">
+        <div className="mx-auto w-full max-w-3xl">
+          <AppBottomNav />
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (frontend auth + categorie UI done; 1-3/1-4/2-1 → done)
+# last_updated: 2026-06-17 (1-6 app shell done → Epic 1 complete; next: 2-2 Liquidità iniziale)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (frontend auth + categorie UI done; 1-3/1-4/2-1 → done)
+last_updated: 2026-06-17 (1-6 app shell done → Epic 1 complete; next: 2-2 Liquidità iniziale)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -43,13 +43,13 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # Epic 1 — Account & Access (Foundation)
-  epic-1: in-progress
+  epic-1: done
   1-1-initialize-project-scaffold-morbido-theme-api-contract-and-ci-baseline: done
   1-2-base-shared-component-library-and-theme-tokens-with-accessibility-floor: done
   1-3-self-service-registration-with-one-time-recovery-code: done
   1-4-login-30-day-session-and-logout: done
   1-5-per-utente-authorization-choke-point-and-data-isolation: done
-  1-6-minimal-onboarding-shell-and-empty-themed-home: backlog
+  1-6-minimal-onboarding-shell-and-empty-themed-home: done
   epic-1-retrospective: optional
 
   # Epic 2 — Track my money (the daily loop)

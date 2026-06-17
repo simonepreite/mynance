@@ -15,7 +15,10 @@ import { Route as RecoverPasswordRouteImport } from './routes/recover-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as LayoutStatisticheRouteImport } from './routes/_layout/statistiche'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
+import { Route as LayoutPatrimonioRouteImport } from './routes/_layout/patrimonio'
+import { Route as LayoutLiquiditaRouteImport } from './routes/_layout/liquidita'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
 import { Route as LayoutCategorieRouteImport } from './routes/_layout/categorie'
 
@@ -48,9 +51,24 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutStatisticheRoute = LayoutStatisticheRouteImport.update({
+  id: '/statistiche',
+  path: '/statistiche',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutPatrimonioRoute = LayoutPatrimonioRouteImport.update({
+  id: '/patrimonio',
+  path: '/patrimonio',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutLiquiditaRoute = LayoutLiquiditaRouteImport.update({
+  id: '/liquidita',
+  path: '/liquidita',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutItemsRoute = LayoutItemsRouteImport.update({
@@ -72,7 +90,10 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/categorie': typeof LayoutCategorieRoute
   '/items': typeof LayoutItemsRoute
+  '/liquidita': typeof LayoutLiquiditaRoute
+  '/patrimonio': typeof LayoutPatrimonioRoute
   '/settings': typeof LayoutSettingsRoute
+  '/statistiche': typeof LayoutStatisticheRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -81,7 +102,10 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/categorie': typeof LayoutCategorieRoute
   '/items': typeof LayoutItemsRoute
+  '/liquidita': typeof LayoutLiquiditaRoute
+  '/patrimonio': typeof LayoutPatrimonioRoute
   '/settings': typeof LayoutSettingsRoute
+  '/statistiche': typeof LayoutStatisticheRoute
   '/': typeof LayoutIndexRoute
 }
 export interface FileRoutesById {
@@ -93,7 +117,10 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/_layout/categorie': typeof LayoutCategorieRoute
   '/_layout/items': typeof LayoutItemsRoute
+  '/_layout/liquidita': typeof LayoutLiquiditaRoute
+  '/_layout/patrimonio': typeof LayoutPatrimonioRoute
   '/_layout/settings': typeof LayoutSettingsRoute
+  '/_layout/statistiche': typeof LayoutStatisticheRoute
   '/_layout/': typeof LayoutIndexRoute
 }
 export interface FileRouteTypes {
@@ -106,7 +133,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/categorie'
     | '/items'
+    | '/liquidita'
+    | '/patrimonio'
     | '/settings'
+    | '/statistiche'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -115,7 +145,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/categorie'
     | '/items'
+    | '/liquidita'
+    | '/patrimonio'
     | '/settings'
+    | '/statistiche'
     | '/'
   id:
     | '__root__'
@@ -126,7 +159,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/_layout/categorie'
     | '/_layout/items'
+    | '/_layout/liquidita'
+    | '/_layout/patrimonio'
     | '/_layout/settings'
+    | '/_layout/statistiche'
     | '/_layout/'
   fileRoutesById: FileRoutesById
 }
@@ -182,11 +218,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/statistiche': {
+      id: '/_layout/statistiche'
+      path: '/statistiche'
+      fullPath: '/statistiche'
+      preLoaderRoute: typeof LayoutStatisticheRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/settings': {
       id: '/_layout/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof LayoutSettingsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/patrimonio': {
+      id: '/_layout/patrimonio'
+      path: '/patrimonio'
+      fullPath: '/patrimonio'
+      preLoaderRoute: typeof LayoutPatrimonioRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/liquidita': {
+      id: '/_layout/liquidita'
+      path: '/liquidita'
+      fullPath: '/liquidita'
+      preLoaderRoute: typeof LayoutLiquiditaRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/items': {
@@ -209,14 +266,20 @@ declare module '@tanstack/react-router' {
 interface LayoutRouteChildren {
   LayoutCategorieRoute: typeof LayoutCategorieRoute
   LayoutItemsRoute: typeof LayoutItemsRoute
+  LayoutLiquiditaRoute: typeof LayoutLiquiditaRoute
+  LayoutPatrimonioRoute: typeof LayoutPatrimonioRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
+  LayoutStatisticheRoute: typeof LayoutStatisticheRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutCategorieRoute: LayoutCategorieRoute,
   LayoutItemsRoute: LayoutItemsRoute,
+  LayoutLiquiditaRoute: LayoutLiquiditaRoute,
+  LayoutPatrimonioRoute: LayoutPatrimonioRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
+  LayoutStatisticheRoute: LayoutStatisticheRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
 
