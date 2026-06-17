@@ -39,6 +39,7 @@ export type CategoriaPublic = {
     nome: string;
     tipo: string;
     secchiello_id?: (string | null);
+    is_system?: boolean;
     created_at?: (string | null);
 };
 
@@ -60,8 +61,18 @@ export type CategorieList = {
     entrata: Array<CategoriaPublic>;
 };
 
+export type DriftPreview = {
+    liquidita_calcolata_cents: number;
+    drift_cents: number;
+    drift_percent: (number | null);
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
+};
+
+export type IntervalloUpdate = {
+    intervallo_riconciliazione_giorni: number;
 };
 
 export type ItemCreate = {
@@ -151,6 +162,36 @@ export type PrivateUserCreate = {
     password: string;
     full_name: string;
     is_verified?: boolean;
+};
+
+export type PromemoriaPublic = {
+    due: boolean;
+    giorni_dall_ultima: number;
+    data_ultima_riconciliazione: (string | null);
+    intervallo_giorni: number;
+    drift_aperto_cents?: (number | null);
+};
+
+export type RiconciliazioneCreate = {
+    liquidita_reale_cents: number;
+    esito: RiconciliazioneEsito;
+};
+
+export type RiconciliazioneEsito = 'chiusa' | 'acknowledged_open';
+
+export type RiconciliazionePublic = {
+    id: string;
+    liquidita_reale_cents: number;
+    liquidita_calcolata_cents: number;
+    drift_cents: number;
+    drift_percent: (number | null);
+    data_riconciliazione: string;
+    esito: string;
+    created_at?: (string | null);
+};
+
+export type RiconciliazioneRealeInput = {
+    liquidita_reale_cents: number;
 };
 
 export type SecchielloCreate = {
@@ -437,6 +478,30 @@ export type PrivateCreateUserData = {
 };
 
 export type PrivateCreateUserResponse = (UserPublic);
+
+export type RiconciliazioneGetIntervalloResponse = (IntervalloUpdate);
+
+export type RiconciliazioneSetIntervalloData = {
+    requestBody: IntervalloUpdate;
+};
+
+export type RiconciliazioneSetIntervalloResponse = (IntervalloUpdate);
+
+export type RiconciliazionePromemoriaResponse = (PromemoriaPublic);
+
+export type RiconciliazioneAnteprimaData = {
+    requestBody: RiconciliazioneRealeInput;
+};
+
+export type RiconciliazioneAnteprimaResponse = (DriftPreview);
+
+export type RiconciliazioneHistoryResponse = (Array<RiconciliazionePublic>);
+
+export type RiconciliazioneConfirmData = {
+    requestBody: RiconciliazioneCreate;
+};
+
+export type RiconciliazioneConfirmResponse = (RiconciliazionePublic);
 
 export type RiepilogoBilancioData = {
     anchor: string;

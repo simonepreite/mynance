@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (Epic 3 complete: Secchielli + allocation + cuscinetto; next: Epic 4 Riconciliazione)
+# last_updated: 2026-06-17 (Epic 4 complete: Riconciliazione + Drift + honesty banner; next: Epic 5 Patrimonio)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (Epic 3 complete: Secchielli + allocation + cuscinetto; next: Epic 4 Riconciliazione)
+last_updated: 2026-06-17 (Epic 4 complete: Riconciliazione + Drift + honesty banner; next: Epic 5 Patrimonio)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -76,13 +76,13 @@ development_status:
   epic-3-retrospective: optional
 
   # Epic 4 — Keep it honest (Drift & Reconciliation)
-  epic-4: backlog
-  4-1-riconciliazione-entity-non-identificato-system-categorie-and-reminder-interval-setting: backlog
-  4-2-computed-reconciliation-reminder-no-scheduler: backlog
-  4-3-reconcile-real-liquidita-and-show-drift-in-euro-and-percent: backlog
-  4-4-close-the-drift-with-a-non-identificato-movimento: backlog
-  4-5-acknowledge-and-leave-the-drift-open: backlog
-  4-6-riconciliazione-flow-ui-and-reconciliation-history: backlog
+  epic-4: done
+  4-1-riconciliazione-entity-non-identificato-system-categorie-and-reminder-interval-setting: done
+  4-2-computed-reconciliation-reminder-no-scheduler: done
+  4-3-reconcile-real-liquidita-and-show-drift-in-euro-and-percent: done
+  4-4-close-the-drift-with-a-non-identificato-movimento: done
+  4-5-acknowledge-and-leave-the-drift-open: done
+  4-6-riconciliazione-flow-ui-and-reconciliation-history: done
   epic-4-retrospective: optional
 
   # Epic 5 — My whole net worth (Patrimonio)

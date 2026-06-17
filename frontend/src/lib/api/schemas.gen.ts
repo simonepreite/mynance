@@ -178,6 +178,11 @@ export const CategoriaPublicSchema = {
             ],
             title: 'Secchiello Id'
         },
+        is_system: {
+            type: 'boolean',
+            title: 'Is System',
+            default: false
+        },
         created_at: {
             anyOf: [
                 {
@@ -277,6 +282,33 @@ export const CategorieListSchema = {
     title: 'CategorieList'
 } as const;
 
+export const DriftPreviewSchema = {
+    properties: {
+        liquidita_calcolata_cents: {
+            type: 'integer',
+            title: 'Liquidita Calcolata Cents'
+        },
+        drift_cents: {
+            type: 'integer',
+            title: 'Drift Cents'
+        },
+        drift_percent: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Drift Percent'
+        }
+    },
+    type: 'object',
+    required: ['liquidita_calcolata_cents', 'drift_cents', 'drift_percent'],
+    title: 'DriftPreview'
+} as const;
+
 export const HTTPValidationErrorSchema = {
     properties: {
         detail: {
@@ -289,6 +321,19 @@ export const HTTPValidationErrorSchema = {
     },
     type: 'object',
     title: 'HTTPValidationError'
+} as const;
+
+export const IntervalloUpdateSchema = {
+    properties: {
+        intervallo_riconciliazione_giorni: {
+            type: 'integer',
+            minimum: 1,
+            title: 'Intervallo Riconciliazione Giorni'
+        }
+    },
+    type: 'object',
+    required: ['intervallo_riconciliazione_giorni'],
+    title: 'IntervalloUpdate'
 } as const;
 
 export const ItemCreateSchema = {
@@ -731,6 +776,141 @@ export const PrivateUserCreateSchema = {
     type: 'object',
     required: ['email', 'password', 'full_name'],
     title: 'PrivateUserCreate'
+} as const;
+
+export const PromemoriaPublicSchema = {
+    properties: {
+        due: {
+            type: 'boolean',
+            title: 'Due'
+        },
+        giorni_dall_ultima: {
+            type: 'integer',
+            title: 'Giorni Dall Ultima'
+        },
+        data_ultima_riconciliazione: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Data Ultima Riconciliazione'
+        },
+        intervallo_giorni: {
+            type: 'integer',
+            title: 'Intervallo Giorni'
+        },
+        drift_aperto_cents: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Drift Aperto Cents'
+        }
+    },
+    type: 'object',
+    required: ['due', 'giorni_dall_ultima', 'data_ultima_riconciliazione', 'intervallo_giorni'],
+    title: 'PromemoriaPublic'
+} as const;
+
+export const RiconciliazioneCreateSchema = {
+    properties: {
+        liquidita_reale_cents: {
+            type: 'integer',
+            minimum: 0,
+            title: 'Liquidita Reale Cents'
+        },
+        esito: {
+            '$ref': '#/components/schemas/RiconciliazioneEsito'
+        }
+    },
+    type: 'object',
+    required: ['liquidita_reale_cents', 'esito'],
+    title: 'RiconciliazioneCreate'
+} as const;
+
+export const RiconciliazioneEsitoSchema = {
+    type: 'string',
+    enum: ['chiusa', 'acknowledged_open'],
+    title: 'RiconciliazioneEsito'
+} as const;
+
+export const RiconciliazionePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        liquidita_reale_cents: {
+            type: 'integer',
+            title: 'Liquidita Reale Cents'
+        },
+        liquidita_calcolata_cents: {
+            type: 'integer',
+            title: 'Liquidita Calcolata Cents'
+        },
+        drift_cents: {
+            type: 'integer',
+            title: 'Drift Cents'
+        },
+        drift_percent: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Drift Percent'
+        },
+        data_riconciliazione: {
+            type: 'string',
+            format: 'date',
+            title: 'Data Riconciliazione'
+        },
+        esito: {
+            type: 'string',
+            title: 'Esito'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'liquidita_reale_cents', 'liquidita_calcolata_cents', 'drift_cents', 'drift_percent', 'data_riconciliazione', 'esito'],
+    title: 'RiconciliazionePublic'
+} as const;
+
+export const RiconciliazioneRealeInputSchema = {
+    properties: {
+        liquidita_reale_cents: {
+            type: 'integer',
+            minimum: 0,
+            title: 'Liquidita Reale Cents'
+        }
+    },
+    type: 'object',
+    required: ['liquidita_reale_cents'],
+    title: 'RiconciliazioneRealeInput'
 } as const;
 
 export const SecchielloCreateSchema = {

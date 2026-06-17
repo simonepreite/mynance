@@ -39,6 +39,7 @@ def _public(categoria: Categoria) -> CategoriaPublic:
         nome=categoria.nome,
         tipo=categoria.tipo,
         secchiello_id=categoria.secchiello_id,
+        is_system=categoria.is_system,
         created_at=categoria.created_at,
     )
 
@@ -80,6 +81,11 @@ def update_categoria(
     categoria = repo.get(categoria_id)
     if categoria is None:
         raise HTTPException(status_code=404, detail="Categoria non trovata.")
+    if categoria.is_system:
+        raise HTTPException(
+            status_code=422,
+            detail="Le categorie di sistema non possono essere modificate.",
+        )
 
     changes = body.model_dump(exclude_unset=True)
     if "secchiello_id" in changes:
@@ -112,6 +118,13 @@ def delete_categoria(
     # NOTE (Story 2.5): when Movimenti exist, deleting a Categoria in use must
     # prompt reassignment rather than soft-delete silently. No Movimenti yet.
     repo = _repo(session, current_utente)
-    if not repo.delete(categoria_id):
+    existing = repo.get(categoria_id)
+    if existing is None:
         raise HTTPException(status_code=404, detail="Categoria non trovata.")
+    if existing.is_system:
+        raise HTTPException(
+            status_code=422,
+            detail="Le categorie di sistema non possono essere eliminate.",
+        )
+    repo.delete(categoria_id)
     return Message(message="Categoria eliminata.")

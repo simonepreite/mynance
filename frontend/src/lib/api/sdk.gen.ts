@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LiquiditaAllocazioneData, LiquiditaAllocazioneResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PrivateCreateUserData, PrivateCreateUserResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LiquiditaAllocazioneData, LiquiditaAllocazioneResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PrivateCreateUserData, PrivateCreateUserResponse, RiconciliazioneGetIntervalloResponse, RiconciliazioneSetIntervalloData, RiconciliazioneSetIntervalloResponse, RiconciliazionePromemoriaResponse, RiconciliazioneAnteprimaData, RiconciliazioneAnteprimaResponse, RiconciliazioneHistoryResponse, RiconciliazioneConfirmData, RiconciliazioneConfirmResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -557,6 +557,101 @@ export class PrivateService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/private/users/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class RiconciliazioneService {
+    /**
+     * Get Intervallo
+     * @returns IntervalloUpdate Successful Response
+     * @throws ApiError
+     */
+    public static getIntervallo(): CancelablePromise<RiconciliazioneGetIntervalloResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/riconciliazione/intervallo'
+        });
+    }
+    
+    /**
+     * Set Intervallo
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns IntervalloUpdate Successful Response
+     * @throws ApiError
+     */
+    public static setIntervallo(data: RiconciliazioneSetIntervalloData): CancelablePromise<RiconciliazioneSetIntervalloResponse> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/api/v1/riconciliazione/intervallo',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Promemoria
+     * @returns PromemoriaPublic Successful Response
+     * @throws ApiError
+     */
+    public static promemoria(): CancelablePromise<RiconciliazionePromemoriaResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/riconciliazione/promemoria'
+        });
+    }
+    
+    /**
+     * Anteprima
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns DriftPreview Successful Response
+     * @throws ApiError
+     */
+    public static anteprima(data: RiconciliazioneAnteprimaData): CancelablePromise<RiconciliazioneAnteprimaResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/riconciliazione/anteprima',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * History
+     * @returns RiconciliazionePublic Successful Response
+     * @throws ApiError
+     */
+    public static history(): CancelablePromise<RiconciliazioneHistoryResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/riconciliazione/'
+        });
+    }
+    
+    /**
+     * Confirm
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns RiconciliazionePublic Successful Response
+     * @throws ApiError
+     */
+    public static confirm(data: RiconciliazioneConfirmData): CancelablePromise<RiconciliazioneConfirmResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/riconciliazione/',
             body: data.requestBody,
             mediaType: 'application/json',
             errors: {

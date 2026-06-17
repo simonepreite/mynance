@@ -17,6 +17,7 @@ import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as LayoutStatisticheRouteImport } from './routes/_layout/statistiche'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
+import { Route as LayoutRiconciliazioneRouteImport } from './routes/_layout/riconciliazione'
 import { Route as LayoutPatrimonioRouteImport } from './routes/_layout/patrimonio'
 import { Route as LayoutLiquiditaRouteImport } from './routes/_layout/liquidita'
 import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
@@ -61,6 +62,11 @@ const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutRiconciliazioneRoute = LayoutRiconciliazioneRouteImport.update({
+  id: '/riconciliazione',
+  path: '/riconciliazione',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutPatrimonioRoute = LayoutPatrimonioRouteImport.update({
   id: '/patrimonio',
   path: '/patrimonio',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/items': typeof LayoutItemsRoute
   '/liquidita': typeof LayoutLiquiditaRoute
   '/patrimonio': typeof LayoutPatrimonioRoute
+  '/riconciliazione': typeof LayoutRiconciliazioneRoute
   '/settings': typeof LayoutSettingsRoute
   '/statistiche': typeof LayoutStatisticheRoute
 }
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/items': typeof LayoutItemsRoute
   '/liquidita': typeof LayoutLiquiditaRoute
   '/patrimonio': typeof LayoutPatrimonioRoute
+  '/riconciliazione': typeof LayoutRiconciliazioneRoute
   '/settings': typeof LayoutSettingsRoute
   '/statistiche': typeof LayoutStatisticheRoute
   '/': typeof LayoutIndexRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/_layout/items': typeof LayoutItemsRoute
   '/_layout/liquidita': typeof LayoutLiquiditaRoute
   '/_layout/patrimonio': typeof LayoutPatrimonioRoute
+  '/_layout/riconciliazione': typeof LayoutRiconciliazioneRoute
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/statistiche': typeof LayoutStatisticheRoute
   '/_layout/': typeof LayoutIndexRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/items'
     | '/liquidita'
     | '/patrimonio'
+    | '/riconciliazione'
     | '/settings'
     | '/statistiche'
   fileRoutesByTo: FileRoutesByTo
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/items'
     | '/liquidita'
     | '/patrimonio'
+    | '/riconciliazione'
     | '/settings'
     | '/statistiche'
     | '/'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/_layout/items'
     | '/_layout/liquidita'
     | '/_layout/patrimonio'
+    | '/_layout/riconciliazione'
     | '/_layout/settings'
     | '/_layout/statistiche'
     | '/_layout/'
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutSettingsRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/riconciliazione': {
+      id: '/_layout/riconciliazione'
+      path: '/riconciliazione'
+      fullPath: '/riconciliazione'
+      preLoaderRoute: typeof LayoutRiconciliazioneRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/patrimonio': {
       id: '/_layout/patrimonio'
       path: '/patrimonio'
@@ -268,6 +287,7 @@ interface LayoutRouteChildren {
   LayoutItemsRoute: typeof LayoutItemsRoute
   LayoutLiquiditaRoute: typeof LayoutLiquiditaRoute
   LayoutPatrimonioRoute: typeof LayoutPatrimonioRoute
+  LayoutRiconciliazioneRoute: typeof LayoutRiconciliazioneRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutStatisticheRoute: typeof LayoutStatisticheRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
@@ -278,6 +298,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutItemsRoute: LayoutItemsRoute,
   LayoutLiquiditaRoute: LayoutLiquiditaRoute,
   LayoutPatrimonioRoute: LayoutPatrimonioRoute,
+  LayoutRiconciliazioneRoute: LayoutRiconciliazioneRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutStatisticheRoute: LayoutStatisticheRoute,
   LayoutIndexRoute: LayoutIndexRoute,

@@ -174,6 +174,8 @@ class Utente(SQLModel, table=True):
         default=None,
         sa_type=BigInteger,
     )
+    # Reconciliation cadence in days (Story 4.1, FR-16); default weekly.
+    intervallo_riconciliazione_giorni: int = Field(default=7)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
@@ -236,6 +238,8 @@ class Categoria(SQLModel, table=True):
     secchiello_id: uuid.UUID | None = Field(
         default=None, foreign_key="secchielli.id", nullable=True
     )
+    # System "non identificato" Categorie (Story 4.1) — cannot be renamed/deleted.
+    is_system: bool = Field(default=False)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
@@ -255,6 +259,7 @@ class CategoriaPublic(SQLModel):
     nome: str
     tipo: str
     secchiello_id: uuid.UUID | None = None
+    is_system: bool = False
     created_at: datetime | None = None
 
 
@@ -494,6 +499,81 @@ class SecchielloPublic(SQLModel):
     saldo_cents: int
     quota_cents: int
     created_at: datetime | None = None
+
+
+# ---------------------------------------------------------------------------
+# mynance — Riconciliazione (FR-16/17/18, Epic 4). Honest, manual reconciliation
+# of computed vs real Liquidità: the Drift, and two ways to resolve it.
+# ---------------------------------------------------------------------------
+
+
+class RiconciliazioneEsito(str, enum.Enum):
+    chiusa = "chiusa"  # gap closed via a "non identificato" plug Movimento
+    acknowledged_open = "acknowledged_open"  # confirmed but left open
+
+
+class Riconciliazione(SQLModel, table=True):
+    __tablename__ = "riconciliazioni"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    liquidita_reale_cents: int = Field(sa_type=BigInteger)
+    liquidita_calcolata_cents: int = Field(sa_type=BigInteger)
+    drift_cents: int = Field(sa_type=BigInteger)  # signed: reale − calcolata
+    data_riconciliazione: date
+    esito: str = Field(max_length=20)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class RiconciliazionePublic(SQLModel):
+    id: uuid.UUID
+    liquidita_reale_cents: int
+    liquidita_calcolata_cents: int
+    drift_cents: int
+    drift_percent: float | None
+    data_riconciliazione: date
+    esito: str
+    created_at: datetime | None = None
+
+
+class DriftPreview(SQLModel):
+    liquidita_calcolata_cents: int
+    drift_cents: int
+    drift_percent: float | None
+
+
+class RiconciliazioneRealeInput(SQLModel):
+    liquidita_reale_cents: int = Field(ge=0)
+
+
+class RiconciliazioneCreate(SQLModel):
+    liquidita_reale_cents: int = Field(ge=0)
+    esito: RiconciliazioneEsito
+
+
+class PromemoriaPublic(SQLModel):
+    due: bool
+    giorni_dall_ultima: int
+    data_ultima_riconciliazione: date | None
+    intervallo_giorni: int
+    # Standing quiet indicator: the snapshot Drift of the latest acknowledged-open
+    # Riconciliazione (null when none is open).
+    drift_aperto_cents: int | None = None
+
+
+class IntervalloUpdate(SQLModel):
+    intervallo_riconciliazione_giorni: int = Field(ge=1)
 
 
 # Append-only audit of re-baselining events (old value, new value, when, whose)

@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
 import { AppBottomNav } from "@/components/Common/AppBottomNav"
+import { ReconcileBanner } from "@/components/Common/ReconcileBanner"
 import { TopBar } from "@/components/Common/TopBar"
 import { isLoggedIn } from "@/hooks/useAuth"
 
@@ -20,7 +21,8 @@ function Layout() {
     <div className="flex min-h-dvh flex-col bg-background">
       <TopBar />
       <main className="flex-1 px-4 pb-28 pt-6">
-        <div className="mx-auto w-full max-w-3xl">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          <ReconcileBanner />
           <Outlet />
         </div>
       </main>

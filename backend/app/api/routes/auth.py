@@ -58,8 +58,10 @@ def register(body: UtenteRegister, session: SessionDep) -> UtenteRegisterRespons
     utente, recovery_code = crud_utente.create_utente(
         session=session, username=body.username, password=body.password
     )
-    # Provision the per-tipo starter Categorie for the new account (Story 2.1).
+    # Provision the per-tipo starter Categorie for the new account (Story 2.1)
+    # and the system "non identificato" Categorie for reconciliation (Story 4.1).
     crud_categoria.provision_starter_categorie(session=session, utente_id=utente.id)
+    crud_categoria.provision_system_categorie(session=session, utente_id=utente.id)
     return UtenteRegisterResponse(utente=_public(utente), recovery_code=recovery_code)
 
 

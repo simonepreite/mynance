@@ -1,5 +1,5 @@
 import { Link as RouterLink } from "@tanstack/react-router"
-import { LogOut, Settings, Tags } from "lucide-react"
+import { LogOut, Scale, Settings, Tags } from "lucide-react"
 
 import { Appearance } from "@/components/Common/Appearance"
 import { Logo } from "@/components/Common/Logo"
@@ -43,6 +43,12 @@ export function TopBar() {
               {user?.username ?? "Account"}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <RouterLink to="/riconciliazione">
+              <DropdownMenuItem>
+                <Scale />
+                Riconciliazione
+              </DropdownMenuItem>
+            </RouterLink>
             <RouterLink to="/categorie">
               <DropdownMenuItem>
                 <Tags />

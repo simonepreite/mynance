@@ -38,3 +38,39 @@ def provision_starter_categorie(*, session: Session, utente_id: uuid.UUID) -> No
             Categoria(utente_id=utente_id, nome=nome, tipo=CategoriaTipo.entrata.value)
         )
     session.commit()
+
+
+NON_IDENTIFICATO = "non identificato"
+
+
+def provision_system_categorie(*, session: Session, utente_id: uuid.UUID) -> None:
+    """Create the system "non identificato" Categorie, one per tipo (Story 4.1).
+
+    Flagged ``is_system`` so they cannot be renamed/deleted; they appear in the
+    typed lists like any other Categoria and host reconciliation plug Movimenti.
+    """
+    for tipo in (CategoriaTipo.spesa, CategoriaTipo.entrata):
+        session.add(
+            Categoria(
+                utente_id=utente_id,
+                nome=NON_IDENTIFICATO,
+                tipo=tipo.value,
+                is_system=True,
+            )
+        )
+    session.commit()
+
+
+def get_system_categoria(
+    *, session: Session, utente_id: uuid.UUID, tipo: CategoriaTipo
+) -> Categoria | None:
+    """The Utente's "non identificato" Categoria for a tipo (reconciliation plug)."""
+    from sqlmodel import select
+
+    statement = select(Categoria).where(
+        Categoria.utente_id == utente_id,
+        Categoria.tipo == tipo.value,
+        Categoria.is_system == True,  # noqa: E712
+        Categoria.deleted_at == None,  # noqa: E711
+    )
+    return session.exec(statement).first()
