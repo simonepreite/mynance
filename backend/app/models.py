@@ -1,6 +1,6 @@
 import enum
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from pydantic import EmailStr
 from sqlalchemy import BigInteger, DateTime
@@ -286,6 +286,64 @@ class LiquiditaInizialeSetResponse(SQLModel):
 class LiquiditaPublic(SQLModel):
     value_cents: int
     iniziale_is_set: bool
+
+
+# ---------------------------------------------------------------------------
+# mynance — Movimento (FR-5 Spesa, FR-6 Entrata). A typed cash movement in
+# integer cents; ``tipo`` matches the referenced Categoria's tipo. The sign is
+# implied by tipo (Spesa subtracts, Entrata adds) — ``amount_cents`` is the
+# positive magnitude. Per-Utente scoped, soft-deleted.
+# ---------------------------------------------------------------------------
+
+
+class MovimentoCreate(SQLModel):
+    tipo: CategoriaTipo
+    amount_cents: int = Field(gt=0)
+    data: date
+    categoria_id: uuid.UUID
+    note: str | None = Field(default=None, max_length=255)
+
+
+class MovimentoUpdate(SQLModel):
+    # tipo is immutable (a Spesa never becomes an Entrata); only these change.
+    amount_cents: int | None = Field(default=None, gt=0)
+    data: date | None = None
+    categoria_id: uuid.UUID | None = None
+    note: str | None = Field(default=None, max_length=255)
+
+
+class Movimento(SQLModel, table=True):
+    __tablename__ = "movimenti"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    tipo: str = Field(max_length=16, index=True)  # "spesa" | "entrata"
+    amount_cents: int = Field(sa_type=BigInteger)
+    data: date
+    categoria_id: uuid.UUID = Field(foreign_key="categorie.id", nullable=False)
+    note: str | None = Field(default=None, max_length=255)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class MovimentoPublic(SQLModel):
+    id: uuid.UUID
+    tipo: str
+    amount_cents: int
+    data: date
+    categoria_id: uuid.UUID
+    note: str | None = None
+    created_at: datetime | None = None
 
 
 # Append-only audit of re-baselining events (old value, new value, when, whose)

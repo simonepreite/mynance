@@ -373,6 +373,153 @@ export const MessageSchema = {
     title: 'Message'
 } as const;
 
+export const MovimentoCreateSchema = {
+    properties: {
+        tipo: {
+            '$ref': '#/components/schemas/CategoriaTipo'
+        },
+        amount_cents: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            title: 'Amount Cents'
+        },
+        data: {
+            type: 'string',
+            format: 'date',
+            title: 'Data'
+        },
+        categoria_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Categoria Id'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        }
+    },
+    type: 'object',
+    required: ['tipo', 'amount_cents', 'data', 'categoria_id'],
+    title: 'MovimentoCreate'
+} as const;
+
+export const MovimentoPublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        tipo: {
+            type: 'string',
+            title: 'Tipo'
+        },
+        amount_cents: {
+            type: 'integer',
+            title: 'Amount Cents'
+        },
+        data: {
+            type: 'string',
+            format: 'date',
+            title: 'Data'
+        },
+        categoria_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Categoria Id'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'tipo', 'amount_cents', 'data', 'categoria_id'],
+    title: 'MovimentoPublic'
+} as const;
+
+export const MovimentoUpdateSchema = {
+    properties: {
+        amount_cents: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Amount Cents'
+        },
+        data: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Data'
+        },
+        categoria_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Categoria Id'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        }
+    },
+    type: 'object',
+    title: 'MovimentoUpdate'
+} as const;
+
 export const NewPasswordSchema = {
     properties: {
         token: {

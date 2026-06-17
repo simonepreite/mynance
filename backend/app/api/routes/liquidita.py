@@ -11,30 +11,42 @@ from app import crud_liquidita
 from app.api.deps import CurrentUtente, SessionDep
 from app.calc.liquidita import compute_liquidita
 from app.models import (
+    CategoriaTipo,
     LiquiditaInizialePublic,
     LiquiditaInizialeSet,
     LiquiditaInizialeSetResponse,
     LiquiditaPublic,
+    Movimento,
 )
+from app.services.repository import UserScopedRepository
 
 router = APIRouter(prefix="/liquidita", tags=["liquidita"])
 
 
 @router.get("/")
-def read_liquidita(current_utente: CurrentUtente) -> LiquiditaPublic:
+def read_liquidita(
+    session: SessionDep, current_utente: CurrentUtente
+) -> LiquiditaPublic:
     """Current Liquidità, derived server-side (API-3: client never recomputes).
 
-    Inputs are loaded scoped to the Utente and fed to the pure calc engine
-    (Story 2.3). Movimenti (Entrate/Spese) arrive in Stories 2.5/2.6 and
-    Capitale versato (Investimenti) in Epic 5; until then those sets are empty,
-    so Liquidità equals the baseline (or 0 when unset). Negative values are
-    returned with sign, never clamped.
+    Loads the Utente's stored inputs — baseline + Movimenti (Entrate/Spese),
+    scoped via the repository — and feeds them to the pure calc engine (Story
+    2.3). Capitale versato (Investimenti) arrives in Epic 5; empty for now.
+    Negative values are returned with sign, never clamped.
     """
     iniziale = current_utente.liquidita_iniziale_cents
+    repo = UserScopedRepository(
+        session=session, model=Movimento, utente_id=current_utente.id
+    )
+    movimenti = repo.list()
+    entrate = [
+        m.amount_cents for m in movimenti if m.tipo == CategoriaTipo.entrata.value
+    ]
+    spese = [m.amount_cents for m in movimenti if m.tipo == CategoriaTipo.spesa.value]
     value = compute_liquidita(
         iniziale_cents=iniziale,
-        entrate_cents=[],
-        spese_cents=[],
+        entrate_cents=entrate,
+        spese_cents=spese,
     )
     return LiquiditaPublic(value_cents=value, iniziale_is_set=iniziale is not None)
 

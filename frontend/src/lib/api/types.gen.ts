@@ -83,6 +83,31 @@ export type Message = {
     message: string;
 };
 
+export type MovimentoCreate = {
+    tipo: CategoriaTipo;
+    amount_cents: number;
+    data: string;
+    categoria_id: string;
+    note?: (string | null);
+};
+
+export type MovimentoPublic = {
+    id: string;
+    tipo: string;
+    amount_cents: number;
+    data: string;
+    categoria_id: string;
+    note?: (string | null);
+    created_at?: (string | null);
+};
+
+export type MovimentoUpdate = {
+    amount_cents?: (number | null);
+    data?: (string | null);
+    categoria_id?: (string | null);
+    note?: (string | null);
+};
+
 export type NewPassword = {
     token: string;
     new_password: string;
@@ -294,6 +319,27 @@ export type LoginRecoverPasswordHtmlContentData = {
 };
 
 export type LoginRecoverPasswordHtmlContentResponse = (string);
+
+export type MovimentiListMovimentiResponse = (Array<MovimentoPublic>);
+
+export type MovimentiCreateMovimentoData = {
+    requestBody: MovimentoCreate;
+};
+
+export type MovimentiCreateMovimentoResponse = (MovimentoPublic);
+
+export type MovimentiUpdateMovimentoData = {
+    movimentoId: string;
+    requestBody: MovimentoUpdate;
+};
+
+export type MovimentiUpdateMovimentoResponse = (MovimentoPublic);
+
+export type MovimentiDeleteMovimentoData = {
+    movimentoId: string;
+};
+
+export type MovimentiDeleteMovimentoResponse = (Message);
 
 export type PrivateCreateUserData = {
     requestBody: PrivateUserCreate;

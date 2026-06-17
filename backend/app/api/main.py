@@ -6,6 +6,7 @@ from app.api.routes import (
     items,
     liquidita,
     login,
+    movimenti,
     private,
     users,
     utils,
@@ -16,6 +17,7 @@ api_router = APIRouter()
 api_router.include_router(auth.router)
 api_router.include_router(categorie.router)
 api_router.include_router(liquidita.router)
+api_router.include_router(movimenti.router)
 api_router.include_router(login.router)
 api_router.include_router(users.router)
 api_router.include_router(utils.router)

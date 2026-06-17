@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieRenameCategoriaData, CategorieRenameCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieRenameCategoriaData, CategorieRenameCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiListMovimentiResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -285,11 +285,10 @@ export class LiquiditaService {
      * Read Liquidita
      * Current Liquidità, derived server-side (API-3: client never recomputes).
      *
-     * Inputs are loaded scoped to the Utente and fed to the pure calc engine
-     * (Story 2.3). Movimenti (Entrate/Spese) arrive in Stories 2.5/2.6 and
-     * Capitale versato (Investimenti) in Epic 5; until then those sets are empty,
-     * so Liquidità equals the baseline (or 0 when unset). Negative values are
-     * returned with sign, never clamped.
+     * Loads the Utente's stored inputs — baseline + Movimenti (Entrate/Spese),
+     * scoped via the repository — and feeds them to the pure calc engine (Story
+     * 2.3). Capitale versato (Investimenti) arrives in Epic 5; empty for now.
+     * Negative values are returned with sign, never clamped.
      * @returns LiquiditaPublic Successful Response
      * @throws ApiError
      */
@@ -421,6 +420,82 @@ export class LoginService {
             url: '/api/v1/password-recovery-html-content/{email}',
             path: {
                 email: data.email
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class MovimentiService {
+    /**
+     * List Movimenti
+     * @returns MovimentoPublic Successful Response
+     * @throws ApiError
+     */
+    public static listMovimenti(): CancelablePromise<MovimentiListMovimentiResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/movimenti/'
+        });
+    }
+    
+    /**
+     * Create Movimento
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns MovimentoPublic Successful Response
+     * @throws ApiError
+     */
+    public static createMovimento(data: MovimentiCreateMovimentoData): CancelablePromise<MovimentiCreateMovimentoResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/movimenti/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Movimento
+     * @param data The data for the request.
+     * @param data.movimentoId
+     * @param data.requestBody
+     * @returns MovimentoPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateMovimento(data: MovimentiUpdateMovimentoData): CancelablePromise<MovimentiUpdateMovimentoResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/movimenti/{movimento_id}',
+            path: {
+                movimento_id: data.movimentoId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Movimento
+     * @param data The data for the request.
+     * @param data.movimentoId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteMovimento(data: MovimentiDeleteMovimentoData): CancelablePromise<MovimentiDeleteMovimentoResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/movimenti/{movimento_id}',
+            path: {
+                movimento_id: data.movimentoId
             },
             errors: {
                 422: 'Validation Error'
