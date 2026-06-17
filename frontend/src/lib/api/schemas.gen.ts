@@ -1156,6 +1156,275 @@ export const PromemoriaPublicSchema = {
     title: 'PromemoriaPublic'
 } as const;
 
+export const RegolaKindSchema = {
+    type: 'string',
+    enum: ['entrata', 'versamento_pac'],
+    title: 'RegolaKind'
+} as const;
+
+export const RegolaRicorrenteCreateSchema = {
+    properties: {
+        importo_cents: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            title: 'Importo Cents'
+        },
+        periodicita: {
+            '$ref': '#/components/schemas/Periodicita'
+        },
+        intervallo_mesi: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    minimum: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Intervallo Mesi'
+        },
+        day_of_period: {
+            type: 'integer',
+            maximum: 31,
+            minimum: 1,
+            title: 'Day Of Period'
+        },
+        kind: {
+            '$ref': '#/components/schemas/RegolaKind'
+        },
+        categoria_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Categoria Id'
+        },
+        investimento_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Investimento Id'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        }
+    },
+    type: 'object',
+    required: ['importo_cents', 'periodicita', 'day_of_period', 'kind', 'start_date'],
+    title: 'RegolaRicorrenteCreate'
+} as const;
+
+export const RegolaRicorrentePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        importo_cents: {
+            type: 'integer',
+            title: 'Importo Cents'
+        },
+        periodicita: {
+            type: 'string',
+            title: 'Periodicita'
+        },
+        intervallo_mesi: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Intervallo Mesi'
+        },
+        day_of_period: {
+            type: 'integer',
+            title: 'Day Of Period'
+        },
+        kind: {
+            type: 'string',
+            title: 'Kind'
+        },
+        categoria_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Categoria Id'
+        },
+        investimento_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Investimento Id'
+        },
+        start_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Start Date'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'importo_cents', 'periodicita', 'intervallo_mesi', 'day_of_period', 'kind', 'categoria_id', 'investimento_id', 'start_date'],
+    title: 'RegolaRicorrentePublic'
+} as const;
+
+export const RegolaRicorrenteUpdateSchema = {
+    properties: {
+        importo_cents: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Importo Cents'
+        },
+        periodicita: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/Periodicita'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        intervallo_mesi: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    minimum: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Intervallo Mesi'
+        },
+        day_of_period: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    maximum: 31,
+                    minimum: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Day Of Period'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        }
+    },
+    type: 'object',
+    title: 'RegolaRicorrenteUpdate'
+} as const;
+
+export const RegoleRicorrentiListSchema = {
+    properties: {
+        items: {
+            items: {
+                '$ref': '#/components/schemas/RegolaRicorrentePublic'
+            },
+            type: 'array',
+            title: 'Items'
+        },
+        total: {
+            type: 'integer',
+            title: 'Total'
+        },
+        limit: {
+            type: 'integer',
+            title: 'Limit'
+        },
+        offset: {
+            type: 'integer',
+            title: 'Offset'
+        }
+    },
+    type: 'object',
+    required: ['items', 'total', 'limit', 'offset'],
+    title: 'RegoleRicorrentiList'
+} as const;
+
 export const RiconciliazioneCreateSchema = {
     properties: {
         liquidita_reale_cents: {

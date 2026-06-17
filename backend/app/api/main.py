@@ -9,6 +9,7 @@ from app.api.routes import (
     movimenti,
     patrimonio,
     private,
+    regole,
     riconciliazione,
     riepilogo,
     secchielli,
@@ -25,6 +26,7 @@ api_router.include_router(movimenti.router)
 api_router.include_router(secchielli.router)
 api_router.include_router(riconciliazione.router)
 api_router.include_router(patrimonio.router)
+api_router.include_router(regole.router)
 api_router.include_router(riepilogo.router)
 api_router.include_router(login.router)
 api_router.include_router(users.router)

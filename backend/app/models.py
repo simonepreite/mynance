@@ -351,6 +351,10 @@ class Movimento(SQLModel, table=True):
     secchiello_id: uuid.UUID | None = Field(
         default=None, foreign_key="secchielli.id", nullable=True
     )
+    # Back-reference to the originating Regola ricorrente (Epic 6), if generated.
+    regola_id: uuid.UUID | None = Field(
+        default=None, foreign_key="regole_ricorrenti.id", nullable=True
+    )
     note: str | None = Field(default=None, max_length=255)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
@@ -654,6 +658,9 @@ class VersamentoPac(SQLModel, table=True):
     )
     importo_cents: int = Field(sa_type=BigInteger)
     data: date
+    regola_id: uuid.UUID | None = Field(
+        default=None, foreign_key="regole_ricorrenti.id", nullable=True
+    )
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
@@ -773,3 +780,103 @@ class PatrimonioPublic(SQLModel):
     beni_immobili_cents: int
     beni_mobili_cents: int
     componenti: list[PatrimonioComponente]
+
+
+# ---------------------------------------------------------------------------
+# mynance — Regole ricorrenti (Epic 6, FR-8). Describe recurring money; the
+# generation engine materializes Entrate / Versamenti PAC up to today only,
+# lazily and idempotently. Generated items carry a regola_id back-reference and
+# are independently editable/skippable (skip recorded in regole_occorrenze).
+# ---------------------------------------------------------------------------
+
+
+class RegolaKind(str, enum.Enum):
+    entrata = "entrata"
+    versamento_pac = "versamento_pac"
+
+
+class RegolaRicorrenteBase(SQLModel):
+    importo_cents: int = Field(gt=0)
+    periodicita: Periodicita
+    intervallo_mesi: int | None = Field(default=None, ge=1)
+    day_of_period: int = Field(ge=1, le=31)
+    kind: RegolaKind
+    categoria_id: uuid.UUID | None = None  # required when kind == entrata
+    investimento_id: uuid.UUID | None = None  # required when kind == versamento_pac
+    start_date: date
+    note: str | None = Field(default=None, max_length=255)
+
+
+class RegolaRicorrenteCreate(RegolaRicorrenteBase):
+    pass
+
+
+class RegolaRicorrenteUpdate(SQLModel):
+    importo_cents: int | None = Field(default=None, gt=0)
+    periodicita: Periodicita | None = None
+    intervallo_mesi: int | None = Field(default=None, ge=1)
+    day_of_period: int | None = Field(default=None, ge=1, le=31)
+    note: str | None = Field(default=None, max_length=255)
+
+
+class RegolaRicorrente(SQLModel, table=True):
+    __tablename__ = "regole_ricorrenti"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    importo_cents: int = Field(sa_type=BigInteger)
+    periodicita: str = Field(max_length=16)
+    intervallo_mesi: int | None = Field(default=None)
+    day_of_period: int
+    kind: str = Field(max_length=20)
+    categoria_id: uuid.UUID | None = Field(
+        default=None, foreign_key="categorie.id", nullable=True
+    )
+    investimento_id: uuid.UUID | None = Field(
+        default=None, foreign_key="investimenti.id", nullable=True
+    )
+    start_date: date
+    note: str | None = Field(default=None, max_length=255)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+class RegolaRicorrentePublic(SQLModel):
+    id: uuid.UUID
+    importo_cents: int
+    periodicita: str
+    intervallo_mesi: int | None
+    day_of_period: int
+    kind: str
+    categoria_id: uuid.UUID | None
+    investimento_id: uuid.UUID | None
+    start_date: date
+    note: str | None = None
+    created_at: datetime | None = None
+
+
+# Ledger of materialized/skipped occurrences — the idempotency + skip memory.
+class RegolaOccorrenza(SQLModel, table=True):
+    __tablename__ = "regole_occorrenze"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    regola_id: uuid.UUID = Field(
+        foreign_key="regole_ricorrenti.id", nullable=False, index=True
+    )
+    data: date
+    skipped: bool = Field(default=False)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )

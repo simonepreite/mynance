@@ -10,7 +10,7 @@ from datetime import date
 
 from fastapi import APIRouter, Query
 
-from app import crud_liquidita
+from app import crud_liquidita, crud_ricorrenza
 from app.api.deps import CurrentUtente, SessionDep
 from app.calc.allocazione import (
     cuscinetto,
@@ -46,6 +46,8 @@ def read_liquidita(
     2.3). Capitale versato (Investimenti) arrives in Epic 5; empty for now.
     Negative values are returned with sign, never clamped.
     """
+    # Lazy generation on access (Epic 6) before deriving the value.
+    crud_ricorrenza.run_generation(session=session, utente=current_utente)
     value = crud_liquidita.compute_current_liquidita(
         session=session, utente=current_utente
     )

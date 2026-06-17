@@ -14,7 +14,7 @@ from typing import TypeVar
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, SQLModel
 
-from app import crud_liquidita
+from app import crud_liquidita, crud_ricorrenza
 from app.api.deps import CurrentUtente, SessionDep
 from app.calc.patrimonio import patrimonio_totale, valore_bene_mobile
 from app.models import (
@@ -202,8 +202,19 @@ def update_versamento(
 def delete_versamento(
     versamento_id: uuid.UUID, session: SessionDep, current_utente: CurrentUtente
 ) -> Message:
-    if not _repo(session, current_utente, VersamentoPac).delete(versamento_id):
+    repo = _repo(session, current_utente, VersamentoPac)
+    v = repo.get(versamento_id)
+    if v is None:
         raise HTTPException(status_code=404, detail="Versamento non trovato.")
+    # A generated Versamento PAC: deleting it skips that occurrence (Story 6.4).
+    if v.regola_id is not None:
+        crud_ricorrenza.mark_skipped(
+            session=session,
+            utente=current_utente,
+            regola_id=v.regola_id,
+            data=v.data,
+        )
+    repo.delete(versamento_id)
     return Message(message="Versamento eliminato.")
 
 

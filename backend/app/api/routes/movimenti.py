@@ -11,6 +11,7 @@ from datetime import date
 
 from fastapi import APIRouter, HTTPException, Query
 
+from app import crud_ricorrenza
 from app.api.deps import CurrentUtente, SessionDep
 from app.models import (
     Categoria,
@@ -127,6 +128,8 @@ def list_movimenti(
     """List my Movimenti, newest first. Optional filters power the Home
     per-Categoria drill-down (Story 2.8): a Categoria and a half-open
     ``[start, end)`` date range."""
+    # Lazy generation on access (Epic 6): materialize due recurring items first.
+    crud_ricorrenza.run_generation(session=session, utente=current_utente)
     repo = _mov_repo(session, current_utente)
     items = list(repo.list())
     if categoria_id is not None:
@@ -175,6 +178,17 @@ def delete_movimento(
     movimento_id: uuid.UUID, session: SessionDep, current_utente: CurrentUtente
 ) -> Message:
     repo = _mov_repo(session, current_utente)
-    if not repo.delete(movimento_id):
+    movimento = repo.get(movimento_id)
+    if movimento is None:
         raise HTTPException(status_code=404, detail="Movimento non trovato.")
+    # A generated Entrata: deleting it skips that occurrence so generation never
+    # re-materializes it (Story 6.4 — skip leaves no Drift).
+    if movimento.regola_id is not None:
+        crud_ricorrenza.mark_skipped(
+            session=session,
+            utente=current_utente,
+            regola_id=movimento.regola_id,
+            data=movimento.data,
+        )
+    repo.delete(movimento_id)
     return Message(message="Movimento eliminato.")

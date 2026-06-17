@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (Epic 5 complete: Patrimonio — Investimenti/PAC, Beni immobili/mobili, net worth; next: Epic 6)
+# last_updated: 2026-06-17 (Epic 6 complete: Regole ricorrenti — lazy generation, PAC, skip, UI. ALL 6 EPICS DONE.)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (Epic 5 complete: Patrimonio — Investimenti/PAC, Beni immobili/mobili, net worth; next: Epic 6)
+last_updated: 2026-06-17 (Epic 6 complete: Regole ricorrenti — lazy generation, PAC, skip, UI. ALL 6 EPICS DONE.)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -94,10 +94,10 @@ development_status:
   epic-5-retrospective: optional
 
   # Epic 6 — Automate recurring money (Regole ricorrenti)
-  epic-6: backlog
-  6-1-create-the-regolaricorrente-model-and-crud-endpoints: backlog
-  6-2-lazy-idempotent-generation-of-recurring-entrate-up-to-today: backlog
-  6-3-extend-generation-to-versamenti-pac: backlog
-  6-4-make-generated-items-editable-and-skippable-without-affecting-the-rule-and-without-creating-drift: backlog
-  6-5-regole-ricorrenti-settings-ui: backlog
+  epic-6: done
+  6-1-create-the-regolaricorrente-model-and-crud-endpoints: done
+  6-2-lazy-idempotent-generation-of-recurring-entrate-up-to-today: done
+  6-3-extend-generation-to-versamenti-pac: done
+  6-4-make-generated-items-editable-and-skippable-without-affecting-the-rule-and-without-creating-drift: done
+  6-5-regole-ricorrenti-settings-ui: done
   epic-6-retrospective: optional

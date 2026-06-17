@@ -242,6 +242,49 @@ export type PromemoriaPublic = {
     drift_aperto_cents?: (number | null);
 };
 
+export type RegolaKind = 'entrata' | 'versamento_pac';
+
+export type RegolaRicorrenteCreate = {
+    importo_cents: number;
+    periodicita: Periodicita;
+    intervallo_mesi?: (number | null);
+    day_of_period: number;
+    kind: RegolaKind;
+    categoria_id?: (string | null);
+    investimento_id?: (string | null);
+    start_date: string;
+    note?: (string | null);
+};
+
+export type RegolaRicorrentePublic = {
+    id: string;
+    importo_cents: number;
+    periodicita: string;
+    intervallo_mesi: (number | null);
+    day_of_period: number;
+    kind: string;
+    categoria_id: (string | null);
+    investimento_id: (string | null);
+    start_date: string;
+    note?: (string | null);
+    created_at?: (string | null);
+};
+
+export type RegolaRicorrenteUpdate = {
+    importo_cents?: (number | null);
+    periodicita?: (Periodicita | null);
+    intervallo_mesi?: (number | null);
+    day_of_period?: (number | null);
+    note?: (string | null);
+};
+
+export type RegoleRicorrentiList = {
+    items: Array<RegolaRicorrentePublic>;
+    total: number;
+    limit: number;
+    offset: number;
+};
+
 export type RiconciliazioneCreate = {
     liquidita_reale_cents: number;
     esito: RiconciliazioneEsito;
@@ -657,6 +700,38 @@ export type PrivateCreateUserData = {
 };
 
 export type PrivateCreateUserResponse = (UserPublic);
+
+export type RegoleRicorrentiCreateRegolaData = {
+    requestBody: RegolaRicorrenteCreate;
+};
+
+export type RegoleRicorrentiCreateRegolaResponse = (RegolaRicorrentePublic);
+
+export type RegoleRicorrentiListRegoleData = {
+    limit?: number;
+    offset?: number;
+};
+
+export type RegoleRicorrentiListRegoleResponse = (RegoleRicorrentiList);
+
+export type RegoleRicorrentiGetRegolaData = {
+    regolaId: string;
+};
+
+export type RegoleRicorrentiGetRegolaResponse = (RegolaRicorrentePublic);
+
+export type RegoleRicorrentiUpdateRegolaData = {
+    regolaId: string;
+    requestBody: RegolaRicorrenteUpdate;
+};
+
+export type RegoleRicorrentiUpdateRegolaResponse = (RegolaRicorrentePublic);
+
+export type RegoleRicorrentiDeleteRegolaData = {
+    regolaId: string;
+};
+
+export type RegoleRicorrentiDeleteRegolaResponse = (Message);
 
 export type RiconciliazioneGetIntervalloResponse = (IntervalloUpdate);
 

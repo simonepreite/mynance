@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link as RouterLink } from "@tanstack/react-router"
+import { ChevronRight } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -56,6 +57,24 @@ function UserSettings() {
       </section>
 
       <LiquiditaInizialeSection />
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium">Gestione</h2>
+        <RouterLink
+          to="/regole"
+          className="flex items-center justify-between rounded-md border px-4 py-3 text-sm outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span>Regole ricorrenti</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </RouterLink>
+        <RouterLink
+          to="/categorie"
+          className="flex items-center justify-between rounded-md border px-4 py-3 text-sm outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span>Categorie</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </RouterLink>
+      </section>
 
       <section className="flex items-center justify-between gap-4">
         <div className="flex flex-col">

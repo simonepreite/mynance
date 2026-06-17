@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LiquiditaAllocazioneData, LiquiditaAllocazioneResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PatrimonioListInvestimentiResponse, PatrimonioCreateInvestimentoData, PatrimonioCreateInvestimentoResponse, PatrimonioUpdateInvestimentoData, PatrimonioUpdateInvestimentoResponse, PatrimonioDeleteInvestimentoData, PatrimonioDeleteInvestimentoResponse, PatrimonioCreateVersamentoData, PatrimonioCreateVersamentoResponse, PatrimonioListVersamentiData, PatrimonioListVersamentiResponse, PatrimonioUpdateVersamentoData, PatrimonioUpdateVersamentoResponse, PatrimonioDeleteVersamentoData, PatrimonioDeleteVersamentoResponse, PatrimonioListImmobiliResponse, PatrimonioCreateImmobileData, PatrimonioCreateImmobileResponse, PatrimonioUpdateImmobileData, PatrimonioUpdateImmobileResponse, PatrimonioDeleteImmobileData, PatrimonioDeleteImmobileResponse, PatrimonioListMobiliResponse, PatrimonioCreateMobileData, PatrimonioCreateMobileResponse, PatrimonioUpdateMobileData, PatrimonioUpdateMobileResponse, PatrimonioDeleteMobileData, PatrimonioDeleteMobileResponse, PatrimonioPatrimonioResponse, PrivateCreateUserData, PrivateCreateUserResponse, RiconciliazioneGetIntervalloResponse, RiconciliazioneSetIntervalloData, RiconciliazioneSetIntervalloResponse, RiconciliazionePromemoriaResponse, RiconciliazioneAnteprimaData, RiconciliazioneAnteprimaResponse, RiconciliazioneHistoryResponse, RiconciliazioneConfirmData, RiconciliazioneConfirmResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LiquiditaAllocazioneData, LiquiditaAllocazioneResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PatrimonioListInvestimentiResponse, PatrimonioCreateInvestimentoData, PatrimonioCreateInvestimentoResponse, PatrimonioUpdateInvestimentoData, PatrimonioUpdateInvestimentoResponse, PatrimonioDeleteInvestimentoData, PatrimonioDeleteInvestimentoResponse, PatrimonioCreateVersamentoData, PatrimonioCreateVersamentoResponse, PatrimonioListVersamentiData, PatrimonioListVersamentiResponse, PatrimonioUpdateVersamentoData, PatrimonioUpdateVersamentoResponse, PatrimonioDeleteVersamentoData, PatrimonioDeleteVersamentoResponse, PatrimonioListImmobiliResponse, PatrimonioCreateImmobileData, PatrimonioCreateImmobileResponse, PatrimonioUpdateImmobileData, PatrimonioUpdateImmobileResponse, PatrimonioDeleteImmobileData, PatrimonioDeleteImmobileResponse, PatrimonioListMobiliResponse, PatrimonioCreateMobileData, PatrimonioCreateMobileResponse, PatrimonioUpdateMobileData, PatrimonioUpdateMobileResponse, PatrimonioDeleteMobileData, PatrimonioDeleteMobileResponse, PatrimonioPatrimonioResponse, PrivateCreateUserData, PrivateCreateUserResponse, RegoleRicorrentiCreateRegolaData, RegoleRicorrentiCreateRegolaResponse, RegoleRicorrentiListRegoleData, RegoleRicorrentiListRegoleResponse, RegoleRicorrentiGetRegolaData, RegoleRicorrentiGetRegolaResponse, RegoleRicorrentiUpdateRegolaData, RegoleRicorrentiUpdateRegolaResponse, RegoleRicorrentiDeleteRegolaData, RegoleRicorrentiDeleteRegolaResponse, RiconciliazioneGetIntervalloResponse, RiconciliazioneSetIntervalloData, RiconciliazioneSetIntervalloResponse, RiconciliazionePromemoriaResponse, RiconciliazioneAnteprimaData, RiconciliazioneAnteprimaResponse, RiconciliazioneHistoryResponse, RiconciliazioneConfirmData, RiconciliazioneConfirmResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -881,6 +881,112 @@ export class PrivateService {
             url: '/api/v1/private/users/',
             body: data.requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class RegoleRicorrentiService {
+    /**
+     * Create Regola
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns RegolaRicorrentePublic Successful Response
+     * @throws ApiError
+     */
+    public static createRegola(data: RegoleRicorrentiCreateRegolaData): CancelablePromise<RegoleRicorrentiCreateRegolaResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/regole-ricorrenti/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Regole
+     * @param data The data for the request.
+     * @param data.limit
+     * @param data.offset
+     * @returns RegoleRicorrentiList Successful Response
+     * @throws ApiError
+     */
+    public static listRegole(data: RegoleRicorrentiListRegoleData = {}): CancelablePromise<RegoleRicorrentiListRegoleResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/regole-ricorrenti/',
+            query: {
+                limit: data.limit,
+                offset: data.offset
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Regola
+     * @param data The data for the request.
+     * @param data.regolaId
+     * @returns RegolaRicorrentePublic Successful Response
+     * @throws ApiError
+     */
+    public static getRegola(data: RegoleRicorrentiGetRegolaData): CancelablePromise<RegoleRicorrentiGetRegolaResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/regole-ricorrenti/{regola_id}',
+            path: {
+                regola_id: data.regolaId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Regola
+     * @param data The data for the request.
+     * @param data.regolaId
+     * @param data.requestBody
+     * @returns RegolaRicorrentePublic Successful Response
+     * @throws ApiError
+     */
+    public static updateRegola(data: RegoleRicorrentiUpdateRegolaData): CancelablePromise<RegoleRicorrentiUpdateRegolaResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/regole-ricorrenti/{regola_id}',
+            path: {
+                regola_id: data.regolaId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Regola
+     * @param data The data for the request.
+     * @param data.regolaId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteRegola(data: RegoleRicorrentiDeleteRegolaData): CancelablePromise<RegoleRicorrentiDeleteRegolaResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/regole-ricorrenti/{regola_id}',
+            path: {
+                regola_id: data.regolaId
+            },
             errors: {
                 422: 'Validation Error'
             }
