@@ -288,6 +288,63 @@ export const ItemsPublicSchema = {
     title: 'ItemsPublic'
 } as const;
 
+export const LiquiditaInizialePublicSchema = {
+    properties: {
+        value_cents: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Value Cents'
+        },
+        is_set: {
+            type: 'boolean',
+            title: 'Is Set'
+        }
+    },
+    type: 'object',
+    required: ['is_set'],
+    title: 'LiquiditaInizialePublic'
+} as const;
+
+export const LiquiditaInizialeSetSchema = {
+    properties: {
+        value_cents: {
+            type: 'integer',
+            minimum: 0,
+            title: 'Value Cents'
+        }
+    },
+    type: 'object',
+    required: ['value_cents'],
+    title: 'LiquiditaInizialeSet'
+} as const;
+
+export const LiquiditaInizialeSetResponseSchema = {
+    properties: {
+        value_cents: {
+            type: 'integer',
+            title: 'Value Cents'
+        },
+        is_set: {
+            type: 'boolean',
+            title: 'Is Set',
+            default: true
+        },
+        rebaselined: {
+            type: 'boolean',
+            title: 'Rebaselined'
+        }
+    },
+    type: 'object',
+    required: ['value_cents', 'rebaselined'],
+    title: 'LiquiditaInizialeSetResponse'
+} as const;
+
 export const MessageSchema = {
     properties: {
         message: {

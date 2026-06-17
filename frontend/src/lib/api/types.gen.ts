@@ -59,6 +59,21 @@ export type ItemUpdate = {
     description?: (string | null);
 };
 
+export type LiquiditaInizialePublic = {
+    value_cents?: (number | null);
+    is_set: boolean;
+};
+
+export type LiquiditaInizialeSet = {
+    value_cents: number;
+};
+
+export type LiquiditaInizialeSetResponse = {
+    value_cents: number;
+    is_set?: boolean;
+    rebaselined: boolean;
+};
+
 export type Message = {
     message: string;
 };
@@ -238,6 +253,14 @@ export type ItemsDeleteItemData = {
 };
 
 export type ItemsDeleteItemResponse = (Message);
+
+export type LiquiditaReadLiquiditaInizialeResponse = (LiquiditaInizialePublic);
+
+export type LiquiditaSetLiquiditaInizialeData = {
+    requestBody: LiquiditaInizialeSet;
+};
+
+export type LiquiditaSetLiquiditaInizialeResponse = (LiquiditaInizialeSetResponse);
 
 export type LoginLoginAccessTokenData = {
     formData: Body_login_login_access_token;

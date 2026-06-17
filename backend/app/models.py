@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timezone
 
 from pydantic import EmailStr
-from sqlalchemy import DateTime
+from sqlalchemy import BigInteger, DateTime
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -168,6 +168,12 @@ class Utente(SQLModel, table=True):
     password_hash: str
     recovery_code_hash: str
     session_timeout_days: int = Field(default=30)
+    # Liquidità iniziale baseline in integer cents (Story 2.2, FR-12).
+    # NULL = unset: a new account starts with no baseline (FR-1).
+    liquidita_iniziale_cents: int | None = Field(
+        default=None,
+        sa_type=BigInteger,
+    )
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
@@ -249,3 +255,42 @@ class CategoriaPublic(SQLModel):
 class CategorieList(SQLModel):
     spesa: list[CategoriaPublic]
     entrata: list[CategoriaPublic]
+
+
+# ---------------------------------------------------------------------------
+# mynance — Liquidità iniziale (FR-12). A single per-Utente baseline in integer
+# cents; changing an already-set value is an audited re-baselining event.
+# ---------------------------------------------------------------------------
+
+
+class LiquiditaInizialeSet(SQLModel):
+    # Integer cents; zero is permitted, negative is rejected. A non-integer
+    # (e.g. a float) is not valid cents and is rejected as 422 problem+json.
+    value_cents: int = Field(ge=0)
+
+
+class LiquiditaInizialePublic(SQLModel):
+    value_cents: int | None = None  # None = unset
+    is_set: bool
+
+
+class LiquiditaInizialeSetResponse(SQLModel):
+    value_cents: int
+    is_set: bool = True
+    # True iff this call changed an already-set baseline (re-baselining): it
+    # shifts every derived figure, so the client surfaces it explicitly.
+    rebaselined: bool
+
+
+# Append-only audit of re-baselining events (old value, new value, when, whose)
+class RebaselineAudit(SQLModel, table=True):
+    __tablename__ = "rebaseline_audit"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    old_value_cents: int = Field(sa_type=BigInteger)
+    new_value_cents: int = Field(sa_type=BigInteger)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )

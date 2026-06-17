@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (1-6 app shell done → Epic 1 complete; next: 2-2 Liquidità iniziale)
+# last_updated: 2026-06-17 (2-2 Liquidità iniziale + audit done; next: 2-3 calc engine)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (1-6 app shell done → Epic 1 complete; next: 2-2 Liquidità iniziale)
+last_updated: 2026-06-17 (2-2 Liquidità iniziale + audit done; next: 2-3 calc engine)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -55,7 +55,7 @@ development_status:
   # Epic 2 — Track my money (the daily loop)
   epic-2: in-progress
   2-1-typed-categorie-crud: done
-  2-2-set-liquidita-iniziale-once-with-re-baseline-audit: backlog
+  2-2-set-liquidita-iniziale-once-with-re-baseline-audit: done
   2-3-pure-derived-on-read-calc-engine-for-liquidita-with-worked-example-tests: backlog
   2-4-derived-liquidita-read-endpoint: backlog
   2-5-record-a-spesa: backlog
