@@ -56,7 +56,7 @@ development_status:
   epic-2: in-progress
   2-1-typed-categorie-crud: done
   2-2-set-liquidita-iniziale-once-with-re-baseline-audit: done
-  2-3-pure-derived-on-read-calc-engine-for-liquidita-with-worked-example-tests: backlog
+  2-3-pure-derived-on-read-calc-engine-for-liquidita-with-worked-example-tests: done
   2-4-derived-liquidita-read-endpoint: backlog
   2-5-record-a-spesa: backlog
   2-6-record-an-entrata: backlog
