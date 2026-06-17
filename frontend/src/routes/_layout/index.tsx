@@ -1,111 +1,200 @@
 import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { Receipt, X } from "lucide-react"
+import { createFileRoute } from "@tanstack/react-router"
+import { Receipt } from "lucide-react"
 import { useState } from "react"
-
+import { PeriodSelector } from "@/components/Common/PeriodSelector"
 import { BalanceBlock, Card } from "@/components/morbido"
-import { Button } from "@/components/ui/button"
-import { LiquiditaService } from "@/lib/api"
-
-const DISMISS_KEY = "mynance-onboarding-liquidita-dismissed"
-
-function readDismissed() {
-  try {
-    return localStorage.getItem(DISMISS_KEY) === "1"
-  } catch {
-    return false
-  }
-}
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+import { Skeleton } from "@/components/ui/skeleton"
+import {
+  type CategoriaSpesa,
+  MovimentiService,
+  RiepilogoService,
+} from "@/lib/api"
+import { formatDateIt, formatEurFromCents } from "@/lib/format"
+import { type Period, periodLabel, todayIso } from "@/lib/periodo"
 
 export const Route = createFileRoute("/_layout/")({
   component: Home,
   head: () => ({
-    meta: [
-      {
-        title: "Home - mynance",
-      },
-    ],
+    meta: [{ title: "Home - mynance" }],
   }),
 })
 
-function currentMonthLabel() {
-  // Display-only; the full period selector (Giorno/Settimana/Mese/Anno) arrives
-  // with the Home "Mese" story (2.8). Here we just label the current month.
-  const month = new Intl.DateTimeFormat("it-IT", { month: "long" }).format(
-    new Date(),
-  )
-  return month.charAt(0).toUpperCase() + month.slice(1)
-}
-
 function Home() {
-  const navigate = useNavigate()
-  const [dismissed, setDismissed] = useState(readDismissed)
+  const [period, setPeriod] = useState<Period>("month")
+  const [anchor, setAnchor] = useState(todayIso())
+  const [drill, setDrill] = useState<CategoriaSpesa | null>(null)
 
-  const { data: liquidita } = useQuery({
-    queryKey: ["liquidita"],
-    queryFn: () => LiquiditaService.readLiquidita(),
+  const { data: bilancio, isPending } = useQuery({
+    queryKey: ["bilancio", period, anchor],
+    queryFn: () => RiepilogoService.bilancio({ anchor, period }),
   })
 
-  const dismiss = () => {
-    try {
-      localStorage.setItem(DISMISS_KEY, "1")
-    } catch {
-      // storage may be unavailable; dismiss for this session regardless
-    }
-    setDismissed(true)
-  }
-
-  const showPrompt = liquidita
-    ? !liquidita.iniziale_is_set && !dismissed
-    : false
+  const max = bilancio?.spese_per_categoria[0]?.total_cents ?? 0
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <p className="type-eyebrow">Bilancio</p>
-        <h1 className="type-h1 text-ink">{currentMonthLabel()}</h1>
-      </div>
+      <PeriodSelector
+        period={period}
+        anchor={anchor}
+        onChange={(n) => {
+          setPeriod(n.period)
+          setAnchor(n.anchor)
+        }}
+      />
 
-      <BalanceBlock label="LIQUIDITÀ" cents={liquidita?.value_cents ?? 0} />
-
-      {showPrompt ? (
-        <Card className="flex flex-col gap-3">
-          <div className="flex items-start justify-between gap-3">
-            <p className="type-body text-ink">
-              Imposta la tua Liquidità iniziale per cominciare.
-            </p>
-            <button
-              type="button"
-              onClick={dismiss}
-              aria-label="Nascondi il suggerimento"
-              data-tap-target
-              className="-m-2 inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-ink-soft outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <X className="h-5 w-5" aria-hidden="true" />
-            </button>
+      {isPending || !bilancio ? (
+        <Skeleton className="h-28 w-full rounded-card" />
+      ) : (
+        <>
+          <BalanceBlock
+            label={`NETTO · ${periodLabel(period, anchor).toUpperCase()}`}
+            cents={bilancio.netto_cents}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="p-4">
+              <p className="type-eyebrow">Entrate</p>
+              <p className="type-h2 tabular-nums text-positive-ink">
+                {formatEurFromCents(bilancio.entrate_cents)}
+              </p>
+            </Card>
+            <Card className="p-4">
+              <p className="type-eyebrow">Spese</p>
+              <p className="type-h2 tabular-nums text-ink">
+                {formatEurFromCents(bilancio.spese_cents)}
+              </p>
+            </Card>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={() => navigate({ to: "/settings" })}>
-              Imposta ora
-            </Button>
-            <Button variant="ghost" onClick={dismiss}>
-              Più tardi
-            </Button>
-          </div>
-        </Card>
-      ) : null}
+        </>
+      )}
 
       <section className="flex flex-col gap-3">
-        <h2 className="type-eyebrow">Spese</h2>
-        <Card className="flex flex-col items-center gap-3 py-12 text-center">
-          <span aria-hidden="true" className="text-ink-soft">
-            <Receipt className="h-7 w-7" />
-          </span>
-          <p className="type-body text-ink-soft">
-            Ancora nessuna spesa questo mese.
-          </p>
-        </Card>
+        <h2 className="type-eyebrow">Spese per categoria</h2>
+        {isPending || !bilancio ? (
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        ) : bilancio.spese_per_categoria.length === 0 ? (
+          <Card className="flex flex-col items-center gap-3 py-12 text-center">
+            <span aria-hidden="true" className="text-ink-soft">
+              <Receipt className="h-7 w-7" />
+            </span>
+            <p className="type-body text-ink-soft">
+              Ancora nessuna spesa in questo periodo.
+            </p>
+          </Card>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {bilancio.spese_per_categoria.map((c) => (
+              <li key={c.categoria_id}>
+                <button
+                  type="button"
+                  onClick={() => setDrill(c)}
+                  data-tap-target
+                  className="flex w-full min-h-11 flex-col gap-2 rounded-card bg-surface px-4 py-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="type-body text-ink">{c.nome}</span>
+                    <span className="type-body tabular-nums text-ink">
+                      {formatEurFromCents(c.total_cents)}
+                    </span>
+                  </div>
+                  <div
+                    className="h-2 rounded-pill bg-surface-2"
+                    aria-hidden="true"
+                  >
+                    <div
+                      className="h-2 rounded-pill bg-accent-soft"
+                      style={{
+                        width: `${max > 0 ? Math.round((c.total_cents / max) * 100) : 0}%`,
+                      }}
+                    />
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
+
+      <CategoriaDrillDown
+        categoria={drill}
+        start={bilancio?.start}
+        end={bilancio?.end}
+        onClose={() => setDrill(null)}
+      />
     </div>
+  )
+}
+
+function CategoriaDrillDown({
+  categoria,
+  start,
+  end,
+  onClose,
+}: {
+  categoria: CategoriaSpesa | null
+  start?: string
+  end?: string
+  onClose: () => void
+}) {
+  const { data: movimenti, isPending } = useQuery({
+    queryKey: ["movimenti", categoria?.categoria_id, start, end],
+    queryFn: () =>
+      MovimentiService.listMovimenti({
+        categoriaId: categoria?.categoria_id,
+        start,
+        end,
+      }),
+    enabled: categoria !== null && !!start && !!end,
+  })
+
+  return (
+    <Sheet open={categoria !== null} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent side="bottom" className="rounded-t-panel">
+        <SheetHeader>
+          <SheetTitle>{categoria?.nome ?? "Categoria"}</SheetTitle>
+          <SheetDescription>Spese del periodo selezionato.</SheetDescription>
+        </SheetHeader>
+        <div className="px-4 pb-6">
+          {isPending ? (
+            <Skeleton className="h-24 w-full" />
+          ) : !movimenti || movimenti.length === 0 ? (
+            <p className="type-body text-ink-soft">Nessuna spesa.</p>
+          ) : (
+            <ul className="flex flex-col divide-y divide-border">
+              {movimenti.map((m) => (
+                <li
+                  key={m.id}
+                  className="flex items-center justify-between gap-3 py-3"
+                >
+                  <div className="flex flex-col">
+                    <span className="type-body text-ink">
+                      {formatDateIt(m.data)}
+                    </span>
+                    {m.note ? (
+                      <span className="type-caption text-ink-soft">
+                        {m.note}
+                      </span>
+                    ) : null}
+                  </div>
+                  <span className="type-body tabular-nums text-ink">
+                    {formatEurFromCents(m.amount_cents)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 }

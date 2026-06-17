@@ -111,6 +111,8 @@ export function QuickAdd({
       // optimistic value past the round-trip.
       queryClient.invalidateQueries({ queryKey: ["liquidita"] })
       queryClient.invalidateQueries({ queryKey: ["movimenti"] })
+      queryClient.invalidateQueries({ queryKey: ["bilancio"] })
+      queryClient.invalidateQueries({ queryKey: ["statistiche"] })
     },
   })
 

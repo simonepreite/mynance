@@ -7,8 +7,9 @@ Movimento is indistinguishable from a missing one (404).
 """
 
 import uuid
+from datetime import date
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from app.api.deps import CurrentUtente, SessionDep
 from app.models import (
@@ -90,10 +91,24 @@ def create_movimento(
 
 @router.get("/")
 def list_movimenti(
-    session: SessionDep, current_utente: CurrentUtente
+    session: SessionDep,
+    current_utente: CurrentUtente,
+    categoria_id: uuid.UUID | None = Query(None),
+    start: date | None = Query(None),
+    end: date | None = Query(None),
 ) -> list[MovimentoPublic]:
+    """List my Movimenti, newest first. Optional filters power the Home
+    per-Categoria drill-down (Story 2.8): a Categoria and a half-open
+    ``[start, end)`` date range."""
     repo = _mov_repo(session, current_utente)
-    items = sorted(repo.list(), key=lambda m: m.data, reverse=True)
+    items = list(repo.list())
+    if categoria_id is not None:
+        items = [m for m in items if m.categoria_id == categoria_id]
+    if start is not None:
+        items = [m for m in items if m.data >= start]
+    if end is not None:
+        items = [m for m in items if m.data < end]
+    items.sort(key=lambda m: m.data, reverse=True)
     return [_public(m) for m in items]
 
 

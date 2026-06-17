@@ -346,6 +346,46 @@ class MovimentoPublic(SQLModel):
     created_at: datetime | None = None
 
 
+# ---------------------------------------------------------------------------
+# mynance — Period aggregation (Story 2.8 Home "Mese", Story 2.9 Statistiche).
+# All monetary aggregates are integer cents, computed server-side (API-3).
+# ---------------------------------------------------------------------------
+
+
+class CategoriaSpesa(SQLModel):
+    categoria_id: uuid.UUID
+    nome: str
+    total_cents: int
+
+
+class BilancioPeriodo(SQLModel):
+    period: str
+    start: date
+    end: date
+    netto_cents: int
+    entrate_cents: int
+    spese_cents: int
+    # Spese grouped by Categoria, sorted largest → smallest (decision #14).
+    spese_per_categoria: list[CategoriaSpesa]
+
+
+class TrendPunto(SQLModel):
+    mese: str  # "YYYY-MM"
+    entrate_cents: int
+    spese_cents: int
+    netto_cents: int
+
+
+class Statistiche(SQLModel):
+    period: str
+    start: date
+    end: date
+    trend: list[TrendPunto]  # month-over-month
+    pie: list[CategoriaSpesa]  # selected period's Spese share by Categoria
+    has_trend: bool  # enough history (≥2 months with data) to chart a trend
+    has_pie: bool  # the selected period has Spese
+
+
 # Append-only audit of re-baselining events (old value, new value, when, whose)
 class RebaselineAudit(SQLModel, table=True):
     __tablename__ = "rebaseline_audit"

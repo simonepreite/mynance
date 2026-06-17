@@ -8,6 +8,7 @@ from app.api.routes import (
     login,
     movimenti,
     private,
+    riepilogo,
     users,
     utils,
 )
@@ -18,6 +19,7 @@ api_router.include_router(auth.router)
 api_router.include_router(categorie.router)
 api_router.include_router(liquidita.router)
 api_router.include_router(movimenti.router)
+api_router.include_router(riepilogo.router)
 api_router.include_router(login.router)
 api_router.include_router(users.router)
 api_router.include_router(utils.router)

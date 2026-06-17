@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieRenameCategoriaData, CategorieRenameCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiListMovimentiResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieRenameCategoriaData, CategorieRenameCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PrivateCreateUserData, PrivateCreateUserResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -430,18 +430,6 @@ export class LoginService {
 
 export class MovimentiService {
     /**
-     * List Movimenti
-     * @returns MovimentoPublic Successful Response
-     * @throws ApiError
-     */
-    public static listMovimenti(): CancelablePromise<MovimentiListMovimentiResponse> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/api/v1/movimenti/'
-        });
-    }
-    
-    /**
      * Create Movimento
      * @param data The data for the request.
      * @param data.requestBody
@@ -454,6 +442,33 @@ export class MovimentiService {
             url: '/api/v1/movimenti/',
             body: data.requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Movimenti
+     * List my Movimenti, newest first. Optional filters power the Home
+     * per-Categoria drill-down (Story 2.8): a Categoria and a half-open
+     * ``[start, end)`` date range.
+     * @param data The data for the request.
+     * @param data.categoriaId
+     * @param data.start
+     * @param data.end
+     * @returns MovimentoPublic Successful Response
+     * @throws ApiError
+     */
+    public static listMovimenti(data: MovimentiListMovimentiData = {}): CancelablePromise<MovimentiListMovimentiResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/movimenti/',
+            query: {
+                categoria_id: data.categoriaId,
+                start: data.start,
+                end: data.end
+            },
             errors: {
                 422: 'Validation Error'
             }
@@ -519,6 +534,52 @@ export class PrivateService {
             url: '/api/v1/private/users/',
             body: data.requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class RiepilogoService {
+    /**
+     * Bilancio
+     * @param data The data for the request.
+     * @param data.anchor
+     * @param data.period
+     * @returns BilancioPeriodo Successful Response
+     * @throws ApiError
+     */
+    public static bilancio(data: RiepilogoBilancioData): CancelablePromise<RiepilogoBilancioResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/bilancio',
+            query: {
+                anchor: data.anchor,
+                period: data.period
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Statistiche
+     * @param data The data for the request.
+     * @param data.anchor
+     * @param data.period
+     * @returns Statistiche Successful Response
+     * @throws ApiError
+     */
+    public static statistiche(data: RiepilogoStatisticheData): CancelablePromise<RiepilogoStatisticheResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/statistiche',
+            query: {
+                anchor: data.anchor,
+                period: data.period
+            },
             errors: {
                 422: 'Validation Error'
             }
