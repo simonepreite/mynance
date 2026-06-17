@@ -315,6 +315,12 @@ export type SecchielloCreate = {
     prossima_scadenza: string;
 };
 
+export type SecchielloPagamento = {
+    amount_cents: number;
+    data: string;
+    categoria_id: string;
+};
+
 export type SecchielloPublic = {
     id: string;
     nome: string;
@@ -797,6 +803,13 @@ export type SecchielliDeleteSecchielloData = {
 };
 
 export type SecchielliDeleteSecchielloResponse = (Message);
+
+export type SecchielliRegistraPagamentoData = {
+    requestBody: SecchielloPagamento;
+    secchielloId: string;
+};
+
+export type SecchielliRegistraPagamentoResponse = (SecchielloPublic);
 
 export type UsersReadUsersData = {
     limit?: number;

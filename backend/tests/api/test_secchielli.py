@@ -158,3 +158,31 @@ def test_spesa_explicit_null_secchiello(client: TestClient) -> None:
         },
     ).json()
     assert mov["secchiello_id"] is None
+
+
+def test_registra_pagamento_advances_cycle(client: TestClient) -> None:
+    headers = _auth(client)
+    sid = _make(client, headers, prossima_scadenza="2027-02-01").json()["id"]
+    spesa_cat = _cat_id(client, headers, "spesa")
+    r = client.post(
+        f"{SEC}{sid}/pagamento",
+        headers=headers,
+        json={"amount_cents": 60000, "data": "2026-06-17", "categoria_id": spesa_cat},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    # Importo previsto updated to the actual paid amount; scadenza +12 months.
+    assert body["importo_previsto_cents"] == 60000
+    assert body["prossima_scadenza"] == "2028-02-01"
+
+
+def test_registra_pagamento_requires_spesa_categoria(client: TestClient) -> None:
+    headers = _auth(client)
+    sid = _make(client, headers).json()["id"]
+    entrata_cat = _cat_id(client, headers, "entrata")
+    r = client.post(
+        f"{SEC}{sid}/pagamento",
+        headers=headers,
+        json={"amount_cents": 60000, "data": "2026-06-17", "categoria_id": entrata_cat},
+    )
+    assert r.status_code == 422

@@ -11,12 +11,10 @@
 
 ## Open (non-blocking)
 
-- **Secchiello automatic cycle-advance on payment** (Story 3.3) — when the linked
-  payment Spesa is logged, `importo_previsto` should update to the actual paid
-  amount and `prossima_scadenza` advance by the Periodicità. Currently done via a
-  manual `PATCH /secchielli/{id}`. Needs a product decision on *which* linked Spesa
-  counts as "the payment" for a cycle before auto-advancing; the derived Saldo/Quota
-  (carryover, negative surfaced) is already correct either way.
+- ~~**Secchiello cycle-advance on payment** (Story 3.3)~~ — RESOLVED via the explicit
+  `POST /secchielli/{id}/pagamento` "Registra pagamento" action (creates the linked
+  Spesa, sets importo_previsto to the paid amount, advances prossima_scadenza by the
+  Periodicità). Surfaced in the Secchielli UI.
 - **Egress lint rule absent** [frontend/biome.json] — a rule banning hand-written
   `fetch`/`axios`/`XMLHttpRequest` outside `frontend/src/lib/api`. Low value: the
   boundary is enforced by convention + the generated client. Add when convenient.

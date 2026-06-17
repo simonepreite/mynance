@@ -23,7 +23,7 @@ Status: done
 
 _The derived computation (replay, virtual credit, negative Saldo, Spesa decrement, back-dated correctness) is complete and tested._
 
-_**Deferred / simplified:** the automatic cycle advance on payment — updating `importo_previsto` to the actual paid amount and advancing `prossima_scadenza` by the Periodicità when a payment Spesa is logged — is not yet automatic. For now the Utente advances the cycle via a `PATCH /secchielli/{id}` edit (the engine already carries the Saldo over and the Quota reflects it). The auto-advance-on-payment is a focused follow-up (it needs a rule for which Spesa counts as "the payment") tracked for a later refinement; it does not affect the honesty of the derived Saldo/Quota._
+_**Cycle advance (resolved):** `POST /api/v1/secchielli/{id}/pagamento` is the explicit "Registra pagamento" action — it creates the linked payment Spesa (a Spesa-type Categoria, scoped), sets `importo_previsto_cents` to the actual paid amount, and advances `prossima_scadenza` by the Periodicità (`periodicita_mesi`, day clamped). The carried-over Saldo and next Quota are derived on read from the new inputs (no stored running balance). Exposed in the Liquidità → Secchielli UI as a per-Secchiello "Registra pagamento" sheet. Tested: cycle advance (importo→paid, scadenza +interval) and the Spesa-type Categoria guard (422)._
 
 ### File List
 

@@ -1556,6 +1556,29 @@ export const SecchielloCreateSchema = {
     title: 'SecchielloCreate'
 } as const;
 
+export const SecchielloPagamentoSchema = {
+    properties: {
+        amount_cents: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            title: 'Amount Cents'
+        },
+        data: {
+            type: 'string',
+            format: 'date',
+            title: 'Data'
+        },
+        categoria_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Categoria Id'
+        }
+    },
+    type: 'object',
+    required: ['amount_cents', 'data', 'categoria_id'],
+    title: 'SecchielloPagamento'
+} as const;
+
 export const SecchielloPublicSchema = {
     properties: {
         id: {

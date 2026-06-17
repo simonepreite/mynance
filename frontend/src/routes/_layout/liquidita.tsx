@@ -36,12 +36,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import useCustomToast from "@/hooks/useCustomToast"
 import {
+  CategorieService,
   LiquiditaService,
   SecchielliService,
   type SecchielloPublic,
 } from "@/lib/api"
 import { formatDateIt, formatEurFromCents } from "@/lib/format"
 import { parseEurToCents } from "@/lib/money"
+import { todayIso } from "@/lib/periodo"
 import { handleError } from "@/utils"
 
 export const Route = createFileRoute("/_layout/liquidita")({
@@ -135,6 +137,7 @@ function AllocazioneTab() {
 function SecchielliTab() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<SecchielloPublic | null>(null)
+  const [paying, setPaying] = useState<SecchielloPublic | null>(null)
 
   const { data: secchielli, isPending } = useQuery({
     queryKey: ["secchielli"],
@@ -218,6 +221,11 @@ function SecchielliTab() {
                     salirà per recuperare.
                   </HonestyBanner>
                 ) : null}
+                <div className="flex justify-end">
+                  <Button variant="outline" onClick={() => setPaying(s)}>
+                    Registra pagamento
+                  </Button>
+                </div>
               </Card>
             </li>
           ))}
@@ -229,7 +237,107 @@ function SecchielliTab() {
         editing={editing}
         onClose={() => setFormOpen(false)}
       />
+      <PagamentoSheet secchiello={paying} onClose={() => setPaying(null)} />
     </div>
+  )
+}
+
+function PagamentoSheet({
+  secchiello,
+  onClose,
+}: {
+  secchiello: SecchielloPublic | null
+  onClose: () => void
+}) {
+  const queryClient = useQueryClient()
+  const { showSuccessToast, showErrorToast } = useCustomToast()
+  const [importo, setImporto] = useState("")
+  const [data, setData] = useState(todayIso())
+  const [categoriaId, setCategoriaId] = useState("")
+
+  const { data: categorie } = useQuery({
+    queryKey: ["categorie"],
+    queryFn: () => CategorieService.listCategorie(),
+    enabled: secchiello !== null,
+  })
+
+  const cents = parseEurToCents(importo)
+  const valid = cents !== null && cents > 0 && categoriaId !== ""
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      SecchielliService.registraPagamento({
+        secchielloId: secchiello?.id ?? "",
+        requestBody: {
+          amount_cents: cents ?? 0,
+          data,
+          categoria_id: categoriaId,
+        },
+      }),
+    onSuccess: () => {
+      showSuccessToast("Pagamento registrato: ciclo aggiornato.")
+      setImporto("")
+      setCategoriaId("")
+      onClose()
+    },
+    onError: handleError.bind(showErrorToast),
+    onSettled: () => {
+      for (const k of [
+        "secchielli",
+        "liquidita",
+        "allocazione",
+        "bilancio",
+        "movimenti",
+      ]) {
+        queryClient.invalidateQueries({ queryKey: [k] })
+      }
+    },
+  })
+
+  return (
+    <Sheet open={secchiello !== null} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent side="bottom" className="rounded-t-panel">
+        <SheetHeader>
+          <SheetTitle>Registra pagamento — {secchiello?.nome}</SheetTitle>
+          <SheetDescription>
+            Crea la spesa collegata e fa avanzare la prossima scadenza.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="flex flex-col gap-3 px-4 pb-6">
+          <Input
+            inputMode="decimal"
+            placeholder="Importo pagato €"
+            value={importo}
+            onChange={(e) => setImporto(e.target.value)}
+          />
+          <Input
+            type="date"
+            value={data}
+            onChange={(e) => setData(e.target.value)}
+            aria-label="Data del pagamento"
+          />
+          <Select value={categoriaId} onValueChange={setCategoriaId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Categoria di spesa" />
+            </SelectTrigger>
+            <SelectContent>
+              {(categorie?.spesa ?? []).map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <LoadingButton
+            loading={mutation.isPending}
+            disabled={!valid}
+            onClick={() => mutation.mutate()}
+          >
+            Registra pagamento
+          </LoadingButton>
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 }
 

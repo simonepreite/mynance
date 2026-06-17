@@ -466,6 +466,14 @@ class SecchielloUpdate(SQLModel):
     prossima_scadenza: date | None = None
 
 
+# Registering the actual payment for a Secchiello (Story 3.3 cycle advance):
+# creates the linked Spesa and advances the cycle.
+class SecchielloPagamento(SQLModel):
+    amount_cents: int = Field(gt=0)
+    data: date
+    categoria_id: uuid.UUID
+
+
 class Secchiello(SQLModel, table=True):
     __tablename__ = "secchielli"
 

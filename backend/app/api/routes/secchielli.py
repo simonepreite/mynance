@@ -6,6 +6,7 @@ access goes through the ``UserScopedRepository`` (authZ choke point): another
 Utente's Secchiello is indistinguishable from a missing one (404).
 """
 
+import calendar
 import uuid
 from collections.abc import Sequence
 from datetime import date
@@ -15,15 +16,18 @@ from fastapi import APIRouter, HTTPException
 from app.api.deps import CurrentUtente, SessionDep
 from app.calc.secchiello import compute_saldo_quota
 from app.models import (
+    Categoria,
     CategoriaTipo,
     Message,
     Movimento,
     Periodicita,
     Secchiello,
     SecchielloCreate,
+    SecchielloPagamento,
     SecchielloPublic,
     SecchielloUpdate,
     get_datetime_utc,
+    periodicita_mesi,
 )
 from app.services.repository import UserScopedRepository
 
@@ -161,6 +165,67 @@ def update_secchiello(
     if updated is None:  # pragma: no cover - just fetched above
         raise HTTPException(status_code=404, detail="Secchiello non trovato.")
     return _public(updated, _movimenti(session, current_utente), date.today())
+
+
+def _advance_months(d: date, n: int) -> date:
+    idx = (d.month - 1) + n
+    year = d.year + idx // 12
+    month = idx % 12 + 1
+    last = calendar.monthrange(year, month)[1]
+    return date(year, month, min(d.day, last))
+
+
+@router.post("/{secchiello_id}/pagamento")
+def registra_pagamento(
+    secchiello_id: uuid.UUID,
+    body: SecchielloPagamento,
+    session: SessionDep,
+    current_utente: CurrentUtente,
+) -> SecchielloPublic:
+    """Log the actual payment (Story 3.3): create the linked Spesa, set Importo
+    previsto to the paid amount, and advance Prossima scadenza by the Periodicità.
+
+    The carried-over Saldo and the next Quota are derived on read from the new
+    inputs (no stored running balance)."""
+    repo = _repo(session, current_utente)
+    secchiello = repo.get(secchiello_id)
+    if secchiello is None:
+        raise HTTPException(status_code=404, detail="Secchiello non trovato.")
+
+    cat = UserScopedRepository(
+        session=session, model=Categoria, utente_id=current_utente.id
+    ).get(body.categoria_id)
+    if cat is None:
+        raise HTTPException(status_code=404, detail="Categoria non trovata.")
+    if cat.tipo != CategoriaTipo.spesa.value:
+        raise HTTPException(
+            status_code=422, detail="La categoria deve essere di tipo spesa."
+        )
+
+    UserScopedRepository(
+        session=session, model=Movimento, utente_id=current_utente.id
+    ).add(
+        Movimento(
+            utente_id=current_utente.id,
+            tipo=CategoriaTipo.spesa.value,
+            amount_cents=body.amount_cents,
+            data=body.data,
+            categoria_id=body.categoria_id,
+            secchiello_id=secchiello.id,
+            note="Pagamento secchiello",
+        )
+    )
+
+    intervallo = periodicita_mesi(secchiello.periodicita, secchiello.intervallo_mesi)
+    repo.update(
+        secchiello_id,
+        importo_previsto_cents=body.amount_cents,
+        prossima_scadenza=_advance_months(secchiello.prossima_scadenza, intervallo),
+        updated_at=get_datetime_utc(),
+    )
+    refreshed = repo.get(secchiello_id)
+    assert refreshed is not None
+    return _public(refreshed, _movimenti(session, current_utente), date.today())
 
 
 @router.delete("/{secchiello_id}")
