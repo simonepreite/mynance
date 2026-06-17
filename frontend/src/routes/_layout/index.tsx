@@ -1,9 +1,11 @@
+import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { Receipt, X } from "lucide-react"
 import { useState } from "react"
 
-import { Card } from "@/components/morbido"
+import { BalanceBlock, Card } from "@/components/morbido"
 import { Button } from "@/components/ui/button"
+import { LiquiditaService } from "@/lib/api"
 
 const DISMISS_KEY = "mynance-onboarding-liquidita-dismissed"
 
@@ -39,6 +41,11 @@ function Home() {
   const navigate = useNavigate()
   const [dismissed, setDismissed] = useState(readDismissed)
 
+  const { data: liquidita } = useQuery({
+    queryKey: ["liquidita"],
+    queryFn: () => LiquiditaService.readLiquidita(),
+  })
+
   const dismiss = () => {
     try {
       localStorage.setItem(DISMISS_KEY, "1")
@@ -48,6 +55,10 @@ function Home() {
     setDismissed(true)
   }
 
+  const showPrompt = liquidita
+    ? !liquidita.iniziale_is_set && !dismissed
+    : false
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -55,7 +66,9 @@ function Home() {
         <h1 className="type-h1 text-ink">{currentMonthLabel()}</h1>
       </div>
 
-      {!dismissed ? (
+      <BalanceBlock label="LIQUIDITÀ" cents={liquidita?.value_cents ?? 0} />
+
+      {showPrompt ? (
         <Card className="flex flex-col gap-3">
           <div className="flex items-start justify-between gap-3">
             <p className="type-body text-ink">

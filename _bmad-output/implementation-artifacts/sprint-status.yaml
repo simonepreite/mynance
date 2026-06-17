@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (2-5/2-6 Movimenti + Liquidità recompute done; next: 2-7 quick-add UI)
+# last_updated: 2026-06-17 (2-7 quick-add UI done; next: 2-8 Home Mese bilancio)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (2-5/2-6 Movimenti + Liquidità recompute done; next: 2-7 quick-add UI)
+last_updated: 2026-06-17 (2-7 quick-add UI done; next: 2-8 Home Mese bilancio)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -60,7 +60,7 @@ development_status:
   2-4-derived-liquidita-read-endpoint: done
   2-5-record-a-spesa: done
   2-6-record-an-entrata: done
-  2-7-quick-add-bottom-sheet-online-first-optimistic-capture: backlog
+  2-7-quick-add-bottom-sheet-online-first-optimistic-capture: done
   2-8-home-mese-period-aware-bilancio-server-aggregated-per-categoria-breakdown-with-drill-down: backlog
   2-9-statistiche-charts-cross-period-trends-per-period-spese-pie: backlog
   epic-2-retrospective: optional

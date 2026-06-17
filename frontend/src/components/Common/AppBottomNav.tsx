@@ -1,14 +1,8 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router"
 import { BarChart3, Home, Landmark, Plus, Wallet } from "lucide-react"
 import { useState } from "react"
+import { QuickAdd } from "@/components/Common/QuickAdd"
 import { BottomNav, type BottomNavItem } from "@/components/morbido"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 
 // The five primary slots (UX-DR2). The central "Aggiungi" is the quick-add FAB,
 // whose bottom-sheet lands in Story 2.7 — here it is a calm stub. Liquidità,
@@ -63,16 +57,7 @@ export function AppBottomNav() {
   return (
     <>
       <BottomNav items={items} activeId={activeId} onSelect={onSelect} />
-      <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Aggiungi un movimento</DialogTitle>
-            <DialogDescription>
-              Presto potrai registrare spese ed entrate da qui, in pochi tocchi.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <QuickAdd open={addOpen} onOpenChange={setAddOpen} />
     </>
   )
 }
