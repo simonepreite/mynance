@@ -282,6 +282,12 @@ class LiquiditaInizialeSetResponse(SQLModel):
     rebaselined: bool
 
 
+# Derived-on-read current Liquidità (Story 2.4, FR-13) — computed server-side.
+class LiquiditaPublic(SQLModel):
+    value_cents: int
+    iniziale_is_set: bool
+
+
 # Append-only audit of re-baselining events (old value, new value, when, whose)
 class RebaselineAudit(SQLModel, table=True):
     __tablename__ = "rebaseline_audit"

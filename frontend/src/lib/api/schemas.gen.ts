@@ -345,6 +345,22 @@ export const LiquiditaInizialeSetResponseSchema = {
     title: 'LiquiditaInizialeSetResponse'
 } as const;
 
+export const LiquiditaPublicSchema = {
+    properties: {
+        value_cents: {
+            type: 'integer',
+            title: 'Value Cents'
+        },
+        iniziale_is_set: {
+            type: 'boolean',
+            title: 'Iniziale Is Set'
+        }
+    },
+    type: 'object',
+    required: ['value_cents', 'iniziale_is_set'],
+    title: 'LiquiditaPublic'
+} as const;
+
 export const MessageSchema = {
     properties: {
         message: {

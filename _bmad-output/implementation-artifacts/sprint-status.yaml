@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (2-2 Liquidità iniziale + audit done; next: 2-3 calc engine)
+# last_updated: 2026-06-17 (2-3 calc engine + 2-4 derived read done; next: 2-5 record Spesa)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (2-2 Liquidità iniziale + audit done; next: 2-3 calc engine)
+last_updated: 2026-06-17 (2-3 calc engine + 2-4 derived read done; next: 2-5 record Spesa)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -57,7 +57,7 @@ development_status:
   2-1-typed-categorie-crud: done
   2-2-set-liquidita-iniziale-once-with-re-baseline-audit: done
   2-3-pure-derived-on-read-calc-engine-for-liquidita-with-worked-example-tests: done
-  2-4-derived-liquidita-read-endpoint: backlog
+  2-4-derived-liquidita-read-endpoint: done
   2-5-record-a-spesa: backlog
   2-6-record-an-entrata: backlog
   2-7-quick-add-bottom-sheet-online-first-optimistic-capture: backlog

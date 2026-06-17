@@ -74,6 +74,11 @@ export type LiquiditaInizialeSetResponse = {
     rebaselined: boolean;
 };
 
+export type LiquiditaPublic = {
+    value_cents: number;
+    iniziale_is_set: boolean;
+};
+
 export type Message = {
     message: string;
 };
@@ -253,6 +258,8 @@ export type ItemsDeleteItemData = {
 };
 
 export type ItemsDeleteItemResponse = (Message);
+
+export type LiquiditaReadLiquiditaResponse = (LiquiditaPublic);
 
 export type LiquiditaReadLiquiditaInizialeResponse = (LiquiditaInizialePublic);
 
