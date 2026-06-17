@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mynance — Liquidità (Morbido)</title>
+<style>
+/* ============================================================
+   mynance — schermata LIQUIDITÀ — direzione "Morbido"
+   Stile/tokens ripresi 1:1 da .working/direction-morbido.html + DESIGN.md
+
+   PALETTE — LIGHT
+     --m-bg          #F4F1EA  sfondo caldo avorio
+     --m-surface     #FBFAF6  card panna
+     --m-surface-2   #EFEAE0  superficie incassata
+     --m-ink         #3A3A38  testo principale (NON nero puro)
+     --m-ink-soft    #807C74  testo secondario
+     --m-accent      #7FA99B  sage/teal muted (accento)
+     --m-accent-soft #DDE8E2  riempimento sage tenue
+     --m-pos         #6B9B7C  verde netto positivo
+     --m-warn        #B07C45  ambra calda honesty (NON rosso allarme)
+     --m-warn-bg     #F6E9D8  fondo banner ambra
+   PALETTE — DARK
+     --m-bg          #21201D  bruno scuro caldo (NON nero)
+     --m-surface     #2C2A27 ; --m-surface-2 #353230
+     --m-ink         #ECE7DD ; --m-ink-soft  #A29D92
+     --m-accent      #9CC4B5 ; --m-accent-soft #38463F
+     --m-pos         #93C4A0 ; --m-warn #E0B080 ; --m-warn-bg #423526
+   RADII: card 34 · panel 24 · control 18 · pill 999
+   ============================================================ */
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:#E8E3D8;color:#3A3A38;line-height:1.45;
+}
+.page-wrap{max-width:1500px;margin:0 auto;padding:40px 24px 80px;}
+.page-head h1{font-size:30px;font-weight:800;letter-spacing:-.02em;color:#3A3A38;}
+.page-head .pill{display:inline-block;margin-left:10px;font-size:13px;font-weight:700;color:#54756A;background:#DDE8E2;padding:4px 14px;border-radius:999px;vertical-align:middle;}
+.rationale{
+  background:#FBFAF6;border:1px solid #E4DFD4;border-radius:24px;
+  padding:20px 26px;margin:18px 0 34px;max-width:980px;
+  font-size:15.5px;color:#5C584F;line-height:1.6;
+}
+.rationale strong{color:#54756A;}
+
+.frames{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;}
+.frame-col{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.frame-label{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#807C74;}
+
+/* ---- PHONE FRAME ---- */
+.phone{
+  width:332px;height:712px;border-radius:54px;
+  padding:12px;background:#D8D2C6;
+  box-shadow:0 30px 60px -22px rgba(60,55,45,.5), inset 0 0 0 2px rgba(255,255,255,.4);
+  position:relative;
+}
+.phone.dark{background:#15140F;box-shadow:0 30px 60px -22px rgba(0,0,0,.7), inset 0 0 0 2px rgba(255,255,255,.06);}
+.screen{
+  width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative;
+  background:var(--m-bg);color:var(--m-ink);display:flex;flex-direction:column;
+}
+.notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:108px;height:26px;border-radius:14px;background:rgba(0,0,0,.16);z-index:40;}
+.dark .notch{background:rgba(0,0,0,.5);}
+
+/* THEME TOKENS — LIGHT */
+.screen.light{
+  --m-bg:#F4F1EA; --m-surface:#FBFAF6; --m-surface-2:#EFEAE0;
+  --m-ink:#3A3A38; --m-ink-soft:#807C74; --m-accent:#7FA99B;
+  --m-accent-soft:#DDE8E2; --m-pos:#6B9B7C; --m-warn:#B07C45;
+  --m-warn-bg:#F6E9D8; --m-warn-bd:#E8D4B8; --m-bar-track:#EAE4D8;
+}
+/* THEME TOKENS — DARK */
+.screen.darkmode{
+  --m-bg:#21201D; --m-surface:#2C2A27; --m-surface-2:#353230;
+  --m-ink:#ECE7DD; --m-ink-soft:#A29D92; --m-accent:#9CC4B5;
+  --m-accent-soft:#38463F; --m-pos:#93C4A0; --m-warn:#E0B080;
+  --m-warn-bg:#423526; --m-warn-bd:#574429; --m-bar-track:#3A3733;
+}
+
+.scr-scroll{flex:1;overflow:hidden;padding:34px 18px 12px;display:flex;flex-direction:column;gap:16px;}
+
+/* screen title */
+.scr-title{display:flex;align-items:center;justify-content:space-between;padding:2px 4px;}
+.scr-title h2{font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--m-ink);}
+.profile{width:38px;height:38px;border-radius:50%;background:var(--m-accent-soft);display:flex;align-items:center;justify-content:center;font-size:18px;}
+
+/* tabs (Allocazione / Secchielli) — segmented control, control radius */
+.tabs{display:flex;background:var(--m-surface-2);border-radius:22px;padding:5px;gap:2px;}
+.tabs button{
+  flex:1;border:none;background:transparent;font:inherit;font-size:13.5px;font-weight:600;
+  color:var(--m-ink-soft);padding:10px 0;border-radius:17px;cursor:default;
+}
+.tabs button.active{background:var(--m-surface);color:var(--m-ink);font-weight:800;box-shadow:0 4px 10px -4px rgba(0,0,0,.18);}
+
+/* balance block (Liquidità totale) */
+.balance{
+  background:var(--m-surface);border-radius:34px;padding:24px 22px 22px;text-align:center;
+  box-shadow:0 12px 28px -16px rgba(60,55,45,.35);
+}
+.dark .balance,.darkmode .balance{box-shadow:0 12px 28px -16px rgba(0,0,0,.55);}
+.balance .lbl{font-size:11.5px;font-weight:800;letter-spacing:.14em;color:var(--m-ink-soft);}
+.balance .net{font-size:44px;font-weight:800;letter-spacing:-.03em;color:var(--m-ink);margin:7px 0 16px;line-height:1;}
+.balance .split{display:flex;gap:12px;}
+.balance .split .cell{flex:1;background:var(--m-surface-2);border-radius:20px;padding:14px 8px;}
+.balance .split .cell .k{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--m-ink-soft);}
+.balance .split .cell .k .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+.balance .split .cell .v{font-size:17.5px;font-weight:800;margin-top:4px;}
+.balance .split .cell .sub{font-size:10.5px;font-weight:600;color:var(--m-ink-soft);margin-top:2px;}
+
+/* allocation bar (allocata vs libero) */
+.allocbar{height:13px;border-radius:999px;overflow:hidden;display:flex;margin-top:16px;background:var(--m-bar-track);}
+.allocbar .seg-alloc{background:var(--m-accent);height:100%;}
+.allocbar .seg-free{background:var(--m-pos);height:100%;}
+
+/* cuscinetto card */
+.cushion{
+  background:var(--m-surface);border-radius:34px;padding:22px 22px 22px;
+  box-shadow:0 12px 28px -16px rgba(60,55,45,.3);
+}
+.dark .cushion,.darkmode .cushion{box-shadow:0 12px 28px -16px rgba(0,0,0,.5);}
+.cushion .ch-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.cushion .ch-head .ic{font-size:19px;}
+.cushion h3{font-size:15px;font-weight:800;color:var(--m-ink);flex:1;}
+.cushion .target-row{display:flex;justify-content:space-between;align-items:baseline;margin:14px 0 6px;}
+.cushion .target-row .k{font-size:12.5px;font-weight:600;color:var(--m-ink-soft);}
+.cushion .target-row .v{font-size:14.5px;font-weight:800;color:var(--m-ink);}
+.cushion .formula{font-size:11px;font-weight:600;color:var(--m-ink-soft);}
+/* gauge: free vs target */
+.gauge{height:13px;border-radius:999px;background:var(--m-bar-track);overflow:hidden;position:relative;margin:4px 0 6px;}
+.gauge .gfill{height:100%;border-radius:999px;background:var(--m-warn);} /* breach -> amber */
+.gauge .marker{position:absolute;top:-4px;bottom:-4px;width:3px;border-radius:2px;background:var(--m-ink-soft);opacity:.5;}
+.gauge .marker::after{content:"";}
+.gauge-cap{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--m-ink-soft);}
+
+/* honesty banner (breach) */
+.honesty{
+  background:var(--m-warn-bg);border:1px solid var(--m-warn-bd);border-radius:24px;
+  padding:14px 16px;display:flex;align-items:center;gap:12px;margin-top:14px;
+}
+.honesty .ic{font-size:19px;}
+.honesty .tx{flex:1;font-size:13px;color:var(--m-warn);font-weight:700;line-height:1.35;}
+.honesty .tx small{display:block;font-weight:500;opacity:.85;font-size:11.5px;margin-top:2px;}
+
+/* ===== Secchielli list ===== */
+.bucketcard{
+  background:var(--m-surface);border-radius:34px;padding:8px 18px 10px;
+  box-shadow:0 12px 28px -16px rgba(60,55,45,.3);
+}
+.dark .bucketcard,.darkmode .bucketcard{box-shadow:0 12px 28px -16px rgba(0,0,0,.5);}
+.brow{padding:16px 4px;border-bottom:1px solid var(--m-surface-2);}
+.brow:last-child{border-bottom:none;}
+.brow .line1{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.brow .emoji{font-size:18px;}
+.brow .name{flex:1;font-size:14.5px;font-weight:700;color:var(--m-ink);}
+.brow .badge{font-size:9.5px;font-weight:800;letter-spacing:.04em;color:var(--m-accent);background:var(--m-accent-soft);padding:3px 9px;border-radius:999px;}
+.brow .saldo{font-size:15px;font-weight:800;color:var(--m-ink);}
+.brow .saldo.neg{color:var(--m-warn);} /* under-funding -> warm amber, never red */
+.brow .line2{display:flex;gap:8px;}
+.brow .meta{flex:1;background:var(--m-surface-2);border-radius:14px;padding:8px 9px;text-align:center;}
+.brow .meta small{display:block;font-size:9.5px;font-weight:700;letter-spacing:.05em;color:var(--m-ink-soft);margin-bottom:2px;}
+.brow .meta b{font-size:12.5px;font-weight:800;color:var(--m-ink);}
+/* mini under-funding note inside the negative row */
+.brow .underfund{
+  margin-top:10px;background:var(--m-warn-bg);border:1px solid var(--m-warn-bd);
+  border-radius:14px;padding:9px 11px;font-size:11.5px;font-weight:600;color:var(--m-warn);
+  display:flex;align-items:center;gap:8px;line-height:1.35;
+}
+
+/* secchielli summary strip on tab B */
+.bsum{display:flex;gap:12px;}
+.bsum .cell{flex:1;background:var(--m-surface);border-radius:24px;padding:15px 14px;text-align:center;box-shadow:0 12px 28px -16px rgba(60,55,45,.3);}
+.dark .bsum .cell,.darkmode .bsum .cell{box-shadow:0 12px 28px -16px rgba(0,0,0,.5);}
+.bsum .cell .k{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--m-ink-soft);}
+.bsum .cell .v{font-size:18px;font-weight:800;color:var(--m-ink);margin-top:3px;}
+
+/* add-secchiello hint row */
+.addrow{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--m-surface-2);border-radius:18px;padding:13px;font-size:13.5px;font-weight:700;color:var(--m-accent);}
+
+/* bottom nav */
+.bottomnav{
+  display:flex;justify-content:space-around;align-items:center;
+  background:var(--m-surface);border-top:1px solid var(--m-surface-2);
+  padding:11px 8px 16px;
+}
+.navitem{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--m-ink-soft);font-weight:600;width:54px;}
+.navitem .gi{font-size:21px;}
+.navitem.on{color:var(--m-accent);}
+.navadd{
+  width:58px;height:58px;margin-top:-26px;border-radius:50%;
+  background:var(--m-accent);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:300;box-shadow:0 10px 22px -6px rgba(127,169,155,.85);
+}
+.darkmode .navadd{color:#1c2521;box-shadow:0 10px 22px -6px rgba(156,196,181,.5);}
+.navlabel-add{font-size:10.5px;font-weight:700;color:var(--m-accent);margin-top:3px;}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+  <div class="page-head">
+    <h1>mynance — Liquidità<span class="pill">Morbido · Allocazione + Secchielli</span></h1>
+  </div>
+  <div class="rationale">
+    La schermata <strong>Liquidità</strong> risponde alla domanda centrale del prodotto: quanto è davvero libero? La tab <strong>Allocazione</strong> mostra la <strong>Liquidità totale</strong> divisa in <strong>Liquidità allocata</strong> (somma dei Saldi positivi dei Secchielli) e <strong>Risparmio libero</strong>, con la card del <strong>Cuscinetto di sicurezza</strong> (target = 6 × Spesa media). Qui il Risparmio libero è <em>sotto</em> il cuscinetto: lo diciamo in ambra calda, mai in rosso allarme. La tab <strong>Secchielli</strong> elenca i Secchielli con Saldo, Quota/mese e Prossima scadenza; un Secchiello sotto-finanziato (Saldo −38&nbsp;€) è segnalato in ambra, mai clampato a zero.
+  </div>
+
+  <div class="frames">
+
+    <!-- ============ TAB A — ALLOCAZIONE · LIGHT (active) ============ -->
+    <div class="frame-col">
+      <div class="frame-label">Tab A · Allocazione · Light</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen light">
+          <div class="scr-scroll">
+            <div class="scr-title"><h2>💧 Liquidità</h2><div class="profile">👤</div></div>
+            <div class="tabs">
+              <button class="active">Allocazione</button>
+              <button>Secchielli</button>
+            </div>
+            <div class="balance">
+              <div class="lbl">LIQUIDITÀ TOTALE</div>
+              <div class="net">8.150 €</div>
+              <div class="split">
+                <div class="cell">
+                  <div class="k"><span class="dot" style="background:var(--m-accent)"></span>Allocata</div>
+                  <div class="v" style="color:var(--m-accent)">3.690 €</div>
+                  <div class="sub">nei Secchielli</div>
+                </div>
+                <div class="cell">
+                  <div class="k"><span class="dot" style="background:var(--m-pos)"></span>Risparmio libero</div>
+                  <div class="v" style="color:var(--m-pos)">4.460 €</div>
+                  <div class="sub">davvero disponibile</div>
+                </div>
+              </div>
+              <div class="allocbar">
+                <div class="seg-alloc" style="width:45%"></div>
+                <div class="seg-free" style="width:55%"></div>
+              </div>
+            </div>
+            <div class="cushion">
+              <div class="ch-head"><span class="ic">🛟</span><h3>Cuscinetto di sicurezza</h3></div>
+              <div class="target-row">
+                <span class="k">Target <span class="formula">(6 × Spesa media 1.620 €)</span></span>
+                <span class="v">9.720 €</span>
+              </div>
+              <div class="gauge">
+                <div class="gfill" style="width:46%"></div>
+                <div class="marker" style="left:100%"></div>
+              </div>
+              <div class="gauge-cap"><span>Libero 4.460 €</span><span>Target 9.720 €</span></div>
+              <div class="honesty">
+                <span class="ic">🛟</span>
+                <span class="tx">Sotto il cuscinetto di sicurezza<small>Risparmio libero sotto il Cuscinetto (6 mesi) · mancano 5.260 €</small></span>
+              </div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem on"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TAB A — ALLOCAZIONE · DARK ============ -->
+    <div class="frame-col">
+      <div class="frame-label">Tab A · Allocazione · Dark</div>
+      <div class="phone dark">
+        <div class="notch"></div>
+        <div class="screen darkmode">
+          <div class="scr-scroll">
+            <div class="scr-title"><h2>💧 Liquidità</h2><div class="profile">👤</div></div>
+            <div class="tabs">
+              <button class="active">Allocazione</button>
+              <button>Secchielli</button>
+            </div>
+            <div class="balance">
+              <div class="lbl">LIQUIDITÀ TOTALE</div>
+              <div class="net">8.150 €</div>
+              <div class="split">
+                <div class="cell">
+                  <div class="k"><span class="dot" style="background:var(--m-accent)"></span>Allocata</div>
+                  <div class="v" style="color:var(--m-accent)">3.690 €</div>
+                  <div class="sub">nei Secchielli</div>
+                </div>
+                <div class="cell">
+                  <div class="k"><span class="dot" style="background:var(--m-pos)"></span>Risparmio libero</div>
+                  <div class="v" style="color:var(--m-pos)">4.460 €</div>
+                  <div class="sub">davvero disponibile</div>
+                </div>
+              </div>
+              <div class="allocbar">
+                <div class="seg-alloc" style="width:45%"></div>
+                <div class="seg-free" style="width:55%"></div>
+              </div>
+            </div>
+            <div class="cushion">
+              <div class="ch-head"><span class="ic">🛟</span><h3>Cuscinetto di sicurezza</h3></div>
+              <div class="target-row">
+                <span class="k">Target <span class="formula">(6 × Spesa media 1.620 €)</span></span>
+                <span class="v">9.720 €</span>
+              </div>
+              <div class="gauge">
+                <div class="gfill" style="width:46%"></div>
+                <div class="marker" style="left:100%"></div>
+              </div>
+              <div class="gauge-cap"><span>Libero 4.460 €</span><span>Target 9.720 €</span></div>
+              <div class="honesty">
+                <span class="ic">🛟</span>
+                <span class="tx">Sotto il cuscinetto di sicurezza<small>Risparmio libero sotto il Cuscinetto (6 mesi) · mancano 5.260 €</small></span>
+              </div>
+            </div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem on"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TAB B — SECCHIELLI · LIGHT ============ -->
+    <div class="frame-col">
+      <div class="frame-label">Tab B · Secchielli · Light</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen light">
+          <div class="scr-scroll">
+            <div class="scr-title"><h2>💧 Liquidità</h2><div class="profile">👤</div></div>
+            <div class="tabs">
+              <button>Allocazione</button>
+              <button class="active">Secchielli</button>
+            </div>
+            <div class="bsum">
+              <div class="cell"><div class="k">ALLOCATA</div><div class="v" style="color:var(--m-accent)">3.690 €</div></div>
+              <div class="cell"><div class="k">QUOTA / MESE</div><div class="v">395 €</div></div>
+            </div>
+            <div class="bucketcard">
+              <!-- under-funding row: NEGATIVE Saldo, warm amber -->
+              <div class="brow">
+                <div class="line1">
+                  <span class="emoji">🎟</span><span class="name">Assicurazioni</span>
+                  <span class="badge">SECCHIELLO</span><span class="saldo neg">−38 €</span>
+                </div>
+                <div class="line2">
+                  <div class="meta"><small>QUOTA/MESE</small><b>95 €</b></div>
+                  <div class="meta"><small>PROSSIMA</small><b>15 feb 2027</b></div>
+                </div>
+                <div class="underfund">
+                  <span>🪣</span><span>Secchiello in rosso di 38 € — la Quota salirà per recuperare.</span>
+                </div>
+              </div>
+              <div class="brow">
+                <div class="line1">
+                  <span class="emoji">🚗</span><span class="name">Auto · bollo + tagliando</span>
+                  <span class="badge">SECCHIELLO</span><span class="saldo">980 €</span>
+                </div>
+                <div class="line2">
+                  <div class="meta"><small>QUOTA/MESE</small><b>110 €</b></div>
+                  <div class="meta"><small>PROSSIMA</small><b>30 set 2026</b></div>
+                </div>
+              </div>
+              <div class="brow">
+                <div class="line1">
+                  <span class="emoji">🏖</span><span class="name">Vacanze estate</span>
+                  <span class="badge">SECCHIELLO</span><span class="saldo">1.240 €</span>
+                </div>
+                <div class="line2">
+                  <div class="meta"><small>QUOTA/MESE</small><b>120 €</b></div>
+                  <div class="meta"><small>PROSSIMA</small><b>1 lug 2026</b></div>
+                </div>
+              </div>
+              <div class="brow">
+                <div class="line1">
+                  <span class="emoji">🧾</span><span class="name">Tasse · saldo</span>
+                  <span class="badge">SECCHIELLO</span><span class="saldo">1.470 €</span>
+                </div>
+                <div class="line2">
+                  <div class="meta"><small>QUOTA/MESE</small><b>70 €</b></div>
+                  <div class="meta"><small>PROSSIMA</small><b>30 nov 2026</b></div>
+                </div>
+              </div>
+            </div>
+            <div class="addrow"><span>＋</span><span>Nuovo Secchiello</span></div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem on"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TAB B — SECCHIELLI · DARK ============ -->
+    <div class="frame-col">
+      <div class="frame-label">Tab B · Secchielli · Dark</div>
+      <div class="phone dark">
+        <div class="notch"></div>
+        <div class="screen darkmode">
+          <div class="scr-scroll">
+            <div class="scr-title"><h2>💧 Liquidità</h2><div class="profile">👤</div></div>
+            <div class="tabs">
+              <button>Allocazione</button>
+              <button class="active">Secchielli</button>
+            </div>
+            <div class="bsum">
+              <div class="cell"><div class="k">ALLOCATA</div><div class="v" style="color:var(--m-accent)">3.690 €</div></div>
+              <div class="cell"><div class="k">QUOTA / MESE</div><div class="v">395 €</div></div>
+            </div>
+            <div class="bucketcard">
+              <div class="brow">
+                <div class="line1">
+                  <span class="emoji">🎟</span><span class="name">Assicurazioni</span>
+                  <span class="badge">SECCHIELLO</span><span class="saldo neg">−38 €</span>
+                </div>
+                <div class="line2">
+                  <div class="meta"><small>QUOTA/MESE</small><b>95 €</b></div>
+                  <div class="meta"><small>PROSSIMA</small><b>15 feb 2027</b></div>
+                </div>
+                <div class="underfund">
+                  <span>🪣</span><span>Secchiello in rosso di 38 € — la Quota salirà per recuperare.</span>
+                </div>
+              </div>
+              <div class="brow">
+                <div class="line1">
+                  <span class="emoji">🚗</span><span class="name">Auto · bollo + tagliando</span>
+                  <span class="badge">SECCHIELLO</span><span class="saldo">980 €</span>
+                </div>
+                <div class="line2">
+                  <div class="meta"><small>QUOTA/MESE</small><b>110 €</b></div>
+                  <div class="meta"><small>PROSSIMA</small><b>30 set 2026</b></div>
+                </div>
+              </div>
+              <div class="brow">
+                <div class="line1">
+                  <span class="emoji">🏖</span><span class="name">Vacanze estate</span>
+                  <span class="badge">SECCHIELLO</span><span class="saldo">1.240 €</span>
+                </div>
+                <div class="line2">
+                  <div class="meta"><small>QUOTA/MESE</small><b>120 €</b></div>
+                  <div class="meta"><small>PROSSIMA</small><b>1 lug 2026</b></div>
+                </div>
+              </div>
+              <div class="brow">
+                <div class="line1">
+                  <span class="emoji">🧾</span><span class="name">Tasse · saldo</span>
+                  <span class="badge">SECCHIELLO</span><span class="saldo">1.470 €</span>
+                </div>
+                <div class="line2">
+                  <div class="meta"><small>QUOTA/MESE</small><b>70 €</b></div>
+                  <div class="meta"><small>PROSSIMA</small><b>30 nov 2026</b></div>
+                </div>
+              </div>
+            </div>
+            <div class="addrow"><span>＋</span><span>Nuovo Secchiello</span></div>
+          </div>
+          <div class="bottomnav">
+            <div class="navitem"><span class="gi">🏠</span>Mese</div>
+            <div class="navitem"><span class="gi">📊</span>Statistiche</div>
+            <div class="navitem"><div class="navadd">＋</div><span class="navlabel-add">Aggiungi</span></div>
+            <div class="navitem on"><span class="gi">💧</span>Liquidità</div>
+            <div class="navitem"><span class="gi">⋯</span>Altro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

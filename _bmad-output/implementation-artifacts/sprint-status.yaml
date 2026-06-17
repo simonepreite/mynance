@@ -1,0 +1,103 @@
+# generated: 2026-06-16
+# last_updated: 2026-06-17 (Epic 6 complete: Regole ricorrenti — lazy generation, PAC, skip, UI. ALL 6 EPICS DONE.)
+# project: mynance
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-06-16
+last_updated: 2026-06-17 (Epic 6 complete: Regole ricorrenti — lazy generation, PAC, skip, UI. ALL 6 EPICS DONE.)
+project: mynance
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1 — Account & Access (Foundation)
+  epic-1: done
+  1-1-initialize-project-scaffold-morbido-theme-api-contract-and-ci-baseline: done
+  1-2-base-shared-component-library-and-theme-tokens-with-accessibility-floor: done
+  1-3-self-service-registration-with-one-time-recovery-code: done
+  1-4-login-30-day-session-and-logout: done
+  1-5-per-utente-authorization-choke-point-and-data-isolation: done
+  1-6-minimal-onboarding-shell-and-empty-themed-home: done
+  epic-1-retrospective: optional
+
+  # Epic 2 — Track my money (the daily loop)
+  epic-2: done
+  2-1-typed-categorie-crud: done
+  2-2-set-liquidita-iniziale-once-with-re-baseline-audit: done
+  2-3-pure-derived-on-read-calc-engine-for-liquidita-with-worked-example-tests: done
+  2-4-derived-liquidita-read-endpoint: done
+  2-5-record-a-spesa: done
+  2-6-record-an-entrata: done
+  2-7-quick-add-bottom-sheet-online-first-optimistic-capture: done
+  2-8-home-mese-period-aware-bilancio-server-aggregated-per-categoria-breakdown-with-drill-down: done
+  2-9-statistiche-charts-cross-period-trends-per-period-spese-pie: done
+  epic-2-retrospective: optional
+
+  # Epic 3 — Set aside & know what's free (Secchielli + allocation)
+  epic-3: done
+  3-1-create-and-edit-a-secchiello-any-periodicita-categoria-secchiello-link: done
+  3-2-derived-on-read-quota-saldo-engine: done
+  3-3-funding-payment-carryover-lifecycle-with-negative-saldo-surfaced: done
+  3-4-secchielli-list-and-detail-on-the-liquidita-screen: done
+  3-5-allocation-breakdown-liquidita-allocata-vs-risparmio-libero: done
+  3-6-cuscinetto-di-sicurezza-warning-with-spesa-media-mensile: done
+  epic-3-retrospective: optional
+
+  # Epic 4 — Keep it honest (Drift & Reconciliation)
+  epic-4: done
+  4-1-riconciliazione-entity-non-identificato-system-categorie-and-reminder-interval-setting: done
+  4-2-computed-reconciliation-reminder-no-scheduler: done
+  4-3-reconcile-real-liquidita-and-show-drift-in-euro-and-percent: done
+  4-4-close-the-drift-with-a-non-identificato-movimento: done
+  4-5-acknowledge-and-leave-the-drift-open: done
+  4-6-riconciliazione-flow-ui-and-reconciliation-history: done
+  epic-4-retrospective: optional
+
+  # Epic 5 — My whole net worth (Patrimonio)
+  epic-5: done
+  5-1-create-an-investimento-and-record-versamenti-pac-at-capitale-versato: done
+  5-2-register-a-bene-immobile-at-price-paid: done
+  5-3-register-a-bene-mobile-with-linear-svalutazione-and-suggested-rates: done
+  5-4-patrimonio-screen-total-net-worth-and-per-component-breakdown: done
+  epic-5-retrospective: optional
+
+  # Epic 6 — Automate recurring money (Regole ricorrenti)
+  epic-6: done
+  6-1-create-the-regolaricorrente-model-and-crud-endpoints: done
+  6-2-lazy-idempotent-generation-of-recurring-entrate-up-to-today: done
+  6-3-extend-generation-to-versamenti-pac: done
+  6-4-make-generated-items-editable-and-skippable-without-affecting-the-rule-and-without-creating-drift: done
+  6-5-regole-ricorrenti-settings-ui: done
+  epic-6-retrospective: optional

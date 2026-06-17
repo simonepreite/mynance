@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mynance</title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.png" />
+    <script>
+      // Apply the resolved theme before first paint to avoid a flash of the
+      // wrong theme (Story 1.1, AC5). storageKey matches src/main.tsx. Guarded
+      // so an unavailable localStorage falls back to the CSS @media query.
+      (() => {
+        try {
+          const stored = localStorage.getItem("mynance-theme")
+          const mql = window.matchMedia("(prefers-color-scheme: dark)")
+          let theme = stored
+          if (!theme || theme === "system") {
+            theme = mql.matches ? "dark" : "light"
+          }
+          document.documentElement.classList.add(theme)
+        } catch {
+          // localStorage unavailable — CSS @media handles the fallback
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,136 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+/* Morbido visual tokens (raw --m-* palette + shadcn slot mappings + light/dark).
+ * Lives under src/theme/ per the architecture token boundary (Story 1.1, AC5). */
+@import "./theme/tokens.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tailwind theme mapping: exposes the Morbido CSS custom properties (defined in
+ * theme/tokens.css) as Tailwind v4 utilities (bg-background, text-ink, …).
+ */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-card: var(--radius-card-base);
+  --radius-panel: 1.5rem;
+  --radius-pill: 999px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Morbido semantic tokens (no shadcn equivalent) → Tailwind utilities */
+  --color-surface: var(--m-surface);
+  --color-surface-2: var(--m-surface-2);
+  --color-ink: var(--m-ink);
+  --color-ink-soft: var(--m-ink-soft);
+  --color-accent-ink: var(--m-accent-ink);
+  --color-accent-soft: var(--m-accent-soft);
+  --color-positive: var(--m-positive);
+  --color-positive-ink: var(--m-positive-ink);
+  --color-negative: var(--m-negative);
+  --color-honesty: var(--m-honesty);
+  --color-honesty-bg: var(--m-honesty-bg);
+  --color-bar-track: var(--m-bar-track);
+  --color-focus: var(--m-focus);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font: var(--type-body);
+  }
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  /* Reduce Motion (Story 1.2, AC6): skip animations/transitions and jump to
+     the end state immediately for users who request it. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Morbido typography utilities (Story 1.2, AC1/AC2) — type carried solely from
+   tokens, no inlined fonts. */
+@layer components {
+  .type-display {
+    font: var(--type-display);
+    letter-spacing: var(--tracking-display);
+  }
+  .type-h1 {
+    font: var(--type-h1);
+    letter-spacing: var(--tracking-h1);
+  }
+  .type-h2 {
+    font: var(--type-h2);
+  }
+  .type-body {
+    font: var(--type-body);
+  }
+  .type-caption {
+    font: var(--type-caption);
+  }
+  .type-eyebrow {
+    font: var(--type-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--m-ink-soft);
+  }
+}
+
+/* Subtle entrance for surfaced-truth components; neutralized under the
+   prefers-reduced-motion rule above (Story 1.2, AC6). */
+@keyframes m-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
