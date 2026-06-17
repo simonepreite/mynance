@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { Plus, Trash2 } from "lucide-react"
+import { Pencil, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 
 import { Card } from "@/components/morbido"
@@ -25,6 +25,7 @@ import useCustomToast from "@/hooks/useCustomToast"
 import {
   CategorieService,
   PatrimonioService,
+  type RegolaRicorrentePublic,
   RegoleRicorrentiService,
 } from "@/lib/api"
 import { formatEurFromCents } from "@/lib/format"
@@ -47,6 +48,7 @@ const PERIODICITA: Record<string, string> = {
 
 function Regole() {
   const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState<RegolaRicorrentePublic | null>(null)
   const { data } = useQuery({
     queryKey: ["regole"],
     queryFn: () => RegoleRicorrentiService.listRegole(),
@@ -73,7 +75,13 @@ function Regole() {
             Automatizza entrate e versamenti PAC prevedibili.
           </p>
         </div>
-        <Button onClick={() => setOpen(true)} data-testid="add-regola">
+        <Button
+          onClick={() => {
+            setEditing(null)
+            setOpen(true)
+          }}
+          data-testid="add-regola"
+        >
           <Plus className="mr-1 h-4 w-4" />
           Nuova
         </Button>
@@ -109,37 +117,73 @@ function Regole() {
                     {r.day_of_period}
                   </span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Elimina regola"
-                  onClick={() => del.mutate(r.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Modifica regola"
+                    onClick={() => {
+                      setEditing(r)
+                      setOpen(true)
+                    }}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Elimina regola"
+                    onClick={() => del.mutate(r.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </Card>
             </li>
           ))}
         </ul>
       )}
 
-      <RegolaForm open={open} onClose={() => setOpen(false)} />
+      <RegolaForm
+        key={editing?.id ?? "new"}
+        open={open}
+        editing={editing}
+        onClose={() => setOpen(false)}
+      />
     </div>
   )
 }
 
-function RegolaForm({ open, onClose }: { open: boolean; onClose: () => void }) {
+function RegolaForm({
+  open,
+  editing,
+  onClose,
+}: {
+  open: boolean
+  editing: RegolaRicorrentePublic | null
+  onClose: () => void
+}) {
   const queryClient = useQueryClient()
   const { showSuccessToast, showErrorToast } = useCustomToast()
 
-  const [importo, setImporto] = useState("")
-  const [periodicita, setPeriodicita] = useState("monthly")
-  const [intervallo, setIntervallo] = useState("2")
-  const [day, setDay] = useState("1")
-  const [kind, setKind] = useState<"entrata" | "versamento_pac">("entrata")
-  const [categoriaId, setCategoriaId] = useState("")
-  const [investimentoId, setInvestimentoId] = useState("")
-  const [startDate, setStartDate] = useState(todayIso())
+  const [importo, setImporto] = useState(
+    editing ? (editing.importo_cents / 100).toFixed(2).replace(".", ",") : "",
+  )
+  const [periodicita, setPeriodicita] = useState(
+    editing?.periodicita ?? "monthly",
+  )
+  const [intervallo, setIntervallo] = useState(
+    editing?.intervallo_mesi ? String(editing.intervallo_mesi) : "2",
+  )
+  const [day, setDay] = useState(String(editing?.day_of_period ?? 1))
+  const [kind, setKind] = useState<"entrata" | "versamento_pac">(
+    (editing?.kind as "entrata" | "versamento_pac") ?? "entrata",
+  )
+  const [categoriaId, setCategoriaId] = useState(editing?.categoria_id ?? "")
+  const [investimentoId, setInvestimentoId] = useState(
+    editing?.investimento_id ?? "",
+  )
+  const [startDate, setStartDate] = useState(editing?.start_date ?? todayIso())
 
   const { data: categorie } = useQuery({
     queryKey: ["categorie"],
@@ -162,27 +206,42 @@ function RegolaForm({ open, onClose }: { open: boolean; onClose: () => void }) {
     dayNum <= 31 &&
     (kind === "entrata" ? categoriaId !== "" : investimentoId !== "")
 
+  const per = periodicita as
+    | "monthly"
+    | "quarterly"
+    | "semiannual"
+    | "annual"
+    | "custom"
+
   const mutation = useMutation({
     mutationFn: () =>
-      RegoleRicorrentiService.createRegola({
-        requestBody: {
-          importo_cents: cents ?? 0,
-          periodicita: periodicita as
-            | "monthly"
-            | "quarterly"
-            | "semiannual"
-            | "annual"
-            | "custom",
-          intervallo_mesi: periodicita === "custom" ? Number(intervallo) : null,
-          day_of_period: dayNum,
-          kind,
-          categoria_id: kind === "entrata" ? categoriaId : null,
-          investimento_id: kind === "versamento_pac" ? investimentoId : null,
-          start_date: startDate,
-        },
-      }),
+      editing
+        ? RegoleRicorrentiService.updateRegola({
+            regolaId: editing.id,
+            requestBody: {
+              importo_cents: cents ?? 0,
+              periodicita: per,
+              intervallo_mesi:
+                periodicita === "custom" ? Number(intervallo) : null,
+              day_of_period: dayNum,
+            },
+          })
+        : RegoleRicorrentiService.createRegola({
+            requestBody: {
+              importo_cents: cents ?? 0,
+              periodicita: per,
+              intervallo_mesi:
+                periodicita === "custom" ? Number(intervallo) : null,
+              day_of_period: dayNum,
+              kind,
+              categoria_id: kind === "entrata" ? categoriaId : null,
+              investimento_id:
+                kind === "versamento_pac" ? investimentoId : null,
+              start_date: startDate,
+            },
+          }),
     onSuccess: () => {
-      showSuccessToast("Regola creata")
+      showSuccessToast(editing ? "Regola aggiornata" : "Regola creata")
       setImporto("")
       onClose()
     },
@@ -198,7 +257,9 @@ function RegolaForm({ open, onClose }: { open: boolean; onClose: () => void }) {
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent side="bottom" className="rounded-t-panel">
         <SheetHeader>
-          <SheetTitle>Nuova regola ricorrente</SheetTitle>
+          <SheetTitle>
+            {editing ? "Modifica regola ricorrente" : "Nuova regola ricorrente"}
+          </SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-3 px-4 pb-6">
           <Input
@@ -211,6 +272,7 @@ function RegolaForm({ open, onClose }: { open: boolean; onClose: () => void }) {
             <Select
               value={kind}
               onValueChange={(v) => setKind(v as "entrata" | "versamento_pac")}
+              disabled={editing !== null}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -221,7 +283,11 @@ function RegolaForm({ open, onClose }: { open: boolean; onClose: () => void }) {
               </SelectContent>
             </Select>
             {kind === "entrata" ? (
-              <Select value={categoriaId} onValueChange={setCategoriaId}>
+              <Select
+                value={categoriaId}
+                onValueChange={setCategoriaId}
+                disabled={editing !== null}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Categoria" />
                 </SelectTrigger>
@@ -234,7 +300,11 @@ function RegolaForm({ open, onClose }: { open: boolean; onClose: () => void }) {
                 </SelectContent>
               </Select>
             ) : (
-              <Select value={investimentoId} onValueChange={setInvestimentoId}>
+              <Select
+                value={investimentoId}
+                onValueChange={setInvestimentoId}
+                disabled={editing !== null}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Investimento" />
                 </SelectTrigger>
@@ -288,13 +358,14 @@ function RegolaForm({ open, onClose }: { open: boolean; onClose: () => void }) {
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             aria-label="Data di inizio"
+            disabled={editing !== null}
           />
           <LoadingButton
             loading={mutation.isPending}
             disabled={!valid}
             onClick={() => mutation.mutate()}
           >
-            Crea regola
+            {editing ? "Salva" : "Crea regola"}
           </LoadingButton>
         </div>
       </SheetContent>
