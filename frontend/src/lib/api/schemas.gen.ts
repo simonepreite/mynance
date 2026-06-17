@@ -130,6 +130,18 @@ export const CategoriaPublicSchema = {
             type: 'string',
             title: 'Tipo'
         },
+        secchiello_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Secchiello Id'
+        },
         created_at: {
             anyOf: [
                 {
@@ -178,14 +190,32 @@ export const CategoriaTipoSchema = {
 export const CategoriaUpdateSchema = {
     properties: {
         nome: {
-            type: 'string',
-            maxLength: 255,
-            minLength: 1,
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Nome'
+        },
+        secchiello_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Secchiello Id'
         }
     },
     type: 'object',
-    required: ['nome'],
     title: 'CategoriaUpdate'
 } as const;
 
@@ -466,6 +496,18 @@ export const MovimentoCreateSchema = {
                 }
             ],
             title: 'Note'
+        },
+        secchiello_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Secchiello Id'
         }
     },
     type: 'object',
@@ -497,6 +539,18 @@ export const MovimentoPublicSchema = {
             type: 'string',
             format: 'uuid',
             title: 'Categoria Id'
+        },
+        secchiello_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Secchiello Id'
         },
         note: {
             anyOf: [
@@ -576,6 +630,18 @@ export const MovimentoUpdateSchema = {
                 }
             ],
             title: 'Note'
+        },
+        secchiello_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Secchiello Id'
         }
     },
     type: 'object',
@@ -598,6 +664,12 @@ export const NewPasswordSchema = {
     type: 'object',
     required: ['token', 'new_password'],
     title: 'NewPassword'
+} as const;
+
+export const PeriodicitaSchema = {
+    type: 'string',
+    enum: ['monthly', 'quarterly', 'semiannual', 'annual', 'custom'],
+    title: 'Periodicita'
 } as const;
 
 export const PrivateUserCreateSchema = {
@@ -623,6 +695,177 @@ export const PrivateUserCreateSchema = {
     type: 'object',
     required: ['email', 'password', 'full_name'],
     title: 'PrivateUserCreate'
+} as const;
+
+export const SecchielloCreateSchema = {
+    properties: {
+        nome: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Nome'
+        },
+        importo_previsto_cents: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            title: 'Importo Previsto Cents'
+        },
+        periodicita: {
+            '$ref': '#/components/schemas/Periodicita'
+        },
+        intervallo_mesi: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    minimum: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Intervallo Mesi'
+        },
+        prossima_scadenza: {
+            type: 'string',
+            format: 'date',
+            title: 'Prossima Scadenza'
+        }
+    },
+    type: 'object',
+    required: ['nome', 'importo_previsto_cents', 'periodicita', 'prossima_scadenza'],
+    title: 'SecchielloCreate'
+} as const;
+
+export const SecchielloPublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        nome: {
+            type: 'string',
+            title: 'Nome'
+        },
+        importo_previsto_cents: {
+            type: 'integer',
+            title: 'Importo Previsto Cents'
+        },
+        periodicita: {
+            type: 'string',
+            title: 'Periodicita'
+        },
+        intervallo_mesi: {
+            anyOf: [
+                {
+                    type: 'integer'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Intervallo Mesi'
+        },
+        prossima_scadenza: {
+            type: 'string',
+            format: 'date',
+            title: 'Prossima Scadenza'
+        },
+        data_inizio: {
+            type: 'string',
+            format: 'date',
+            title: 'Data Inizio'
+        },
+        saldo_cents: {
+            type: 'integer',
+            title: 'Saldo Cents'
+        },
+        quota_cents: {
+            type: 'integer',
+            title: 'Quota Cents'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'nome', 'importo_previsto_cents', 'periodicita', 'intervallo_mesi', 'prossima_scadenza', 'data_inizio', 'saldo_cents', 'quota_cents'],
+    title: 'SecchielloPublic'
+} as const;
+
+export const SecchielloUpdateSchema = {
+    properties: {
+        nome: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Nome'
+        },
+        importo_previsto_cents: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Importo Previsto Cents'
+        },
+        periodicita: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/Periodicita'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        intervallo_mesi: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    minimum: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Intervallo Mesi'
+        },
+        prossima_scadenza: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Prossima Scadenza'
+        }
+    },
+    type: 'object',
+    title: 'SecchielloUpdate'
 } as const;
 
 export const StatisticheSchema = {

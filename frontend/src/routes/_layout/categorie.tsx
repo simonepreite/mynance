@@ -267,7 +267,7 @@ function RenameCategoria({ categoria }: { categoria: CategoriaPublic }) {
 
   const mutation = useMutation({
     mutationFn: (data: RenameFormData) =>
-      CategorieService.renameCategoria({
+      CategorieService.updateCategoria({
         categoriaId: categoria.id,
         requestBody: { nome: data.nome },
       }),

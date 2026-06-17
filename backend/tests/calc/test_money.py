@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from app.calc.money import add, cents_to_euros, euros_to_cents
+from app.calc.money import add, cents_to_euros, div_round, euros_to_cents
 
 
 def test_euros_to_cents_returns_int() -> None:
@@ -40,3 +40,17 @@ def test_add_keeps_integer_cents() -> None:
 def test_cents_to_euros_rejects_float() -> None:
     with pytest.raises(TypeError):
         cents_to_euros(12.34)  # type: ignore[arg-type]
+
+
+def test_div_round_half_up() -> None:
+    assert div_round(10000, 7) == 1429  # 1428.57 → 1429
+    assert div_round(100, 8) == 13  # 12.5 → 13 (HALF_UP)
+    assert div_round(100, 1) == 100
+    assert div_round(0, 5) == 0
+
+
+def test_div_round_rejects_float_and_bad_divisor() -> None:
+    with pytest.raises(TypeError):
+        div_round(10.0, 2)  # type: ignore[arg-type]
+    with pytest.raises(ValueError):
+        div_round(100, 0)

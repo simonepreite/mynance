@@ -42,3 +42,19 @@ def add(*amounts: Cents) -> Cents:
         if not isinstance(a, int) or isinstance(a, bool):
             raise TypeError("amounts must be int cents")
     return sum(amounts)
+
+
+def div_round(cents: Cents, divisor: int) -> Cents:
+    """Divide integer cents by a positive integer, HALF_UP, returning int cents.
+
+    Centralized money rounding (e.g. a Quota = outstanding / months); never float.
+    """
+    if not isinstance(cents, int) or isinstance(cents, bool):
+        raise TypeError("cents must be an int")
+    if divisor <= 0:
+        raise ValueError("divisor must be a positive integer")
+    return int(
+        (Decimal(cents) / Decimal(divisor)).quantize(
+            Decimal("1"), rounding=ROUND_HALF_UP
+        )
+    )

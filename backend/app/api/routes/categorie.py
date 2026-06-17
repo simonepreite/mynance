@@ -17,6 +17,7 @@ from app.models import (
     CategoriaUpdate,
     CategorieList,
     Message,
+    Secchiello,
     get_datetime_utc,
 )
 from app.services.repository import UserScopedRepository
@@ -37,6 +38,7 @@ def _public(categoria: Categoria) -> CategoriaPublic:
         id=categoria.id,
         nome=categoria.nome,
         tipo=categoria.tipo,
+        secchiello_id=categoria.secchiello_id,
         created_at=categoria.created_at,
     )
 
@@ -63,17 +65,44 @@ def list_categorie(session: SessionDep, current_utente: CurrentUtente) -> Catego
 
 
 @router.patch("/{categoria_id}")
-def rename_categoria(
+def update_categoria(
     categoria_id: uuid.UUID,
     body: CategoriaUpdate,
     session: SessionDep,
     current_utente: CurrentUtente,
 ) -> CategoriaPublic:
+    """Rename and/or set the Categoria→Secchiello link (Story 3.1).
+
+    Only Spesa-type Categorie can link to a Secchiello (Entrata → 422); the
+    Secchiello must be owned (else 404); `secchiello_id: null` clears the link.
+    """
     repo = _repo(session, current_utente)
-    categoria = repo.update(categoria_id, nome=body.nome, updated_at=get_datetime_utc())
+    categoria = repo.get(categoria_id)
     if categoria is None:
         raise HTTPException(status_code=404, detail="Categoria non trovata.")
-    return _public(categoria)
+
+    changes = body.model_dump(exclude_unset=True)
+    if "secchiello_id" in changes:
+        if categoria.tipo != CategoriaTipo.spesa.value:
+            raise HTTPException(
+                status_code=422,
+                detail="Solo le categorie di spesa possono avere un Secchiello.",
+            )
+        sid = changes["secchiello_id"]
+        if sid is not None:
+            owned = UserScopedRepository(
+                session=session, model=Secchiello, utente_id=current_utente.id
+            ).get(sid)
+            if owned is None:
+                raise HTTPException(status_code=404, detail="Secchiello non trovato.")
+    if changes.get("nome") is None:
+        changes.pop("nome", None)
+    changes["updated_at"] = get_datetime_utc()
+
+    updated = repo.update(categoria_id, **changes)
+    if updated is None:  # pragma: no cover - just fetched above
+        raise HTTPException(status_code=404, detail="Categoria non trovata.")
+    return _public(updated)
 
 
 @router.delete("/{categoria_id}")

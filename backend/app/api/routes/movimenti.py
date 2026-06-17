@@ -19,6 +19,7 @@ from app.models import (
     MovimentoCreate,
     MovimentoPublic,
     MovimentoUpdate,
+    Secchiello,
     get_datetime_utc,
 )
 from app.services.repository import UserScopedRepository
@@ -49,6 +50,7 @@ def _public(m: Movimento) -> MovimentoPublic:
         amount_cents=m.amount_cents,
         data=m.data,
         categoria_id=m.categoria_id,
+        secchiello_id=m.secchiello_id,
         note=m.note,
         created_at=m.created_at,
     )
@@ -56,7 +58,7 @@ def _public(m: Movimento) -> MovimentoPublic:
 
 def _require_categoria_of_tipo(
     cat_repo: UserScopedRepository[Categoria], categoria_id: uuid.UUID, tipo: str
-) -> None:
+) -> Categoria:
     """Owned Categoria of the matching tipo, else 404 (missing/foreign) or 422 (tipo)."""
     cat = cat_repo.get(categoria_id)
     if cat is None:
@@ -66,15 +68,39 @@ def _require_categoria_of_tipo(
             status_code=422,
             detail="La Categoria non è del tipo del movimento.",
         )
+    return cat
+
+
+def _require_owned_secchiello(
+    session: SessionDep, current_utente: CurrentUtente, secchiello_id: uuid.UUID
+) -> None:
+    owned = UserScopedRepository(
+        session=session, model=Secchiello, utente_id=current_utente.id
+    ).get(secchiello_id)
+    if owned is None:
+        raise HTTPException(status_code=404, detail="Secchiello non trovato.")
 
 
 @router.post("/", status_code=201)
 def create_movimento(
     body: MovimentoCreate, session: SessionDep, current_utente: CurrentUtente
 ) -> MovimentoPublic:
-    _require_categoria_of_tipo(
+    categoria = _require_categoria_of_tipo(
         _cat_repo(session, current_utente), body.categoria_id, body.tipo.value
     )
+    # Secchiello link (Story 3.1): Entrate never link; for a Spesa, default from
+    # the Categoria's linked Secchiello unless the caller set one explicitly
+    # (passing null forces "no Secchiello").
+    secchiello_id: uuid.UUID | None
+    if body.tipo.value != "spesa":
+        secchiello_id = None
+    elif "secchiello_id" in body.model_fields_set:
+        secchiello_id = body.secchiello_id
+    else:
+        secchiello_id = categoria.secchiello_id
+    if secchiello_id is not None:
+        _require_owned_secchiello(session, current_utente, secchiello_id)
+
     repo = _mov_repo(session, current_utente)
     movimento = repo.add(
         Movimento(
@@ -83,6 +109,7 @@ def create_movimento(
             amount_cents=body.amount_cents,
             data=body.data,
             categoria_id=body.categoria_id,
+            secchiello_id=secchiello_id,
             note=body.note,
         )
     )

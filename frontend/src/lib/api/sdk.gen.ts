@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieRenameCategoriaData, CategorieRenameCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PrivateCreateUserData, PrivateCreateUserResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PrivateCreateUserData, PrivateCreateUserResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class AuthService {
     /**
@@ -126,14 +126,18 @@ export class CategorieService {
     }
     
     /**
-     * Rename Categoria
+     * Update Categoria
+     * Rename and/or set the Categoria→Secchiello link (Story 3.1).
+     *
+     * Only Spesa-type Categorie can link to a Secchiello (Entrata → 422); the
+     * Secchiello must be owned (else 404); `secchiello_id: null` clears the link.
      * @param data The data for the request.
      * @param data.categoriaId
      * @param data.requestBody
      * @returns CategoriaPublic Successful Response
      * @throws ApiError
      */
-    public static renameCategoria(data: CategorieRenameCategoriaData): CancelablePromise<CategorieRenameCategoriaResponse> {
+    public static updateCategoria(data: CategorieUpdateCategoriaData): CancelablePromise<CategorieUpdateCategoriaResponse> {
         return __request(OpenAPI, {
             method: 'PATCH',
             url: '/api/v1/categorie/{categoria_id}',
@@ -579,6 +583,102 @@ export class RiepilogoService {
             query: {
                 anchor: data.anchor,
                 period: data.period
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class SecchielliService {
+    /**
+     * List Secchielli
+     * @returns SecchielloPublic Successful Response
+     * @throws ApiError
+     */
+    public static listSecchielli(): CancelablePromise<SecchielliListSecchielliResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/secchielli/'
+        });
+    }
+    
+    /**
+     * Create Secchiello
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns SecchielloPublic Successful Response
+     * @throws ApiError
+     */
+    public static createSecchiello(data: SecchielliCreateSecchielloData): CancelablePromise<SecchielliCreateSecchielloResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/secchielli/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Secchiello
+     * @param data The data for the request.
+     * @param data.secchielloId
+     * @returns SecchielloPublic Successful Response
+     * @throws ApiError
+     */
+    public static getSecchiello(data: SecchielliGetSecchielloData): CancelablePromise<SecchielliGetSecchielloResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/secchielli/{secchiello_id}',
+            path: {
+                secchiello_id: data.secchielloId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Update Secchiello
+     * @param data The data for the request.
+     * @param data.secchielloId
+     * @param data.requestBody
+     * @returns SecchielloPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateSecchiello(data: SecchielliUpdateSecchielloData): CancelablePromise<SecchielliUpdateSecchielloResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/secchielli/{secchiello_id}',
+            path: {
+                secchiello_id: data.secchielloId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Secchiello
+     * @param data The data for the request.
+     * @param data.secchielloId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteSecchiello(data: SecchielliDeleteSecchielloData): CancelablePromise<SecchielliDeleteSecchielloResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/secchielli/{secchiello_id}',
+            path: {
+                secchiello_id: data.secchielloId
             },
             errors: {
                 422: 'Validation Error'

@@ -28,6 +28,7 @@ export type CategoriaPublic = {
     id: string;
     nome: string;
     tipo: string;
+    secchiello_id?: (string | null);
     created_at?: (string | null);
 };
 
@@ -40,7 +41,8 @@ export type CategoriaSpesa = {
 export type CategoriaTipo = 'spesa' | 'entrata';
 
 export type CategoriaUpdate = {
-    nome: string;
+    nome?: (string | null);
+    secchiello_id?: (string | null);
 };
 
 export type CategorieList = {
@@ -105,6 +107,7 @@ export type MovimentoCreate = {
     data: string;
     categoria_id: string;
     note?: (string | null);
+    secchiello_id?: (string | null);
 };
 
 export type MovimentoPublic = {
@@ -113,6 +116,7 @@ export type MovimentoPublic = {
     amount_cents: number;
     data: string;
     categoria_id: string;
+    secchiello_id?: (string | null);
     note?: (string | null);
     created_at?: (string | null);
 };
@@ -122,6 +126,7 @@ export type MovimentoUpdate = {
     data?: (string | null);
     categoria_id?: (string | null);
     note?: (string | null);
+    secchiello_id?: (string | null);
 };
 
 export type NewPassword = {
@@ -129,11 +134,42 @@ export type NewPassword = {
     new_password: string;
 };
 
+export type Periodicita = 'monthly' | 'quarterly' | 'semiannual' | 'annual' | 'custom';
+
 export type PrivateUserCreate = {
     email: string;
     password: string;
     full_name: string;
     is_verified?: boolean;
+};
+
+export type SecchielloCreate = {
+    nome: string;
+    importo_previsto_cents: number;
+    periodicita: Periodicita;
+    intervallo_mesi?: (number | null);
+    prossima_scadenza: string;
+};
+
+export type SecchielloPublic = {
+    id: string;
+    nome: string;
+    importo_previsto_cents: number;
+    periodicita: string;
+    intervallo_mesi: (number | null);
+    prossima_scadenza: string;
+    data_inizio: string;
+    saldo_cents: number;
+    quota_cents: number;
+    created_at?: (string | null);
+};
+
+export type SecchielloUpdate = {
+    nome?: (string | null);
+    importo_previsto_cents?: (number | null);
+    periodicita?: (Periodicita | null);
+    intervallo_mesi?: (number | null);
+    prossima_scadenza?: (string | null);
 };
 
 export type Statistiche = {
@@ -272,12 +308,12 @@ export type CategorieCreateCategoriaData = {
 
 export type CategorieCreateCategoriaResponse = (CategoriaPublic);
 
-export type CategorieRenameCategoriaData = {
+export type CategorieUpdateCategoriaData = {
     categoriaId: string;
     requestBody: CategoriaUpdate;
 };
 
-export type CategorieRenameCategoriaResponse = (CategoriaPublic);
+export type CategorieUpdateCategoriaResponse = (CategoriaPublic);
 
 export type CategorieDeleteCategoriaData = {
     categoriaId: string;
@@ -399,6 +435,33 @@ export type RiepilogoStatisticheData = {
 };
 
 export type RiepilogoStatisticheResponse = (Statistiche);
+
+export type SecchielliListSecchielliResponse = (Array<SecchielloPublic>);
+
+export type SecchielliCreateSecchielloData = {
+    requestBody: SecchielloCreate;
+};
+
+export type SecchielliCreateSecchielloResponse = (SecchielloPublic);
+
+export type SecchielliGetSecchielloData = {
+    secchielloId: string;
+};
+
+export type SecchielliGetSecchielloResponse = (SecchielloPublic);
+
+export type SecchielliUpdateSecchielloData = {
+    requestBody: SecchielloUpdate;
+    secchielloId: string;
+};
+
+export type SecchielliUpdateSecchielloResponse = (SecchielloPublic);
+
+export type SecchielliDeleteSecchielloData = {
+    secchielloId: string;
+};
+
+export type SecchielliDeleteSecchielloResponse = (Message);
 
 export type UsersReadUsersData = {
     limit?: number;

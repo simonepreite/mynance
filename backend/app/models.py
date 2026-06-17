@@ -219,8 +219,10 @@ class CategoriaCreate(SQLModel):
 
 
 class CategoriaUpdate(SQLModel):
-    # Only a rename is allowed; tipo is a fixed, distinct space.
-    nome: str = Field(min_length=1, max_length=255)
+    # tipo is fixed; a rename and/or the Secchiello link may change (Story 3.1).
+    nome: str | None = Field(default=None, min_length=1, max_length=255)
+    # Categoria→Secchiello link (Spesa-type only): null clears it.
+    secchiello_id: uuid.UUID | None = None
 
 
 class Categoria(SQLModel, table=True):
@@ -230,6 +232,10 @@ class Categoria(SQLModel, table=True):
     utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
     nome: str = Field(max_length=255)
     tipo: str = Field(max_length=16, index=True)  # "spesa" | "entrata"
+    # Optional default Secchiello for Spese in this Categoria (Story 3.1, FR-7).
+    secchiello_id: uuid.UUID | None = Field(
+        default=None, foreign_key="secchielli.id", nullable=True
+    )
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
@@ -248,6 +254,7 @@ class CategoriaPublic(SQLModel):
     id: uuid.UUID
     nome: str
     tipo: str
+    secchiello_id: uuid.UUID | None = None
     created_at: datetime | None = None
 
 
@@ -302,6 +309,9 @@ class MovimentoCreate(SQLModel):
     data: date
     categoria_id: uuid.UUID
     note: str | None = Field(default=None, max_length=255)
+    # Per-Spesa Secchiello link (Story 3.1). If omitted, it defaults from the
+    # Categoria's linked Secchiello; pass null to force "no Secchiello".
+    secchiello_id: uuid.UUID | None = None
 
 
 class MovimentoUpdate(SQLModel):
@@ -310,6 +320,7 @@ class MovimentoUpdate(SQLModel):
     data: date | None = None
     categoria_id: uuid.UUID | None = None
     note: str | None = Field(default=None, max_length=255)
+    secchiello_id: uuid.UUID | None = None
 
 
 class Movimento(SQLModel, table=True):
@@ -321,6 +332,9 @@ class Movimento(SQLModel, table=True):
     amount_cents: int = Field(sa_type=BigInteger)
     data: date
     categoria_id: uuid.UUID = Field(foreign_key="categorie.id", nullable=False)
+    secchiello_id: uuid.UUID | None = Field(
+        default=None, foreign_key="secchielli.id", nullable=True
+    )
     note: str | None = Field(default=None, max_length=255)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
@@ -342,6 +356,7 @@ class MovimentoPublic(SQLModel):
     amount_cents: int
     data: date
     categoria_id: uuid.UUID
+    secchiello_id: uuid.UUID | None = None
     note: str | None = None
     created_at: datetime | None = None
 
@@ -384,6 +399,90 @@ class Statistiche(SQLModel):
     pie: list[CategoriaSpesa]  # selected period's Spese share by Categoria
     has_trend: bool  # enough history (≥2 months with data) to chart a trend
     has_pie: bool  # the selected period has Spese
+
+
+# ---------------------------------------------------------------------------
+# mynance — Secchiello (FR-9/10/11). A predictive amortization bucket: set aside
+# money in advance for a known recurring expense. Quota and Saldo are derived
+# on read (Stories 3.2/3.3); only the inputs below are stored.
+# ---------------------------------------------------------------------------
+
+
+class Periodicita(str, enum.Enum):
+    monthly = "monthly"
+    quarterly = "quarterly"
+    semiannual = "semiannual"
+    annual = "annual"
+    custom = "custom"
+
+
+def periodicita_mesi(periodicita: str, intervallo_mesi: int | None) -> int:
+    """Interval length in months for a Periodicità."""
+    fixed = {"monthly": 1, "quarterly": 3, "semiannual": 6, "annual": 12}
+    if periodicita in fixed:
+        return fixed[periodicita]
+    if periodicita == "custom" and intervallo_mesi is not None:
+        return intervallo_mesi
+    raise ValueError("custom periodicità requires a positive integer interval")
+
+
+class SecchielloBase(SQLModel):
+    nome: str = Field(min_length=1, max_length=255)
+    importo_previsto_cents: int = Field(gt=0)
+    periodicita: Periodicita
+    intervallo_mesi: int | None = Field(default=None, ge=1)
+    prossima_scadenza: date
+
+
+class SecchielloCreate(SecchielloBase):
+    pass
+
+
+class SecchielloUpdate(SQLModel):
+    nome: str | None = Field(default=None, min_length=1, max_length=255)
+    importo_previsto_cents: int | None = Field(default=None, gt=0)
+    periodicita: Periodicita | None = None
+    intervallo_mesi: int | None = Field(default=None, ge=1)
+    prossima_scadenza: date | None = None
+
+
+class Secchiello(SQLModel, table=True):
+    __tablename__ = "secchielli"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", nullable=False, index=True)
+    nome: str = Field(max_length=255)
+    importo_previsto_cents: int = Field(sa_type=BigInteger)
+    periodicita: str = Field(max_length=16)
+    intervallo_mesi: int | None = Field(default=None)
+    prossima_scadenza: date
+    data_inizio: date  # when accumulation started (chronological replay anchor)
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    updated_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    deleted_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+
+
+# Public projection — Quota & Saldo are derived-on-read (read-only, Story 3.2).
+class SecchielloPublic(SQLModel):
+    id: uuid.UUID
+    nome: str
+    importo_previsto_cents: int
+    periodicita: str
+    intervallo_mesi: int | None
+    prossima_scadenza: date
+    data_inizio: date
+    saldo_cents: int
+    quota_cents: int
+    created_at: datetime | None = None
 
 
 # Append-only audit of re-baselining events (old value, new value, when, whose)
