@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (Epic 6 complete: Regole ricorrenti — lazy generation, PAC, skip, UI. ALL 6 EPICS DONE.)
+# last_updated: 2026-06-17 (MVP merged to main via PR #1; program retrospective done — see mvp-retro-2026-06-17.md)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (Epic 6 complete: Regole ricorrenti — lazy generation, PAC, skip, UI. ALL 6 EPICS DONE.)
+last_updated: 2026-06-17 (MVP merged to main via PR #1; program retrospective done — see mvp-retro-2026-06-17.md)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -50,7 +50,7 @@ development_status:
   1-4-login-30-day-session-and-logout: done
   1-5-per-utente-authorization-choke-point-and-data-isolation: done
   1-6-minimal-onboarding-shell-and-empty-themed-home: done
-  epic-1-retrospective: optional
+  epic-1-retrospective: done
 
   # Epic 2 — Track my money (the daily loop)
   epic-2: done
@@ -63,7 +63,7 @@ development_status:
   2-7-quick-add-bottom-sheet-online-first-optimistic-capture: done
   2-8-home-mese-period-aware-bilancio-server-aggregated-per-categoria-breakdown-with-drill-down: done
   2-9-statistiche-charts-cross-period-trends-per-period-spese-pie: done
-  epic-2-retrospective: optional
+  epic-2-retrospective: done
 
   # Epic 3 — Set aside & know what's free (Secchielli + allocation)
   epic-3: done
@@ -73,7 +73,7 @@ development_status:
   3-4-secchielli-list-and-detail-on-the-liquidita-screen: done
   3-5-allocation-breakdown-liquidita-allocata-vs-risparmio-libero: done
   3-6-cuscinetto-di-sicurezza-warning-with-spesa-media-mensile: done
-  epic-3-retrospective: optional
+  epic-3-retrospective: done
 
   # Epic 4 — Keep it honest (Drift & Reconciliation)
   epic-4: done
@@ -83,7 +83,7 @@ development_status:
   4-4-close-the-drift-with-a-non-identificato-movimento: done
   4-5-acknowledge-and-leave-the-drift-open: done
   4-6-riconciliazione-flow-ui-and-reconciliation-history: done
-  epic-4-retrospective: optional
+  epic-4-retrospective: done
 
   # Epic 5 — My whole net worth (Patrimonio)
   epic-5: done
@@ -91,7 +91,7 @@ development_status:
   5-2-register-a-bene-immobile-at-price-paid: done
   5-3-register-a-bene-mobile-with-linear-svalutazione-and-suggested-rates: done
   5-4-patrimonio-screen-total-net-worth-and-per-component-breakdown: done
-  epic-5-retrospective: optional
+  epic-5-retrospective: done
 
   # Epic 6 — Automate recurring money (Regole ricorrenti)
   epic-6: done
@@ -100,4 +100,4 @@ development_status:
   6-3-extend-generation-to-versamenti-pac: done
   6-4-make-generated-items-editable-and-skippable-without-affecting-the-rule-and-without-creating-drift: done
   6-5-regole-ricorrenti-settings-ui: done
-  epic-6-retrospective: optional
+  epic-6-retrospective: done
