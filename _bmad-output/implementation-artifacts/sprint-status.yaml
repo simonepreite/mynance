@@ -1,5 +1,5 @@
 # generated: 2026-06-16
-# last_updated: 2026-06-17 (Epic 3: 3-1 Secchielli CRUD + 3-2/3-3 Quota/Saldo engine done; next: 3-4 UI, 3-5 allocation, 3-6 cuscinetto)
+# last_updated: 2026-06-17 (Epic 3 complete: Secchielli + allocation + cuscinetto; next: Epic 4 Riconciliazione)
 # project: mynance
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-16
-last_updated: 2026-06-17 (Epic 3: 3-1 Secchielli CRUD + 3-2/3-3 Quota/Saldo engine done; next: 3-4 UI, 3-5 allocation, 3-6 cuscinetto)
+last_updated: 2026-06-17 (Epic 3 complete: Secchielli + allocation + cuscinetto; next: Epic 4 Riconciliazione)
 project: mynance
 project_key: NOKEY
 tracking_system: file-system
@@ -66,13 +66,13 @@ development_status:
   epic-2-retrospective: optional
 
   # Epic 3 — Set aside & know what's free (Secchielli + allocation)
-  epic-3: in-progress
+  epic-3: done
   3-1-create-and-edit-a-secchiello-any-periodicita-categoria-secchiello-link: done
   3-2-derived-on-read-quota-saldo-engine: done
   3-3-funding-payment-carryover-lifecycle-with-negative-saldo-surfaced: done
-  3-4-secchielli-list-and-detail-on-the-liquidita-screen: backlog
-  3-5-allocation-breakdown-liquidita-allocata-vs-risparmio-libero: backlog
-  3-6-cuscinetto-di-sicurezza-warning-with-spesa-media-mensile: backlog
+  3-4-secchielli-list-and-detail-on-the-liquidita-screen: done
+  3-5-allocation-breakdown-liquidita-allocata-vs-risparmio-libero: done
+  3-6-cuscinetto-di-sicurezza-warning-with-spesa-media-mensile: done
   epic-3-retrospective: optional
 
   # Epic 4 — Keep it honest (Drift & Reconciliation)

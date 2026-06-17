@@ -295,6 +295,17 @@ class LiquiditaPublic(SQLModel):
     iniziale_is_set: bool
 
 
+# Allocation + safety buffer (Stories 3.5/3.6, FR-14/FR-15) — all integer cents.
+class AllocazionePublic(SQLModel):
+    liquidita_cents: int
+    liquidita_allocata_cents: int
+    risparmio_libero_cents: int
+    spesa_media_mensile_cents: int
+    mesi_cuscinetto: int
+    cuscinetto_cents: int
+    sotto_cuscinetto: bool
+
+
 # ---------------------------------------------------------------------------
 # mynance — Movimento (FR-5 Spesa, FR-6 Entrata). A typed cash movement in
 # integer cents; ``tipo`` matches the referenced Categoria's tipo. The sign is
