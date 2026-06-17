@@ -5,12 +5,14 @@
 
 ## Goal
 
-Two related additions, on top of the shipped MVP:
+Three related additions, on top of the shipped MVP:
 
 1. **Sub-categories** — one level of hierarchy under a Categoria
    (e.g. *Casa* → *Mutuo*, *Condominio*).
 2. **Note field in the quick-add** — expose the already-existing
    `MovimentoCreate.note` in the add-Spesa/Entrata bottom sheet.
+3. **Configurable Cuscinetto months (N)** — a per-Utente setting for the safety
+   buffer horizon (default 6), replacing the hardcoded default.
 
 "Adding categories" already exists (Impostazioni → Categorie, create/rename/
 delete); this design extends it with hierarchy. No change to the Secchielli,
@@ -103,6 +105,31 @@ The system "non identificato" Categorie stay flat, top-level, childless.
 synthetic "(diretto)" entry uses the parent's `categoria_id` and a "(diretto)"
 nome.
 
+## Configurable Cuscinetto months (N)
+
+Today `GET /liquidita/allocazione` takes `mesi` as a query param defaulting to a
+hardcoded 6; there is no persisted per-Utente value and no UI. Make N a stored
+per-Utente setting (precedent: `Utente.intervallo_riconciliazione_giorni`).
+
+**Data model**
+- `Utente` gains `mesi_cuscinetto: int = Field(default=6, ge=1)` (migration
+  `e9f0a1b2c3d4`, server_default `'6'`).
+
+**API**
+- `GET /api/v1/liquidita/cuscinetto-mesi` → `{ mesi_cuscinetto: int }`.
+- `PUT /api/v1/liquidita/cuscinetto-mesi` (`{ mesi_cuscinetto: int }`, `ge=1` →
+  422 otherwise) → persists and returns the value.
+- `GET /api/v1/liquidita/allocazione` — the effective N is the stored
+  `current_utente.mesi_cuscinetto`; the existing `mesi` query param remains an
+  optional override (when omitted, use the stored value). `AllocazionePublic`
+  already returns `mesi_cuscinetto` so the client always knows the active N.
+
+**Frontend**
+- Allocazione tab ([liquidita.tsx](frontend/src/routes/_layout/liquidita.tsx)):
+  a small "Cuscinetto: N mesi" control (numeric input/stepper) next to the
+  Cuscinetto card; on change, `PUT` then invalidate `['allocazione']` so the
+  target + above/below status recompute live.
+
 ## Frontend
 
 - **Impostazioni → Categorie** ([categorie.tsx](frontend/src/routes/_layout/categorie.tsx)):
@@ -132,12 +159,14 @@ nome.
 - `GET /movimenti?categoria_id=<parent>` includes children's movimenti; with a
   child id returns only that child's.
 - Delete parent → children soft-deleted (drop from `GET /categorie`).
+- Cuscinetto months: `GET /cuscinetto-mesi` default 6; `PUT` persists; `PUT 0` →
+  422; `/allocazione` uses the stored value (and the `mesi` override still works).
 - All scoped per-Utente (404 cross-Utente).
 
 **Frontend**
 - `biome ci` + `tsc` + `vite build` green.
 - Categorie tree + parent select; quick-add note persists; drill-down sub-split
-  renders.
+  renders; Cuscinetto-months control persists and recomputes the buffer.
 
 ## Risks / notes
 
