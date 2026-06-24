@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query"
@@ -107,6 +108,9 @@ function CategoriaGroup({
   tipo: CategoriaTipo
   categorie: CategoriaPublic[]
 }) {
+  const parents = categorie.filter((c) => c.parent_id == null)
+  const childrenOf = (id: string) => categorie.filter((c) => c.parent_id === id)
+
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -123,8 +127,15 @@ function CategoriaGroup({
         </div>
       ) : (
         <ul className="flex flex-col gap-2">
-          {categorie.map((categoria) => (
-            <CategoriaRow key={categoria.id} categoria={categoria} />
+          {parents.map((parent) => (
+            <>
+              <CategoriaRow key={parent.id} categoria={parent} />
+              {childrenOf(parent.id).map((child) => (
+                <div key={child.id} className="ml-6">
+                  <CategoriaRow categoria={child} />
+                </div>
+              ))}
+            </>
           ))}
         </ul>
       )}
@@ -153,8 +164,11 @@ type CreateFormData = z.infer<typeof createSchema>
 
 function CreateCategoria() {
   const [isOpen, setIsOpen] = useState(false)
+  const [parentId, setParentId] = useState<string>("")
   const queryClient = useQueryClient()
   const { showSuccessToast, showErrorToast } = useCustomToast()
+
+  const { data: categorieData } = useQuery(categorieQueryOptions())
 
   const form = useForm<CreateFormData>({
     resolver: zodResolver(createSchema),
@@ -162,12 +176,19 @@ function CreateCategoria() {
     defaultValues: { nome: "", tipo: "spesa" },
   })
 
+  const selectedTipo = form.watch("tipo")
+
+  const topLevelParents = (categorieData?.[selectedTipo] ?? []).filter(
+    (c) => c.parent_id == null && !c.is_system,
+  )
+
   const mutation = useMutation({
     mutationFn: (data: CategoriaCreate) =>
       CategorieService.createCategoria({ requestBody: data }),
     onSuccess: () => {
       showSuccessToast("Categoria creata")
       form.reset({ nome: "", tipo: "spesa" })
+      setParentId("")
       setIsOpen(false)
     },
     onError: handleError.bind(showErrorToast),
@@ -192,7 +213,11 @@ function CreateCategoria() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))}>
+          <form
+            onSubmit={form.handleSubmit((data) =>
+              mutation.mutate({ ...data, parent_id: parentId || null }),
+            )}
+          >
             <div className="grid gap-4 py-4">
               <FormField
                 control={form.control}
@@ -215,7 +240,13 @@ function CreateCategoria() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Tipo</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={(val) => {
+                        field.onChange(val)
+                        setParentId("")
+                      }}
+                      value={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger data-testid="categoria-tipo">
                           <SelectValue />
@@ -230,6 +261,28 @@ function CreateCategoria() {
                   </FormItem>
                 )}
               />
+              {topLevelParents.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <label
+                    className="text-sm font-medium leading-none"
+                    htmlFor="parent-select"
+                  >
+                    Sottocategoria di…
+                  </label>
+                  <Select value={parentId} onValueChange={setParentId}>
+                    <SelectTrigger id="parent-select">
+                      <SelectValue placeholder="Nessuna (categoria principale)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {topLevelParents.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <DialogClose asChild>
