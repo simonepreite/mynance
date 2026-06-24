@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Pencil, Plus, Tags, Trash2 } from "lucide-react"
-import { Suspense, useState } from "react"
+import { Fragment, Suspense, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
@@ -107,6 +108,9 @@ function CategoriaGroup({
   tipo: CategoriaTipo
   categorie: CategoriaPublic[]
 }) {
+  const parents = categorie.filter((c) => c.parent_id == null)
+  const childrenOf = (id: string) => categorie.filter((c) => c.parent_id === id)
+
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -123,8 +127,15 @@ function CategoriaGroup({
         </div>
       ) : (
         <ul className="flex flex-col gap-2">
-          {categorie.map((categoria) => (
-            <CategoriaRow key={categoria.id} categoria={categoria} />
+          {parents.map((parent) => (
+            <Fragment key={parent.id}>
+              <CategoriaRow categoria={parent} />
+              {childrenOf(parent.id).map((child) => (
+                <li key={child.id} className="ml-6 list-none">
+                  <CategoriaRow categoria={child} />
+                </li>
+              ))}
+            </Fragment>
           ))}
         </ul>
       )}
@@ -144,6 +155,8 @@ function CategoriaRow({ categoria }: { categoria: CategoriaPublic }) {
   )
 }
 
+const NO_PARENT = "__none__"
+
 const createSchema = z.object({
   nome: z.string().min(1, { message: "Inserisci un nome" }).max(60),
   tipo: z.enum(["spesa", "entrata"]),
@@ -153,8 +166,11 @@ type CreateFormData = z.infer<typeof createSchema>
 
 function CreateCategoria() {
   const [isOpen, setIsOpen] = useState(false)
+  const [parentId, setParentId] = useState<string>("")
   const queryClient = useQueryClient()
   const { showSuccessToast, showErrorToast } = useCustomToast()
+
+  const { data: categorieData } = useQuery(categorieQueryOptions())
 
   const form = useForm<CreateFormData>({
     resolver: zodResolver(createSchema),
@@ -162,12 +178,19 @@ function CreateCategoria() {
     defaultValues: { nome: "", tipo: "spesa" },
   })
 
+  const selectedTipo = form.watch("tipo")
+
+  const topLevelParents = (categorieData?.[selectedTipo] ?? []).filter(
+    (c) => c.parent_id == null && !c.is_system,
+  )
+
   const mutation = useMutation({
     mutationFn: (data: CategoriaCreate) =>
       CategorieService.createCategoria({ requestBody: data }),
     onSuccess: () => {
       showSuccessToast("Categoria creata")
       form.reset({ nome: "", tipo: "spesa" })
+      setParentId("")
       setIsOpen(false)
     },
     onError: handleError.bind(showErrorToast),
@@ -192,7 +215,14 @@ function CreateCategoria() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))}>
+          <form
+            onSubmit={form.handleSubmit((data) =>
+              mutation.mutate({
+                ...data,
+                parent_id: parentId && parentId !== NO_PARENT ? parentId : null,
+              }),
+            )}
+          >
             <div className="grid gap-4 py-4">
               <FormField
                 control={form.control}
@@ -215,7 +245,13 @@ function CreateCategoria() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Tipo</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={(val) => {
+                        field.onChange(val)
+                        setParentId("")
+                      }}
+                      value={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger data-testid="categoria-tipo">
                           <SelectValue />
@@ -230,6 +266,31 @@ function CreateCategoria() {
                   </FormItem>
                 )}
               />
+              {topLevelParents.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <label
+                    className="text-sm font-medium leading-none"
+                    htmlFor="parent-select"
+                  >
+                    Sottocategoria di…
+                  </label>
+                  <Select value={parentId} onValueChange={setParentId}>
+                    <SelectTrigger id="parent-select">
+                      <SelectValue placeholder="Nessuna (categoria principale)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NO_PARENT}>
+                        Nessuna (categoria principale)
+                      </SelectItem>
+                      {topLevelParents.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
             <DialogFooter>
               <DialogClose asChild>

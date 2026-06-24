@@ -176,6 +176,7 @@ class Utente(SQLModel, table=True):
     )
     # Reconciliation cadence in days (Story 4.1, FR-16); default weekly.
     intervallo_riconciliazione_giorni: int = Field(default=7)
+    mesi_cuscinetto: int = Field(default=6)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
@@ -218,6 +219,7 @@ class CategoriaTipo(str, enum.Enum):
 class CategoriaCreate(SQLModel):
     nome: str = Field(min_length=1, max_length=255)
     tipo: CategoriaTipo
+    parent_id: uuid.UUID | None = None
 
 
 class CategoriaUpdate(SQLModel):
@@ -237,6 +239,9 @@ class Categoria(SQLModel, table=True):
     # Optional default Secchiello for Spese in this Categoria (Story 3.1, FR-7).
     secchiello_id: uuid.UUID | None = Field(
         default=None, foreign_key="secchielli.id", nullable=True
+    )
+    parent_id: uuid.UUID | None = Field(
+        default=None, foreign_key="categorie.id", nullable=True, index=True
     )
     # System "non identificato" Categorie (Story 4.1) — cannot be renamed/deleted.
     is_system: bool = Field(default=False)
@@ -259,6 +264,7 @@ class CategoriaPublic(SQLModel):
     nome: str
     tipo: str
     secchiello_id: uuid.UUID | None = None
+    parent_id: uuid.UUID | None = None
     is_system: bool = False
     created_at: datetime | None = None
 
@@ -309,6 +315,10 @@ class AllocazionePublic(SQLModel):
     mesi_cuscinetto: int
     cuscinetto_cents: int
     sotto_cuscinetto: bool
+
+
+class CuscinettoMesi(SQLModel):
+    mesi_cuscinetto: int = Field(ge=1)
 
 
 # ---------------------------------------------------------------------------
@@ -391,6 +401,7 @@ class CategoriaSpesa(SQLModel):
     categoria_id: uuid.UUID
     nome: str
     total_cents: int
+    sottocategorie: list["CategoriaSpesa"] | None = None
 
 
 class BilancioPeriodo(SQLModel):

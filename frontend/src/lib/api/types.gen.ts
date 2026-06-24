@@ -73,6 +73,7 @@ export type Body_login_login_access_token = {
 export type CategoriaCreate = {
     nome: string;
     tipo: CategoriaTipo;
+    parent_id?: (string | null);
 };
 
 export type CategoriaPublic = {
@@ -80,6 +81,7 @@ export type CategoriaPublic = {
     nome: string;
     tipo: string;
     secchiello_id?: (string | null);
+    parent_id?: (string | null);
     is_system?: boolean;
     created_at?: (string | null);
 };
@@ -88,6 +90,7 @@ export type CategoriaSpesa = {
     categoria_id: string;
     nome: string;
     total_cents: number;
+    sottocategorie?: (Array<CategoriaSpesa> | null);
 };
 
 export type CategoriaTipo = 'spesa' | 'entrata';
@@ -100,6 +103,10 @@ export type CategoriaUpdate = {
 export type CategorieList = {
     spesa: Array<CategoriaPublic>;
     entrata: Array<CategoriaPublic>;
+};
+
+export type CuscinettoMesi = {
+    mesi_cuscinetto: number;
 };
 
 export type DriftPreview = {
@@ -551,8 +558,16 @@ export type LiquiditaSetLiquiditaInizialeData = {
 
 export type LiquiditaSetLiquiditaInizialeResponse = (LiquiditaInizialeSetResponse);
 
+export type LiquiditaGetCuscinettoMesiResponse = (CuscinettoMesi);
+
+export type LiquiditaSetCuscinettoMesiData = {
+    requestBody: CuscinettoMesi;
+};
+
+export type LiquiditaSetCuscinettoMesiResponse = (CuscinettoMesi);
+
 export type LiquiditaAllocazioneData = {
-    mesi?: number;
+    mesi?: (number | null);
 };
 
 export type LiquiditaAllocazioneResponse = (AllocazionePublic);

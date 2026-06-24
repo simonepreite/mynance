@@ -248,3 +248,43 @@ def test_unauthenticated_is_401(client: TestClient) -> None:
         ).status_code
         == 401
     )
+
+
+def test_list_filter_includes_children(client: TestClient) -> None:
+    headers = _auth(client)
+    casa = client.post(
+        CAT, headers=headers, json={"nome": "Casa", "tipo": "spesa"}
+    ).json()
+    mutuo = client.post(
+        CAT,
+        headers=headers,
+        json={"nome": "Mutuo", "tipo": "spesa", "parent_id": casa["id"]},
+    ).json()
+    client.post(
+        MOV,
+        headers=headers,
+        json={
+            "tipo": "spesa",
+            "amount_cents": 10000,
+            "data": "2026-06-05",
+            "categoria_id": casa["id"],
+        },
+    )
+    client.post(
+        MOV,
+        headers=headers,
+        json={
+            "tipo": "spesa",
+            "amount_cents": 40000,
+            "data": "2026-06-06",
+            "categoria_id": mutuo["id"],
+        },
+    )
+    # Parent filter → parent + child movimenti.
+    rows = client.get(MOV, headers=headers, params={"categoria_id": casa["id"]}).json()
+    assert len(rows) == 2
+    # Child filter → only the child's.
+    rows_child = client.get(
+        MOV, headers=headers, params={"categoria_id": mutuo["id"]}
+    ).json()
+    assert len(rows_child) == 1 and rows_child[0]["amount_cents"] == 40000

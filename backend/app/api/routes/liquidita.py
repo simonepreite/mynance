@@ -23,6 +23,7 @@ from app.calc.secchiello import compute_saldo_quota
 from app.models import (
     AllocazionePublic,
     CategoriaTipo,
+    CuscinettoMesi,
     LiquiditaInizialePublic,
     LiquiditaInizialeSet,
     LiquiditaInizialeSetResponse,
@@ -79,6 +80,21 @@ def set_liquidita_iniziale(
     )
 
 
+@router.get("/cuscinetto-mesi")
+def get_cuscinetto_mesi(current_utente: CurrentUtente) -> CuscinettoMesi:
+    return CuscinettoMesi(mesi_cuscinetto=current_utente.mesi_cuscinetto)
+
+
+@router.put("/cuscinetto-mesi")
+def set_cuscinetto_mesi(
+    body: CuscinettoMesi, session: SessionDep, current_utente: CurrentUtente
+) -> CuscinettoMesi:
+    current_utente.mesi_cuscinetto = body.mesi_cuscinetto
+    session.add(current_utente)
+    session.commit()
+    return CuscinettoMesi(mesi_cuscinetto=current_utente.mesi_cuscinetto)
+
+
 def _first_of_month(d: date) -> date:
     return d.replace(day=1)
 
@@ -113,9 +129,10 @@ def _monthly_spese_totals(
 def allocazione(
     session: SessionDep,
     current_utente: CurrentUtente,
-    mesi: int = Query(6, ge=1, le=60),
+    mesi: int | None = Query(None, ge=1, le=60),
 ) -> AllocazionePublic:
     """Allocation split + safety buffer, computed server-side (FR-14/FR-15)."""
+    mesi = mesi if mesi is not None else current_utente.mesi_cuscinetto
     today = date.today()
     movimenti = UserScopedRepository(
         session=session, model=Movimento, utente_id=current_utente.id

@@ -160,3 +160,30 @@ def test_isolation_and_auth(client: TestClient) -> None:
         ).status_code
         == 401
     )
+
+
+def test_bilancio_aggregates_at_top_level_with_subsplit(client: TestClient) -> None:
+    headers = _auth(client)
+    casa = client.post(
+        f"{CAT}", headers=headers, json={"nome": "Casa", "tipo": "spesa"}
+    ).json()
+    mutuo = client.post(
+        f"{CAT}",
+        headers=headers,
+        json={"nome": "Mutuo", "tipo": "spesa", "parent_id": casa["id"]},
+    ).json()
+    _spesa(client, headers, casa["id"], 10000, "2026-06-05")  # direct on parent
+    _spesa(client, headers, mutuo["id"], 40000, "2026-06-06")  # on child
+
+    body = client.get(
+        BILANCIO, headers=headers, params={"period": "month", "anchor": "2026-06-15"}
+    ).json()
+    casa_row = next(
+        c for c in body["spese_per_categoria"] if c["categoria_id"] == casa["id"]
+    )
+    assert casa_row["total_cents"] == 50000  # parent + child
+    subs = {s["nome"]: s["total_cents"] for s in casa_row["sottocategorie"]}
+    assert subs["Mutuo"] == 40000
+    assert subs["(diretto)"] == 10000
+    # Child is not also a separate top-level row.
+    assert all(c["categoria_id"] != mutuo["id"] for c in body["spese_per_categoria"])

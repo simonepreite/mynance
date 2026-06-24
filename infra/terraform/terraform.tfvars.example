@@ -1,0 +1,73 @@
+###############################################################################
+# Copy to terraform.tfvars and fill in. Cost-minimal defaults are applied for
+# everything not set here.
+###############################################################################
+
+# --- Required ----------------------------------------------------------------
+project_id = "my-gcp-project"
+region     = "europe-west1"
+
+# --- Domain (leave empty for an HTTP-only smoke-test LB) ---------------------
+# Set later and re-apply to provision the managed cert + HTTPS listener.
+# domain = "example.com"   # routes app.example.com -> FE, api.example.com -> BE
+
+# --- Networking: CREATE (leave empty) vs REFERENCE (provide both) ------------
+# Leave both empty to create a new VPC + subnet:
+network_self_link = ""
+subnet_self_link  = ""
+# host_project_id = "my-shared-vpc-host"   # Shared VPC case
+# To REFERENCE an existing Shared VPC instead:
+# network_self_link = "projects/HOST/global/networks/shared-vpc"
+# subnet_self_link  = "projects/HOST/regions/europe-west1/subnetworks/mynance-subnet"
+
+# When creating:
+# network_name = "mynance-vpc"
+# subnet_name  = "mynance-subnet"
+# subnet_cidr  = "10.10.0.0/24"
+
+# --- Cloud SQL ---------------------------------------------------------------
+# db_tier     = "db-f1-micro"   # cheapest; ~0.6GB RAM (see README caveat)
+# db_version  = "POSTGRES_16"
+# db_disk_size = 10
+# db_name     = "app"
+# db_user     = "mynance"
+# db_backups_enabled     = false
+# db_deletion_protection = false
+
+# --- Cloud Run ---------------------------------------------------------------
+# Build & push real images, then set them here. The FRONTEND image must be
+# built with VITE_API_URL=https://api.<domain> baked in (Vite is build-time).
+# backend_image  = "europe-west1-docker.pkg.dev/my-gcp-project/mynance/backend:latest"
+# frontend_image = "europe-west1-docker.pkg.dev/my-gcp-project/mynance/frontend:latest"
+# cloudrun_min_instances = 0
+# cloudrun_max_instances = 2
+# cloudrun_cpu    = "1"
+# cloudrun_memory = "512Mi"
+
+# --- App ---------------------------------------------------------------------
+# project_name = "mynance"
+# environment  = "production"
+# extra_backend_env = {
+#   SENTRY_DSN = ""
+# }
+
+# --- Optional GCS FUSE persistence (DEFAULT OFF — app is stateless) -----------
+# The app keeps all state in Cloud SQL and has no file uploads, so these are
+# OFF by default and provision NOTHING. Enable per service ONLY if you ever
+# need a persistent file mount. GCS-FUSE is NOT a POSIX filesystem (eventual
+# consistency, no file locking, higher latency) — never put a database/SQLite
+# on it. See README "Optional GCS FUSE persistence".
+#
+# Backend bucket:
+# backend_bucket_enabled       = false
+# backend_bucket_name          = ""          # empty => "<project_id>-<name_prefix>-backend"
+# backend_bucket_mount_path    = "/mnt/data"
+# backend_bucket_force_destroy = false
+# backend_bucket_versioning    = false
+#
+# Frontend bucket:
+# frontend_bucket_enabled       = false
+# frontend_bucket_name          = ""         # empty => "<project_id>-<name_prefix>-frontend"
+# frontend_bucket_mount_path    = "/mnt/data"
+# frontend_bucket_force_destroy = false
+# frontend_bucket_versioning    = false

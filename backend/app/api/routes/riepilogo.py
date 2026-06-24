@@ -30,15 +30,19 @@ router = APIRouter(tags=["riepilogo"])
 
 def _load(
     session: SessionDep, current_utente: CurrentUtente
-) -> tuple[Sequence[Movimento], dict[uuid.UUID, str]]:
+) -> tuple[
+    Sequence[Movimento], dict[uuid.UUID, str], dict[uuid.UUID, uuid.UUID | None]
+]:
     mov_repo = UserScopedRepository(
         session=session, model=Movimento, utente_id=current_utente.id
     )
     cat_repo = UserScopedRepository(
         session=session, model=Categoria, utente_id=current_utente.id
     )
-    nomi = {c.id: c.nome for c in cat_repo.list()}
-    return mov_repo.list(), nomi
+    cats = cat_repo.list()
+    nomi = {c.id: c.nome for c in cats}
+    parent_of = {c.id: c.parent_id for c in cats}
+    return mov_repo.list(), nomi, parent_of
 
 
 def _in_range(m: Movimento, start: date, end: date) -> bool:
@@ -50,16 +54,56 @@ def _sum_tipo(movimenti: Sequence[Movimento], tipo: CategoriaTipo) -> int:
 
 
 def _spese_per_categoria(
-    movimenti: Sequence[Movimento], nomi: dict[uuid.UUID, str]
+    movimenti: Sequence[Movimento],
+    nomi: dict[uuid.UUID, str],
+    parent_of: dict[uuid.UUID, uuid.UUID | None],
 ) -> list[CategoriaSpesa]:
-    totals: dict[uuid.UUID, int] = {}
+    # direct spend per categoria (leaf or parent)
+    direct: dict[uuid.UUID, int] = {}
     for m in movimenti:
         if m.tipo == CategoriaTipo.spesa.value:
-            totals[m.categoria_id] = totals.get(m.categoria_id, 0) + m.amount_cents
-    items = [
-        CategoriaSpesa(categoria_id=cid, nome=nomi.get(cid, "—"), total_cents=tot)
-        for cid, tot in totals.items()
-    ]
+            direct[m.categoria_id] = direct.get(m.categoria_id, 0) + m.amount_cents
+
+    def top(cid: uuid.UUID) -> uuid.UUID:
+        return parent_of.get(cid) or cid
+
+    # group totals by top-level ancestor
+    totals: dict[uuid.UUID, int] = {}
+    for cid, amt in direct.items():
+        totals[top(cid)] = totals.get(top(cid), 0) + amt
+
+    items: list[CategoriaSpesa] = []
+    for parent_cid, total in totals.items():
+        sotto: list[CategoriaSpesa] | None = None
+        children = {
+            cid: amt
+            for cid, amt in direct.items()
+            if cid != parent_cid and top(cid) == parent_cid
+        }
+        if children:
+            sotto = [
+                CategoriaSpesa(
+                    categoria_id=cid, nome=nomi.get(cid, "—"), total_cents=amt
+                )
+                for cid, amt in children.items()
+            ]
+            if direct.get(parent_cid):
+                sotto.append(
+                    CategoriaSpesa(
+                        categoria_id=parent_cid,
+                        nome="(diretto)",
+                        total_cents=direct[parent_cid],
+                    )
+                )
+            sotto.sort(key=lambda x: x.total_cents, reverse=True)
+        items.append(
+            CategoriaSpesa(
+                categoria_id=parent_cid,
+                nome=nomi.get(parent_cid, "—"),
+                total_cents=total,
+                sottocategorie=sotto,
+            )
+        )
     items.sort(key=lambda x: x.total_cents, reverse=True)
     return items
 
@@ -78,7 +122,7 @@ def bilancio(
 ) -> BilancioPeriodo:
     _validate_period(period)
     start, end = period_bounds(period, anchor)
-    movimenti, nomi = _load(session, current_utente)
+    movimenti, nomi, parent_of = _load(session, current_utente)
     in_period = [m for m in movimenti if _in_range(m, start, end)]
     entrate = _sum_tipo(in_period, CategoriaTipo.entrata)
     spese = _sum_tipo(in_period, CategoriaTipo.spesa)
@@ -89,7 +133,7 @@ def bilancio(
         netto_cents=entrate - spese,
         entrate_cents=entrate,
         spese_cents=spese,
-        spese_per_categoria=_spese_per_categoria(in_period, nomi),
+        spese_per_categoria=_spese_per_categoria(in_period, nomi, parent_of),
     )
 
 
@@ -102,10 +146,10 @@ def statistiche(
 ) -> Statistiche:
     _validate_period(period)
     start, end = period_bounds(period, anchor)
-    movimenti, nomi = _load(session, current_utente)
+    movimenti, nomi, parent_of = _load(session, current_utente)
 
     in_period = [m for m in movimenti if _in_range(m, start, end)]
-    pie = _spese_per_categoria(in_period, nomi)
+    pie = _spese_per_categoria(in_period, nomi, parent_of)
 
     trend: list[TrendPunto] = []
     months_with_data = 0
