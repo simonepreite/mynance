@@ -197,6 +197,21 @@ function CategoriaDrillDown({
             <SheetDescription>Spese del periodo selezionato.</SheetDescription>
           </SheetHeader>
           <div className="px-4 pb-6">
+            {categoria?.sottocategorie?.length ? (
+              <ul className="mb-3 flex flex-col gap-1">
+                {categoria.sottocategorie.map((s) => (
+                  <li
+                    key={`${s.categoria_id}-${s.nome}`}
+                    className="flex justify-between type-caption text-ink-soft"
+                  >
+                    <span>{s.nome}</span>
+                    <span className="tabular-nums">
+                      {formatEurFromCents(s.total_cents)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
             {isPending ? (
               <Skeleton className="h-24 w-full" />
             ) : !movimenti || movimenti.length === 0 ? (

@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Pencil, Plus, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -80,10 +80,49 @@ function Liquidita() {
 }
 
 function AllocazioneTab() {
+  const queryClient = useQueryClient()
+  const { showSuccessToast, showErrorToast } = useCustomToast()
+  const [mesi, setMesi] = useState("")
+  const [mesiError, setMesiError] = useState<string | null>(null)
+
   const { data, isPending } = useQuery({
     queryKey: ["allocazione"],
     queryFn: () => LiquiditaService.allocazione({}),
   })
+
+  const { data: cusc } = useQuery({
+    queryKey: ["cuscinetto-mesi"],
+    queryFn: () => LiquiditaService.getCuscinettoMesi(),
+  })
+
+  useEffect(() => {
+    if (cusc?.mesi_cuscinetto != null) {
+      setMesi(String(cusc.mesi_cuscinetto))
+    }
+  }, [cusc?.mesi_cuscinetto])
+
+  const cuscinettoMutation = useMutation({
+    mutationFn: (n: number) =>
+      LiquiditaService.setCuscinettoMesi({
+        requestBody: { mesi_cuscinetto: n },
+      }),
+    onSuccess: () => {
+      showSuccessToast("Cuscinetto aggiornato")
+      queryClient.invalidateQueries({ queryKey: ["allocazione"] })
+      queryClient.invalidateQueries({ queryKey: ["cuscinetto-mesi"] })
+    },
+    onError: handleError.bind(showErrorToast),
+  })
+
+  const handleMesiBlur = () => {
+    const n = Number.parseInt(mesi, 10)
+    if (!Number.isInteger(n) || n < 1) {
+      setMesiError("Il valore deve essere un intero ≥ 1")
+      return
+    }
+    setMesiError(null)
+    cuscinettoMutation.mutate(n)
+  }
 
   if (isPending || !data) {
     return <Skeleton className="h-48 w-full rounded-card" />
@@ -108,9 +147,23 @@ function AllocazioneTab() {
       </div>
 
       <Card className="flex flex-col gap-2">
-        <p className="type-eyebrow">
-          Cuscinetto di sicurezza ({data.mesi_cuscinetto} mesi)
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="type-eyebrow">Cuscinetto di sicurezza</p>
+          <div className="flex items-center gap-2">
+            <Input
+              inputMode="numeric"
+              className="w-16 text-center"
+              value={mesi}
+              onChange={(e) => setMesi(e.target.value)}
+              onBlur={handleMesiBlur}
+              aria-label="Mesi cuscinetto"
+            />
+            <span className="type-caption text-ink-soft">mesi</span>
+          </div>
+        </div>
+        {mesiError ? (
+          <p className="type-caption text-honesty">{mesiError}</p>
+        ) : null}
         <p className="type-body text-ink-soft">
           Obiettivo:{" "}
           <span className="font-medium text-ink">
