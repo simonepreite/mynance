@@ -180,3 +180,18 @@ def test_subcategoria_parent_must_be_owned_and_non_system(client: TestClient) ->
     )
     assert sys_resp.status_code == 422
     assert sys_resp.headers["content-type"].startswith(PROBLEM_JSON)
+
+
+def test_delete_parent_cascades_children(client: TestClient) -> None:
+    headers = _auth_headers(client)
+    parent = client.post(
+        BASE, headers=headers, json={"nome": "MyHouse", "tipo": "spesa"}
+    ).json()
+    client.post(
+        BASE,
+        headers=headers,
+        json={"nome": "Mutuo", "tipo": "spesa", "parent_id": parent["id"]},
+    )
+    assert client.delete(f"{BASE}{parent['id']}", headers=headers).status_code == 200
+    names = [c["nome"] for c in client.get(BASE, headers=headers).json()["spesa"]]
+    assert "MyHouse" not in names and "Mutuo" not in names

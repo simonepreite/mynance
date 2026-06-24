@@ -151,5 +151,8 @@ def delete_categoria(
             status_code=422,
             detail="Le categorie di sistema non possono essere eliminate.",
         )
+    for child in repo.list():
+        if child.parent_id == categoria_id:
+            repo.delete(child.id)
     repo.delete(categoria_id)
     return Message(message="Categoria eliminata.")
