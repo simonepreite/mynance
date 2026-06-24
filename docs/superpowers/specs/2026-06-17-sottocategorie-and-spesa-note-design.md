@@ -1,7 +1,7 @@
 # Design — Categoria sub-categories + note in quick-add
 
 **Date:** 2026-06-17 · **Project:** mynance · **Author:** Simone (+ AI dev)
-**Status:** Approved — ready for implementation plan.
+**Status:** Implemented (2026-06-24, branch feat/story-1-1-scaffold; whole-branch review READY TO MERGE). Follow-ups tracked in `_bmad-output/implementation-artifacts/deferred-work.md`.
 
 ## Goal
 
