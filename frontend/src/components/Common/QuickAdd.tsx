@@ -47,6 +47,7 @@ export function QuickAdd({
   const [tipo, setTipo] = useState<CategoriaTipo>("spesa")
   const [amount, setAmount] = useState("")
   const [categoriaId, setCategoriaId] = useState<string | null>(null)
+  const [note, setNote] = useState("")
   const amountRef = useRef<HTMLInputElement>(null)
 
   const { data: categorie } = useQuery({
@@ -61,6 +62,7 @@ export function QuickAdd({
     setAmount("")
     setCategoriaId(null)
     setTipo("spesa")
+    setNote("")
   }
 
   const mutation = useMutation<
@@ -76,6 +78,7 @@ export function QuickAdd({
           amount_cents: vars.amount_cents,
           data: todayIso(),
           categoria_id: vars.categoria_id,
+          note: note.trim() === "" ? undefined : note,
         },
       }),
     onMutate: async (vars) => {
@@ -214,6 +217,13 @@ export function QuickAdd({
               </div>
             )}
           </div>
+
+          <Input
+            placeholder="Nota (facoltativa)"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            data-testid="quick-add-note"
+          />
 
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => onOpenChange(false)}>

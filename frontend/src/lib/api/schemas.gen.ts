@@ -361,6 +361,18 @@ export const CategoriaCreateSchema = {
         },
         tipo: {
             '$ref': '#/components/schemas/CategoriaTipo'
+        },
+        parent_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Parent Id'
         }
     },
     type: 'object',
@@ -394,6 +406,18 @@ export const CategoriaPublicSchema = {
                 }
             ],
             title: 'Secchiello Id'
+        },
+        parent_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Parent Id'
         },
         is_system: {
             type: 'boolean',
@@ -432,6 +456,20 @@ export const CategoriaSpesaSchema = {
         total_cents: {
             type: 'integer',
             title: 'Total Cents'
+        },
+        sottocategorie: {
+            anyOf: [
+                {
+                    items: {
+                        '$ref': '#/components/schemas/CategoriaSpesa'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Sottocategorie'
         }
     },
     type: 'object',
@@ -497,6 +535,19 @@ export const CategorieListSchema = {
     type: 'object',
     required: ['spesa', 'entrata'],
     title: 'CategorieList'
+} as const;
+
+export const CuscinettoMesiSchema = {
+    properties: {
+        mesi_cuscinetto: {
+            type: 'integer',
+            minimum: 1,
+            title: 'Mesi Cuscinetto'
+        }
+    },
+    type: 'object',
+    required: ['mesi_cuscinetto'],
+    title: 'CuscinettoMesi'
 } as const;
 
 export const DriftPreviewSchema = {
