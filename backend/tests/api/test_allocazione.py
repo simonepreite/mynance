@@ -12,6 +12,7 @@ INIZIALE = f"{settings.API_V1_STR}/liquidita/iniziale"
 SEC = f"{settings.API_V1_STR}/secchielli/"
 CAT = f"{settings.API_V1_STR}/categorie/"
 MOV = f"{settings.API_V1_STR}/movimenti/"
+CUSC = f"{settings.API_V1_STR}/liquidita/cuscinetto-mesi"
 
 
 def _auth(client: TestClient) -> dict[str, str]:
@@ -98,3 +99,32 @@ def test_isolation_and_auth(client: TestClient) -> None:
     b = client.get(ALLOC, headers=headers_b).json()
     assert b["liquidita_cents"] == 0  # never sees A's liquidità
     assert client.get(ALLOC).status_code == 401
+
+
+def test_cuscinetto_mesi_default_and_update(client: TestClient) -> None:
+    headers = _auth(client)
+    assert client.get(CUSC, headers=headers).json()["mesi_cuscinetto"] == 6
+    ok = client.put(CUSC, headers=headers, json={"mesi_cuscinetto": 3})
+    assert ok.status_code == 200 and ok.json()["mesi_cuscinetto"] == 3
+    bad = client.put(CUSC, headers=headers, json={"mesi_cuscinetto": 0})
+    assert bad.status_code == 422
+
+
+def test_allocazione_uses_stored_mesi(client: TestClient) -> None:
+    headers = _auth(client)
+    cat = _spesa_cat(client, headers)
+    for data in ("2026-04-10", "2026-05-12"):
+        client.post(
+            MOV,
+            headers=headers,
+            json={
+                "tipo": "spesa",
+                "amount_cents": 100000,
+                "data": data,
+                "categoria_id": cat,
+            },
+        )
+    client.put(CUSC, headers=headers, json={"mesi_cuscinetto": 3})
+    a = client.get(ALLOC, headers=headers).json()  # no mesi override
+    assert a["mesi_cuscinetto"] == 3
+    assert a["cuscinetto_cents"] == 300000  # 3 × media(100000)

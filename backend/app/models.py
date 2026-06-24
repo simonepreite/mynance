@@ -317,6 +317,10 @@ class AllocazionePublic(SQLModel):
     sotto_cuscinetto: bool
 
 
+class CuscinettoMesi(SQLModel):
+    mesi_cuscinetto: int = Field(ge=1)
+
+
 # ---------------------------------------------------------------------------
 # mynance — Movimento (FR-5 Spesa, FR-6 Entrata). A typed cash movement in
 # integer cents; ``tipo`` matches the referenced Categoria's tipo. The sign is
