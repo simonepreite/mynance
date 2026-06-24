@@ -133,7 +133,11 @@ def list_movimenti(
     repo = _mov_repo(session, current_utente)
     items = list(repo.list())
     if categoria_id is not None:
-        items = [m for m in items if m.categoria_id == categoria_id]
+        cat_ids = {categoria_id}
+        for c in _cat_repo(session, current_utente).list():
+            if c.parent_id == categoria_id:
+                cat_ids.add(c.id)
+        items = [m for m in items if m.categoria_id in cat_ids]
     if start is not None:
         items = [m for m in items if m.data >= start]
     if end is not None:
