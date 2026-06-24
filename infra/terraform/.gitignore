@@ -1,0 +1,20 @@
+# Terraform working/build artifacts — never commit these.
+.terraform/
+.terraform.tfstate.lock.info
+
+# Local state (bootstrap keeps LOCAL state; never commit it).
+*.tfstate
+*.tfstate.*
+
+# Real variable values (may contain project IDs / secrets).
+terraform.tfvars
+*.auto.tfvars
+
+# Crash logs / plans
+crash.log
+*.tfplan
+
+# Keep:
+#   - *.tf source
+#   - .terraform.lock.hcl  (provider version pinning — committed on purpose)
+#   - terraform.tfvars.example

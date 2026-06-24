@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and fill in. Used only by the bootstrap config.
+project_id        = "my-gcp-project"
+state_bucket_name = "my-gcp-project-mynance-tfstate" # must be globally unique
+# state_bucket_location   = "EU"
+# state_version_retention = 10
+# enable_apis             = true
