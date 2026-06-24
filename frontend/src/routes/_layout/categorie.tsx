@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Pencil, Plus, Tags, Trash2 } from "lucide-react"
-import { Suspense, useState } from "react"
+import { Fragment, Suspense, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
@@ -128,14 +128,14 @@ function CategoriaGroup({
       ) : (
         <ul className="flex flex-col gap-2">
           {parents.map((parent) => (
-            <>
-              <CategoriaRow key={parent.id} categoria={parent} />
+            <Fragment key={parent.id}>
+              <CategoriaRow categoria={parent} />
               {childrenOf(parent.id).map((child) => (
-                <div key={child.id} className="ml-6">
+                <li key={child.id} className="ml-6 list-none">
                   <CategoriaRow categoria={child} />
-                </div>
+                </li>
               ))}
-            </>
+            </Fragment>
           ))}
         </ul>
       )}
@@ -154,6 +154,8 @@ function CategoriaRow({ categoria }: { categoria: CategoriaPublic }) {
     </li>
   )
 }
+
+const NO_PARENT = "__none__"
 
 const createSchema = z.object({
   nome: z.string().min(1, { message: "Inserisci un nome" }).max(60),
@@ -215,7 +217,10 @@ function CreateCategoria() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((data) =>
-              mutation.mutate({ ...data, parent_id: parentId || null }),
+              mutation.mutate({
+                ...data,
+                parent_id: parentId && parentId !== NO_PARENT ? parentId : null,
+              }),
             )}
           >
             <div className="grid gap-4 py-4">
@@ -274,6 +279,9 @@ function CreateCategoria() {
                       <SelectValue placeholder="Nessuna (categoria principale)" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value={NO_PARENT}>
+                        Nessuna (categoria principale)
+                      </SelectItem>
                       {topLevelParents.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
                           {p.nome}
