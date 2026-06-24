@@ -100,3 +100,83 @@ def test_cross_utente_access_is_404(client: TestClient) -> None:
     # ...and never sees it in their own list.
     listed_b = client.get(BASE, headers=headers_b).json()
     assert "Privata" not in [c["nome"] for c in listed_b["spesa"]]
+
+
+def test_create_subcategoria(client: TestClient) -> None:
+    headers = _auth_headers(client)
+    parent = client.post(
+        BASE, headers=headers, json={"nome": "Casa", "tipo": "spesa"}
+    ).json()
+    sub = client.post(
+        BASE,
+        headers=headers,
+        json={"nome": "Mutuo", "tipo": "spesa", "parent_id": parent["id"]},
+    )
+    assert sub.status_code == 201
+    assert sub.json()["parent_id"] == parent["id"]
+    # GET carries parent_id on the child.
+    listed = client.get(BASE, headers=headers).json()
+    child = next(c for c in listed["spesa"] if c["nome"] == "Mutuo")
+    assert child["parent_id"] == parent["id"]
+
+
+def test_subcategoria_one_level_only(client: TestClient) -> None:
+    headers = _auth_headers(client)
+    parent = client.post(
+        BASE, headers=headers, json={"nome": "Casa", "tipo": "spesa"}
+    ).json()
+    child = client.post(
+        BASE,
+        headers=headers,
+        json={"nome": "Mutuo", "tipo": "spesa", "parent_id": parent["id"]},
+    ).json()
+    # A child cannot be a parent.
+    r = client.post(
+        BASE,
+        headers=headers,
+        json={"nome": "Rata", "tipo": "spesa", "parent_id": child["id"]},
+    )
+    assert r.status_code == 422
+    assert r.headers["content-type"].startswith(PROBLEM_JSON)
+
+
+def test_subcategoria_tipo_must_match_parent(client: TestClient) -> None:
+    headers = _auth_headers(client)
+    parent = client.post(
+        BASE, headers=headers, json={"nome": "Casa", "tipo": "spesa"}
+    ).json()
+    r = client.post(
+        BASE,
+        headers=headers,
+        json={"nome": "X", "tipo": "entrata", "parent_id": parent["id"]},
+    )
+    assert r.status_code == 422
+
+
+def test_subcategoria_parent_must_be_owned_and_non_system(client: TestClient) -> None:
+    headers_a = _auth_headers(client)
+    headers_b = _auth_headers(client)
+    parent_a = client.post(
+        BASE, headers=headers_a, json={"nome": "Casa", "tipo": "spesa"}
+    ).json()
+    # B cannot parent under A's categoria.
+    assert (
+        client.post(
+            BASE,
+            headers=headers_b,
+            json={"nome": "x", "tipo": "spesa", "parent_id": parent_a["id"]},
+        ).status_code
+        == 404
+    )
+    # System "non identificato" cannot be a parent.
+    sys_cat = next(
+        c for c in client.get(BASE, headers=headers_a).json()["spesa"] if c["is_system"]
+    )
+    assert (
+        client.post(
+            BASE,
+            headers=headers_a,
+            json={"nome": "x", "tipo": "spesa", "parent_id": sys_cat["id"]},
+        ).status_code
+        == 422
+    )

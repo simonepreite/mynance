@@ -38,6 +38,7 @@ def _public(categoria: Categoria) -> CategoriaPublic:
         id=categoria.id,
         nome=categoria.nome,
         tipo=categoria.tipo,
+        parent_id=categoria.parent_id,
         secchiello_id=categoria.secchiello_id,
         is_system=categoria.is_system,
         created_at=categoria.created_at,
@@ -49,8 +50,32 @@ def create_categoria(
     body: CategoriaCreate, session: SessionDep, current_utente: CurrentUtente
 ) -> CategoriaPublic:
     repo = _repo(session, current_utente)
+    if body.parent_id is not None:
+        parent = repo.get(body.parent_id)
+        if parent is None:
+            raise HTTPException(status_code=404, detail="Categoria padre non trovata.")
+        if parent.parent_id is not None:
+            raise HTTPException(
+                status_code=422,
+                detail="Le sottocategorie possono avere un solo livello.",
+            )
+        if parent.tipo != body.tipo.value:
+            raise HTTPException(
+                status_code=422,
+                detail="La sottocategoria deve essere dello stesso tipo della categoria padre.",
+            )
+        if parent.is_system:
+            raise HTTPException(
+                status_code=422,
+                detail="Le categorie di sistema non possono avere sottocategorie.",
+            )
     categoria = repo.add(
-        Categoria(utente_id=current_utente.id, nome=body.nome, tipo=body.tipo.value)
+        Categoria(
+            utente_id=current_utente.id,
+            nome=body.nome,
+            tipo=body.tipo.value,
+            parent_id=body.parent_id,
+        )
     )
     return _public(categoria)
 
