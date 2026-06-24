@@ -397,6 +397,7 @@ class CategoriaSpesa(SQLModel):
     categoria_id: uuid.UUID
     nome: str
     total_cents: int
+    sottocategorie: list["CategoriaSpesa"] | None = None
 
 
 class BilancioPeriodo(SQLModel):
