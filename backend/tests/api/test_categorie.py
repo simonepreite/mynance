@@ -151,6 +151,7 @@ def test_subcategoria_tipo_must_match_parent(client: TestClient) -> None:
         json={"nome": "X", "tipo": "entrata", "parent_id": parent["id"]},
     )
     assert r.status_code == 422
+    assert r.headers["content-type"].startswith(PROBLEM_JSON)
 
 
 def test_subcategoria_parent_must_be_owned_and_non_system(client: TestClient) -> None:
@@ -172,11 +173,10 @@ def test_subcategoria_parent_must_be_owned_and_non_system(client: TestClient) ->
     sys_cat = next(
         c for c in client.get(BASE, headers=headers_a).json()["spesa"] if c["is_system"]
     )
-    assert (
-        client.post(
-            BASE,
-            headers=headers_a,
-            json={"nome": "x", "tipo": "spesa", "parent_id": sys_cat["id"]},
-        ).status_code
-        == 422
+    sys_resp = client.post(
+        BASE,
+        headers=headers_a,
+        json={"nome": "x", "tipo": "spesa", "parent_id": sys_cat["id"]},
     )
+    assert sys_resp.status_code == 422
+    assert sys_resp.headers["content-type"].startswith(PROBLEM_JSON)
