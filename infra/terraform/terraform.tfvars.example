@@ -50,3 +50,24 @@ subnet_self_link  = ""
 # extra_backend_env = {
 #   SENTRY_DSN = ""
 # }
+
+# --- Optional GCS FUSE persistence (DEFAULT OFF — app is stateless) -----------
+# The app keeps all state in Cloud SQL and has no file uploads, so these are
+# OFF by default and provision NOTHING. Enable per service ONLY if you ever
+# need a persistent file mount. GCS-FUSE is NOT a POSIX filesystem (eventual
+# consistency, no file locking, higher latency) — never put a database/SQLite
+# on it. See README "Optional GCS FUSE persistence".
+#
+# Backend bucket:
+# backend_bucket_enabled       = false
+# backend_bucket_name          = ""          # empty => "<project_id>-<name_prefix>-backend"
+# backend_bucket_mount_path    = "/mnt/data"
+# backend_bucket_force_destroy = false
+# backend_bucket_versioning    = false
+#
+# Frontend bucket:
+# frontend_bucket_enabled       = false
+# frontend_bucket_name          = ""         # empty => "<project_id>-<name_prefix>-frontend"
+# frontend_bucket_mount_path    = "/mnt/data"
+# frontend_bucket_force_destroy = false
+# frontend_bucket_versioning    = false

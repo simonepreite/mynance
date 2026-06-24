@@ -51,7 +51,7 @@ Key design points:
 ### APIs enabled (parametrically, via `google_project_service`)
 
 `run`, `sqladmin`, `compute`, `certificatemanager`, `secretmanager`,
-`servicenetworking`, `dns` (optional), `iam`, `serviceusage`.
+`storage`, `servicenetworking`, `dns` (optional), `iam`, `serviceusage`.
 Toggle with `enable_apis` (default `true`).
 
 ## Bootstrap → init → apply (exact commands)
@@ -128,6 +128,50 @@ domain and re-apply (see below).
   with** `VITE_API_URL=https://api.<domain>` for the SPA to hit the API. A
   runtime env var will NOT change an already-built bundle.
 
+## Optional GCS FUSE persistence (OFF by default)
+
+The mynance app is **stateless** — all state lives in Cloud SQL and there are
+no file uploads — so this capability is **disabled by default and provisions
+nothing**. It exists as a "provide it if ever needed" option: each Cloud Run
+service can independently get a dedicated GCS bucket mounted into the container
+as a Cloud Storage FUSE volume.
+
+When both `backend_bucket_enabled` and `frontend_bucket_enabled` are `false`
+(the defaults), the plan is **byte-identical** to the no-bucket stack: no
+bucket, no volume, no mount, no extra IAM, and the services keep the default
+(gen1) execution environment. The toggle is wired through the reusable
+`cloudrun` module so both instantiations stay DRY.
+
+When enabled for a service, Terraform creates:
+
+- a `google_storage_bucket` (`location = region`,
+  `uniform_bucket_level_access = true`, `force_destroy` and `versioning`
+  configurable, both off by default), named from the `*_bucket_name` var or
+  derived as `<project_id>-<name_prefix>-<service>`;
+- a `volumes { gcs { ... } }` + matching `volume_mounts { mount_path = ... }`
+  on the Cloud Run v2 service, with
+  `execution_environment = "EXECUTION_ENVIRONMENT_GEN2"` (required for GCS
+  mounts, and set ONLY when a bucket is mounted);
+- an IAM binding granting that service's **runtime SA**
+  `roles/storage.objectAdmin` on its own bucket.
+
+Enable per service in `terraform.tfvars`, e.g.:
+
+```hcl
+backend_bucket_enabled    = true
+backend_bucket_mount_path = "/mnt/data"   # default
+# backend_bucket_name      = "my-unique-bucket"  # else derived from project+service
+```
+
+**GCS-FUSE caveats** — a mounted bucket is **NOT a POSIX filesystem**:
+
+- **Eventual consistency** for some operations; **no file locking**.
+- **Higher latency** and no atomic rename across "directories".
+- Object metadata operations are comparatively slow.
+- **Do NOT** run a database/SQLite, write-ahead logs, or any latency- or
+  consistency-sensitive workload on it. It is for large, mostly-immutable blobs
+  (assets, exports, backups) — not transactional state.
+
 ## Variables (root) — name, default, purpose
 
 | Variable | Default | Purpose |
@@ -165,6 +209,16 @@ domain and re-apply (see below).
 | `project_name` | `mynance` | App `PROJECT_NAME` |
 | `extra_backend_env` | `{}` | Extra plain backend env (e.g. SECRET_KEY, SENTRY_DSN) |
 | `extra_frontend_env` | `{}` | Extra plain frontend env |
+| `backend_bucket_enabled` | `false` | Provision a GCS bucket + FUSE mount for the backend |
+| `backend_bucket_name` | `""` | Backend bucket name; empty ⇒ `<project_id>-<name_prefix>-backend` |
+| `backend_bucket_mount_path` | `/mnt/data` | Backend container mount path |
+| `backend_bucket_force_destroy` | `false` | Allow destroying a non-empty backend bucket |
+| `backend_bucket_versioning` | `false` | Object versioning on the backend bucket |
+| `frontend_bucket_enabled` | `false` | Provision a GCS bucket + FUSE mount for the frontend |
+| `frontend_bucket_name` | `""` | Frontend bucket name; empty ⇒ `<project_id>-<name_prefix>-frontend` |
+| `frontend_bucket_mount_path` | `/mnt/data` | Frontend container mount path |
+| `frontend_bucket_force_destroy` | `false` | Allow destroying a non-empty frontend bucket |
+| `frontend_bucket_versioning` | `false` | Object versioning on the frontend bucket |
 
 ### Bootstrap variables
 
@@ -194,7 +248,8 @@ domain and re-apply (see below).
 `subnet_self_link`, `network_created`, `cloudsql_instance_name`,
 `cloudsql_connection_name`, `cloudsql_psc_ip`, `db_password_secret_id`,
 `backend_service_uri`, `frontend_service_uri`, `backend_service_account`,
-`frontend_service_account`.
+`frontend_service_account`, `backend_bucket_name` (null when disabled),
+`frontend_bucket_name` (null when disabled).
 
 ## Caveats / TODO
 

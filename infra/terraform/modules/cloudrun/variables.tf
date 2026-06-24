@@ -84,3 +84,40 @@ variable "secret_env" {
   }))
   default = {}
 }
+
+# --- Optional GCS FUSE bucket persistence (DEFAULT OFF) ----------------------
+# The mynance app is stateless (state in Cloud SQL; no file uploads), so this
+# is OFF by default. When `bucket_enabled = false` the module provisions NO
+# bucket, NO volume, NO mount and keeps the gen1 execution environment — i.e.
+# byte-identical to the no-bucket behavior. Enable per service only if a
+# persistent file mount is ever needed. See README for GCS-FUSE caveats
+# (not POSIX: eventual consistency, no file locking, higher latency).
+variable "bucket_enabled" {
+  description = "Enable a GCS bucket + Cloud Storage FUSE volume mount for this service. Default OFF (app is stateless)."
+  type        = bool
+  default     = false
+}
+
+variable "bucket_name" {
+  description = "Name of the GCS bucket to create when bucket_enabled = true. Globally unique."
+  type        = string
+  default     = ""
+}
+
+variable "bucket_mount_path" {
+  description = "Container path where the bucket is mounted (only when bucket_enabled = true)."
+  type        = string
+  default     = "/mnt/data"
+}
+
+variable "bucket_force_destroy" {
+  description = "Allow Terraform to destroy a non-empty bucket (only when bucket_enabled = true)."
+  type        = bool
+  default     = false
+}
+
+variable "bucket_versioning" {
+  description = "Enable object versioning on the bucket (only when bucket_enabled = true)."
+  type        = bool
+  default     = false
+}

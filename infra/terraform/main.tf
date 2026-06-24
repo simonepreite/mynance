@@ -27,6 +27,17 @@ locals {
   #############################################################################
   enable_https = var.domain != ""
 
+  #############################################################################
+  # OPTIONAL GCS FUSE PERSISTENCE (DEFAULT OFF, per service)
+  #
+  # The app is stateless, so buckets default to disabled. When a bucket name is
+  # not explicitly given, derive a parametric one from project + service.
+  # These locals are only consumed when the corresponding *_bucket_enabled
+  # toggle is true (the module ignores the name otherwise).
+  #############################################################################
+  backend_bucket_name  = var.backend_bucket_name != "" ? var.backend_bucket_name : "${var.project_id}-${var.name_prefix}-backend"
+  frontend_bucket_name = var.frontend_bucket_name != "" ? var.frontend_bucket_name : "${var.project_id}-${var.name_prefix}-frontend"
+
   # Required Google APIs. Enabled when var.enable_apis is true.
   required_apis = var.enable_apis ? toset([
     "run.googleapis.com",
@@ -34,6 +45,7 @@ locals {
     "compute.googleapis.com",
     "certificatemanager.googleapis.com",
     "secretmanager.googleapis.com",
+    "storage.googleapis.com", # only used when an optional GCS bucket is enabled
     "servicenetworking.googleapis.com",
     "dns.googleapis.com", # optional but harmless; used if managing DNS in-project
     "iam.googleapis.com",
@@ -143,6 +155,13 @@ module "backend" {
     }
   }
 
+  # Optional GCS FUSE persistence (default OFF; nothing created when disabled).
+  bucket_enabled       = var.backend_bucket_enabled
+  bucket_name          = local.backend_bucket_name
+  bucket_mount_path    = var.backend_bucket_mount_path
+  bucket_force_destroy = var.backend_bucket_force_destroy
+  bucket_versioning    = var.backend_bucket_versioning
+
   depends_on = [google_project_service.apis]
 }
 
@@ -171,6 +190,13 @@ module "frontend" {
   env = merge({
     VITE_API_URL = local.enable_https ? "https://api.${var.domain}" : "http://api.${var.domain}"
   }, var.extra_frontend_env)
+
+  # Optional GCS FUSE persistence (default OFF; nothing created when disabled).
+  bucket_enabled       = var.frontend_bucket_enabled
+  bucket_name          = local.frontend_bucket_name
+  bucket_mount_path    = var.frontend_bucket_mount_path
+  bucket_force_destroy = var.frontend_bucket_force_destroy
+  bucket_versioning    = var.frontend_bucket_versioning
 
   depends_on = [google_project_service.apis]
 }

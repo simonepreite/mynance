@@ -67,3 +67,13 @@ output "frontend_service_account" {
   description = "Frontend runtime service account email."
   value       = module.frontend.service_account_email
 }
+
+output "backend_bucket_name" {
+  description = "Name of the backend GCS bucket, or null when backend_bucket_enabled = false."
+  value       = module.backend.bucket_name
+}
+
+output "frontend_bucket_name" {
+  description = "Name of the frontend GCS bucket, or null when frontend_bucket_enabled = false."
+  value       = module.frontend.bucket_name
+}

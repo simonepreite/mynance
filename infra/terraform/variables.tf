@@ -207,3 +207,68 @@ variable "extra_frontend_env" {
   type        = map(string)
   default     = {}
 }
+
+# --- Optional GCS FUSE persistence (DEFAULT OFF, per service) ----------------
+# The app is stateless (state in Cloud SQL; no file uploads), so these default
+# to false and provision NOTHING. Enable a bucket per service ONLY if a
+# persistent file mount is ever needed. See README for the GCS-FUSE caveats
+# (not a POSIX filesystem; not for databases/SQLite).
+variable "backend_bucket_enabled" {
+  description = "Provision a GCS bucket + FUSE mount for the backend service. Default OFF."
+  type        = bool
+  default     = false
+}
+
+variable "backend_bucket_name" {
+  description = "Name of the backend GCS bucket. Empty => derived from project + service. Globally unique."
+  type        = string
+  default     = ""
+}
+
+variable "backend_bucket_mount_path" {
+  description = "Container mount path for the backend bucket (only when enabled)."
+  type        = string
+  default     = "/mnt/data"
+}
+
+variable "backend_bucket_force_destroy" {
+  description = "Allow Terraform to destroy a non-empty backend bucket (only when enabled)."
+  type        = bool
+  default     = false
+}
+
+variable "backend_bucket_versioning" {
+  description = "Enable object versioning on the backend bucket (only when enabled)."
+  type        = bool
+  default     = false
+}
+
+variable "frontend_bucket_enabled" {
+  description = "Provision a GCS bucket + FUSE mount for the frontend service. Default OFF."
+  type        = bool
+  default     = false
+}
+
+variable "frontend_bucket_name" {
+  description = "Name of the frontend GCS bucket. Empty => derived from project + service. Globally unique."
+  type        = string
+  default     = ""
+}
+
+variable "frontend_bucket_mount_path" {
+  description = "Container mount path for the frontend bucket (only when enabled)."
+  type        = string
+  default     = "/mnt/data"
+}
+
+variable "frontend_bucket_force_destroy" {
+  description = "Allow Terraform to destroy a non-empty frontend bucket (only when enabled)."
+  type        = bool
+  default     = false
+}
+
+variable "frontend_bucket_versioning" {
+  description = "Enable object versioning on the frontend bucket (only when enabled)."
+  type        = bool
+  default     = false
+}

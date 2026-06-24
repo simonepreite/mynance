@@ -26,6 +26,37 @@ resource "google_service_account" "this" {
   display_name = "Runtime SA for Cloud Run service ${var.service_name}"
 }
 
+# --- Optional GCS bucket (DEFAULT OFF) ---------------------------------------
+# Gated entirely on var.bucket_enabled. When false: zero resources created.
+locals {
+  bucket_enabled = var.bucket_enabled
+  # Stable internal name for the Cloud Run volume <-> mount pairing.
+  bucket_volume_name = "gcs-data"
+}
+
+resource "google_storage_bucket" "this" {
+  count = local.bucket_enabled ? 1 : 0
+
+  project                     = var.project_id
+  name                        = var.bucket_name
+  location                    = var.region
+  uniform_bucket_level_access = true
+  force_destroy               = var.bucket_force_destroy
+
+  versioning {
+    enabled = var.bucket_versioning
+  }
+}
+
+# Runtime SA gets object-level admin on its own bucket (read/write objects).
+resource "google_storage_bucket_iam_member" "this" {
+  count = local.bucket_enabled ? 1 : 0
+
+  bucket = google_storage_bucket.this[0].name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.this.email}"
+}
+
 resource "google_cloud_run_v2_service" "this" {
   project  = var.project_id
   name     = var.service_name
@@ -38,6 +69,11 @@ resource "google_cloud_run_v2_service" "this" {
 
   template {
     service_account = google_service_account.this.email
+
+    # GCS FUSE volume mounts require the gen2 execution environment. Only set
+    # it when a bucket is actually mounted; otherwise leave it to the Cloud Run
+    # default (unset) so disabled services are byte-identical to before.
+    execution_environment = local.bucket_enabled ? "EXECUTION_ENVIRONMENT_GEN2" : null
 
     scaling {
       min_instance_count = var.min_instances
@@ -91,6 +127,27 @@ resource "google_cloud_run_v2_service" "this" {
               version = env.value.version
             }
           }
+        }
+      }
+
+      # Mount the GCS FUSE volume into the container (only when enabled).
+      dynamic "volume_mounts" {
+        for_each = local.bucket_enabled ? [1] : []
+        content {
+          name       = local.bucket_volume_name
+          mount_path = var.bucket_mount_path
+        }
+      }
+    }
+
+    # Cloud Storage FUSE volume backed by the bucket (only when enabled).
+    dynamic "volumes" {
+      for_each = local.bucket_enabled ? [1] : []
+      content {
+        name = local.bucket_volume_name
+        gcs {
+          bucket    = google_storage_bucket.this[0].name
+          read_only = false
         }
       }
     }
