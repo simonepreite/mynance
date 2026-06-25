@@ -83,7 +83,10 @@ def create_categoria(
 @router.get("/")
 def list_categorie(session: SessionDep, current_utente: CurrentUtente) -> CategorieList:
     repo = _repo(session, current_utente)
-    items = repo.list()
+    # Deterministic order: user Categorie first (alphabetical), system "non
+    # identificato" plugs last. Without this the underlying query has no ORDER
+    # BY, so the heap order is unstable as the table grows.
+    items = sorted(repo.list(), key=lambda c: (c.is_system, c.nome.lower()))
     return CategorieList(
         spesa=[_public(c) for c in items if c.tipo == CategoriaTipo.spesa.value],
         entrata=[_public(c) for c in items if c.tipo == CategoriaTipo.entrata.value],

@@ -21,7 +21,7 @@ import { LoadingButton } from "@/components/ui/loading-button"
 import { PasswordInput } from "@/components/ui/password-input"
 import { isLoggedIn } from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
-import { LoginService } from "@/lib/api"
+import { AuthService, type ResetPasswordRequest } from "@/lib/api"
 import { handleError } from "@/utils"
 
 const searchSchema = z.object({
@@ -32,14 +32,12 @@ const formSchema = z
   .object({
     new_password: z
       .string()
-      .min(1, { message: "Password is required" })
-      .min(8, { message: "Password must be at least 8 characters" }),
-    confirm_password: z
-      .string()
-      .min(1, { message: "Password confirmation is required" }),
+      .min(1, { message: "Inserisci la password" })
+      .min(8, { message: "La password deve avere almeno 8 caratteri" }),
+    confirm_password: z.string().min(1, { message: "Conferma la password" }),
   })
   .refine((data) => data.new_password === data.confirm_password, {
-    message: "The passwords don't match",
+    message: "Le password non coincidono",
     path: ["confirm_password"],
   })
 
@@ -81,10 +79,10 @@ function ResetPassword() {
   })
 
   const mutation = useMutation({
-    mutationFn: (data: { new_password: string; token: string }) =>
-      LoginService.resetPassword({ requestBody: data }),
+    mutationFn: (data: ResetPasswordRequest) =>
+      AuthService.resetPassword({ requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("Password updated successfully")
+      showSuccessToast("Password aggiornata. Ora puoi accedere.")
       form.reset()
       navigate({ to: "/login" })
     },
@@ -103,7 +101,10 @@ function ResetPassword() {
           className="flex flex-col gap-6"
         >
           <div className="flex flex-col items-center gap-2 text-center">
-            <h1 className="text-2xl font-bold">Reset Password</h1>
+            <h1 className="text-2xl font-bold">Reimposta la password</h1>
+            <p className="text-muted-foreground text-sm">
+              Scegli una nuova password per il tuo account.
+            </p>
           </div>
 
           <div className="grid gap-4">
@@ -112,11 +113,12 @@ function ResetPassword() {
               name="new_password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>Nuova password</FormLabel>
                   <FormControl>
                     <PasswordInput
                       data-testid="new-password-input"
-                      placeholder="New Password"
+                      placeholder="Almeno 8 caratteri"
+                      autoComplete="new-password"
                       {...field}
                     />
                   </FormControl>
@@ -130,11 +132,12 @@ function ResetPassword() {
               name="confirm_password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>Conferma password</FormLabel>
                   <FormControl>
                     <PasswordInput
                       data-testid="confirm-password-input"
-                      placeholder="Confirm Password"
+                      placeholder="Ripeti la password"
+                      autoComplete="new-password"
                       {...field}
                     />
                   </FormControl>
@@ -148,14 +151,17 @@ function ResetPassword() {
               className="w-full"
               loading={mutation.isPending}
             >
-              Reset Password
+              Reimposta password
             </LoadingButton>
           </div>
 
           <div className="text-center text-sm">
-            Remember your password?{" "}
-            <RouterLink to="/login" className="underline underline-offset-4">
-              Log in
+            Link scaduto?{" "}
+            <RouterLink
+              to="/forgot-password"
+              className="underline underline-offset-4"
+            >
+              Richiedi un nuovo link
             </RouterLink>
           </div>
         </form>

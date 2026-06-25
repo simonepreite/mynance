@@ -1,0 +1,20 @@
+<mjml>
+  <mj-body background-color="#fafbfc">
+    <mj-section background-color="#ffffff">
+      <mj-column>
+        <mj-text font-size="20px" color="#333333" align="center">{{ project_name }} - Verifica il tuo indirizzo email</mj-text>
+        <mj-text font-size="16px" color="#555555" align="center">Ciao {{ username }},</mj-text>
+        <mj-text font-size="16px" color="#555555" align="center">
+          Per completare la registrazione e accedere a {{ project_name }}, conferma il tuo
+          indirizzo email ({{ email }}) cliccando il pulsante qui sotto.
+        </mj-text>
+        <mj-button href="{{ link }}" background-color="#009688" font-size="18px" border-radius="8px">Verifica email</mj-button>
+        <mj-text font-size="15px" color="#555555" align="center">Oppure copia e incolla questo link nel browser:</mj-text>
+        <mj-text font-size="15px" align="center"><a href="{{ link }}">{{ link }}</a></mj-text>
+        <mj-text font-size="15px" color="#555555" align="center">Il link scade tra {{ valid_hours }} ore.</mj-text>
+        <mj-divider border-color="#cccccc" />
+        <mj-text font-size="14px" color="#888888" align="center">Se non hai creato questo account, ignora pure questa email.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

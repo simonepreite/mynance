@@ -3,12 +3,14 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LiquiditaGetCuscinettoMesiResponse, LiquiditaSetCuscinettoMesiData, LiquiditaSetCuscinettoMesiResponse, LiquiditaAllocazioneData, LiquiditaAllocazioneResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PatrimonioListInvestimentiResponse, PatrimonioCreateInvestimentoData, PatrimonioCreateInvestimentoResponse, PatrimonioUpdateInvestimentoData, PatrimonioUpdateInvestimentoResponse, PatrimonioDeleteInvestimentoData, PatrimonioDeleteInvestimentoResponse, PatrimonioCreateVersamentoData, PatrimonioCreateVersamentoResponse, PatrimonioListVersamentiData, PatrimonioListVersamentiResponse, PatrimonioUpdateVersamentoData, PatrimonioUpdateVersamentoResponse, PatrimonioDeleteVersamentoData, PatrimonioDeleteVersamentoResponse, PatrimonioListImmobiliResponse, PatrimonioCreateImmobileData, PatrimonioCreateImmobileResponse, PatrimonioUpdateImmobileData, PatrimonioUpdateImmobileResponse, PatrimonioDeleteImmobileData, PatrimonioDeleteImmobileResponse, PatrimonioListMobiliResponse, PatrimonioCreateMobileData, PatrimonioCreateMobileResponse, PatrimonioUpdateMobileData, PatrimonioUpdateMobileResponse, PatrimonioDeleteMobileData, PatrimonioDeleteMobileResponse, PatrimonioPatrimonioResponse, PrivateCreateUserData, PrivateCreateUserResponse, RegoleRicorrentiCreateRegolaData, RegoleRicorrentiCreateRegolaResponse, RegoleRicorrentiListRegoleData, RegoleRicorrentiListRegoleResponse, RegoleRicorrentiGetRegolaData, RegoleRicorrentiGetRegolaResponse, RegoleRicorrentiUpdateRegolaData, RegoleRicorrentiUpdateRegolaResponse, RegoleRicorrentiDeleteRegolaData, RegoleRicorrentiDeleteRegolaResponse, RiconciliazioneGetIntervalloResponse, RiconciliazioneSetIntervalloData, RiconciliazioneSetIntervalloResponse, RiconciliazionePromemoriaResponse, RiconciliazioneAnteprimaData, RiconciliazioneAnteprimaResponse, RiconciliazioneHistoryResponse, RiconciliazioneConfirmData, RiconciliazioneConfirmResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, SecchielliRegistraPagamentoData, SecchielliRegistraPagamentoResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { AuthRegisterData, AuthRegisterResponse, AuthLoginData, AuthLoginResponse, AuthReadMeResponse, AuthLogoutResponse, AuthRecoverData, AuthRecoverResponse, AuthVerifyEmailData, AuthVerifyEmailResponse, AuthResendVerificationData, AuthResendVerificationResponse, AuthForgotPasswordData, AuthForgotPasswordResponse, AuthResetPasswordData, AuthResetPasswordResponse, CategorieListCategorieResponse, CategorieCreateCategoriaData, CategorieCreateCategoriaResponse, CategorieUpdateCategoriaData, CategorieUpdateCategoriaResponse, CategorieDeleteCategoriaData, CategorieDeleteCategoriaResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LiquiditaReadLiquiditaResponse, LiquiditaReadLiquiditaInizialeResponse, LiquiditaSetLiquiditaInizialeData, LiquiditaSetLiquiditaInizialeResponse, LiquiditaGetCuscinettoMesiResponse, LiquiditaSetCuscinettoMesiData, LiquiditaSetCuscinettoMesiResponse, LiquiditaAllocazioneData, LiquiditaAllocazioneResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, MovimentiCreateMovimentoData, MovimentiCreateMovimentoResponse, MovimentiListMovimentiData, MovimentiListMovimentiResponse, MovimentiUpdateMovimentoData, MovimentiUpdateMovimentoResponse, MovimentiDeleteMovimentoData, MovimentiDeleteMovimentoResponse, PatrimonioListInvestimentiResponse, PatrimonioCreateInvestimentoData, PatrimonioCreateInvestimentoResponse, PatrimonioUpdateInvestimentoData, PatrimonioUpdateInvestimentoResponse, PatrimonioDeleteInvestimentoData, PatrimonioDeleteInvestimentoResponse, PatrimonioCreateVersamentoData, PatrimonioCreateVersamentoResponse, PatrimonioListVersamentiData, PatrimonioListVersamentiResponse, PatrimonioUpdateVersamentoData, PatrimonioUpdateVersamentoResponse, PatrimonioDeleteVersamentoData, PatrimonioDeleteVersamentoResponse, PatrimonioListImmobiliResponse, PatrimonioCreateImmobileData, PatrimonioCreateImmobileResponse, PatrimonioUpdateImmobileData, PatrimonioUpdateImmobileResponse, PatrimonioDeleteImmobileData, PatrimonioDeleteImmobileResponse, PatrimonioListMobiliResponse, PatrimonioCreateMobileData, PatrimonioCreateMobileResponse, PatrimonioUpdateMobileData, PatrimonioUpdateMobileResponse, PatrimonioDeleteMobileData, PatrimonioDeleteMobileResponse, PatrimonioPatrimonioResponse, PrivateCreateUserData, PrivateCreateUserResponse, RegoleRicorrentiCreateRegolaData, RegoleRicorrentiCreateRegolaResponse, RegoleRicorrentiListRegoleData, RegoleRicorrentiListRegoleResponse, RegoleRicorrentiGetRegolaData, RegoleRicorrentiGetRegolaResponse, RegoleRicorrentiUpdateRegolaData, RegoleRicorrentiUpdateRegolaResponse, RegoleRicorrentiDeleteRegolaData, RegoleRicorrentiDeleteRegolaResponse, RiconciliazioneGetIntervalloResponse, RiconciliazioneSetIntervalloData, RiconciliazioneSetIntervalloResponse, RiconciliazionePromemoriaResponse, RiconciliazioneAnteprimaData, RiconciliazioneAnteprimaResponse, RiconciliazioneHistoryResponse, RiconciliazioneConfirmData, RiconciliazioneConfirmResponse, RiepilogoBilancioData, RiepilogoBilancioResponse, RiepilogoStatisticheData, RiepilogoStatisticheResponse, SecchielliListSecchielliResponse, SecchielliCreateSecchielloData, SecchielliCreateSecchielloResponse, SecchielliGetSecchielloData, SecchielliGetSecchielloResponse, SecchielliUpdateSecchielloData, SecchielliUpdateSecchielloResponse, SecchielliDeleteSecchielloData, SecchielliDeleteSecchielloResponse, SecchielliRegistraPagamentoData, SecchielliRegistraPagamentoResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class AuthService {
     /**
      * Register
-     * Create an Utente and return the one-time recovery code (shown once).
+     * Create an unverified Utente, send a verification email, and return the
+     * one-time recovery code (shown once). No session is issued — the user must
+     * verify their email before logging in.
      * @param data The data for the request.
      * @param data.requestBody
      * @returns UtenteRegisterResponse Successful Response
@@ -84,6 +86,86 @@ export class AuthService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/auth/recover',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Verify Email
+     * Confirm an email address by consuming a single-use verify token.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static verifyEmail(data: AuthVerifyEmailData): CancelablePromise<AuthVerifyEmailResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/auth/verify-email',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Resend Verification
+     * Re-send the verification link. Generic response (no account enumeration).
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static resendVerification(data: AuthResendVerificationData): CancelablePromise<AuthResendVerificationResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/auth/resend-verification',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Forgot Password
+     * Start an email password reset. Generic response (no account enumeration).
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static forgotPassword(data: AuthForgotPasswordData): CancelablePromise<AuthForgotPasswordResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/auth/forgot-password',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Reset Password
+     * Set a new password by consuming a single-use reset token.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static resetPassword(data: AuthResetPasswordData): CancelablePromise<AuthResetPasswordResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/auth/reset-password',
             body: data.requestBody,
             mediaType: 'application/json',
             errors: {

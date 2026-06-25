@@ -34,9 +34,25 @@ def get_utente_by_username(*, session: Session, username: str) -> Utente | None:
     return session.exec(statement).first()
 
 
+def get_utente_by_email(*, session: Session, email: str) -> Utente | None:
+    statement = select(Utente).where(Utente.email == email)
+    return session.exec(statement).first()
+
+
+def get_utente_by_identifier(*, session: Session, identifier: str) -> Utente | None:
+    """Resolve an Utente by username, falling back to email."""
+    utente = get_utente_by_username(session=session, username=identifier)
+    if utente is None:
+        utente = get_utente_by_email(session=session, email=identifier)
+    return utente
+
+
 def authenticate(*, session: Session, username: str, password: str) -> Utente | None:
-    """Return the Utente iff username+password match; constant-time on miss."""
-    utente = get_utente_by_username(session=session, username=username)
+    """Return the Utente iff identifier+password match; constant-time on miss.
+
+    ``username`` accepts a username *or* an email.
+    """
+    utente = get_utente_by_identifier(session=session, identifier=username)
     if utente is None or utente.deleted_at is not None:
         verify_password(password, DUMMY_PASSWORD_HASH)
         return None
@@ -52,16 +68,19 @@ def authenticate(*, session: Session, username: str, password: str) -> Utente | 
 
 
 def create_utente(
-    *, session: Session, username: str, password: str
+    *, session: Session, username: str, password: str, email: str
 ) -> tuple[Utente, str]:
-    """Create an Utente; return it with the one-time recovery code plaintext.
+    """Create an unverified Utente; return it with the one-time recovery code.
 
-    The plaintext is returned exactly once (for the registration response) and
-    never persisted — only its salted hash is stored.
+    The recovery-code plaintext is returned exactly once (for the registration
+    response) and never persisted — only its salted hash is stored. The account
+    starts ``email_verified=False`` (verification gates login).
     """
     recovery_code = generate_recovery_code()
     utente = Utente(
         username=username,
+        email=email,
+        email_verified=False,
         password_hash=get_password_hash(password),
         recovery_code_hash=hash_recovery_code(recovery_code),
     )
@@ -69,6 +88,21 @@ def create_utente(
     session.commit()
     session.refresh(utente)
     return utente, recovery_code
+
+
+def set_password(*, session: Session, utente: Utente, new_password: str) -> None:
+    """Replace the password hash (used by the email-based reset flow)."""
+    utente.password_hash = get_password_hash(new_password)
+    utente.updated_at = get_datetime_utc()
+    session.add(utente)
+    session.commit()
+
+
+def mark_email_verified(*, session: Session, utente: Utente) -> None:
+    utente.email_verified = True
+    utente.updated_at = get_datetime_utc()
+    session.add(utente)
+    session.commit()
 
 
 def recover_utente(

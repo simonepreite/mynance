@@ -1,0 +1,35 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ project_name }} - Verifica email</title>
+  </head>
+  <body style="margin:0;padding:0;background-color:#fafbfc;">
+    <div style="background-color:#fafbfc;padding:24px 0;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
+             style="background:#ffffff;border-radius:8px;max-width:600px;width:100%;margin:0 auto;font-family:Arial,Helvetica,sans-serif;">
+        <tr>
+          <td style="padding:40px 35px;text-align:center;color:#333333;">
+            <div style="font-size:20px;line-height:1.2;color:#333333;">{{ project_name }} - Verifica il tuo indirizzo email</div>
+            <div style="font-size:16px;line-height:1.4;color:#555555;padding-top:20px;">Ciao {{ username }},</div>
+            <div style="font-size:16px;line-height:1.4;color:#555555;padding-top:12px;">
+              Per completare la registrazione e accedere a {{ project_name }}, conferma il tuo
+              indirizzo email ({{ email }}) cliccando il pulsante qui sotto.
+            </div>
+            <div style="padding:24px 0;">
+              <a href="{{ link }}"
+                 style="background:#009688;color:#ffffff;border-radius:8px;padding:12px 28px;font-size:18px;text-decoration:none;display:inline-block;"
+                 target="_blank">Verifica email</a>
+            </div>
+            <div style="font-size:15px;line-height:1.4;color:#555555;">Oppure copia e incolla questo link nel browser:</div>
+            <div style="font-size:15px;line-height:1.4;padding-top:6px;"><a href="{{ link }}">{{ link }}</a></div>
+            <div style="font-size:15px;line-height:1.4;color:#555555;padding-top:18px;">Il link scade tra {{ valid_hours }} ore.</div>
+            <hr style="border:none;border-top:solid 2px #cccccc;margin:24px 0;" />
+            <div style="font-size:14px;line-height:1.4;color:#888888;">Se non hai creato questo account, ignora pure questa email.</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

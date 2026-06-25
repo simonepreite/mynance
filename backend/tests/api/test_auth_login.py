@@ -1,22 +1,16 @@
 """mynance auth: login, session, logout, rate limiting (Story 1.4, FR-2)."""
 
-import uuid
-
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
+from tests.utils.utente import PW, register_verified
 
 PROBLEM_JSON = "application/problem+json"
-PW = "una-password-robusta"
 
 
 def _register(client: TestClient) -> str:
-    username = f"luigi_{uuid.uuid4().hex[:12]}"
-    r = client.post(
-        f"{settings.API_V1_STR}/auth/register",
-        json={"username": username, "password": PW},
-    )
-    assert r.status_code == 201
+    """Register a verified Utente (login is gated by verification)."""
+    username, _ = register_verified(client)
     return username
 
 

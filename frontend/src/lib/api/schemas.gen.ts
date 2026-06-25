@@ -577,6 +577,33 @@ export const DriftPreviewSchema = {
     title: 'DriftPreview'
 } as const;
 
+export const EmailVerifyRequestSchema = {
+    properties: {
+        token: {
+            type: 'string',
+            minLength: 1,
+            title: 'Token'
+        }
+    },
+    type: 'object',
+    required: ['token'],
+    title: 'EmailVerifyRequest'
+} as const;
+
+export const ForgotPasswordRequestSchema = {
+    properties: {
+        email: {
+            type: 'string',
+            maxLength: 255,
+            format: 'email',
+            title: 'Email'
+        }
+    },
+    type: 'object',
+    required: ['email'],
+    title: 'ForgotPasswordRequest'
+} as const;
+
 export const HTTPValidationErrorSchema = {
     properties: {
         detail: {
@@ -1476,6 +1503,39 @@ export const RegoleRicorrentiListSchema = {
     title: 'RegoleRicorrentiList'
 } as const;
 
+export const ResendVerificationRequestSchema = {
+    properties: {
+        identifier: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Identifier'
+        }
+    },
+    type: 'object',
+    required: ['identifier'],
+    title: 'ResendVerificationRequest'
+} as const;
+
+export const ResetPasswordRequestSchema = {
+    properties: {
+        token: {
+            type: 'string',
+            minLength: 1,
+            title: 'Token'
+        },
+        new_password: {
+            type: 'string',
+            maxLength: 128,
+            minLength: 8,
+            title: 'New Password'
+        }
+    },
+    type: 'object',
+    required: ['token', 'new_password'],
+    title: 'ResetPasswordRequest'
+} as const;
+
 export const RiconciliazioneCreateSchema = {
     properties: {
         liquidita_reale_cents: {
@@ -2131,6 +2191,22 @@ export const UtentePublicSchema = {
             type: 'string',
             title: 'Username'
         },
+        email: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Email'
+        },
+        email_verified: {
+            type: 'boolean',
+            title: 'Email Verified',
+            default: false
+        },
         session_timeout_days: {
             type: 'integer',
             title: 'Session Timeout Days'
@@ -2187,6 +2263,12 @@ export const UtenteRegisterSchema = {
             minLength: 3,
             title: 'Username'
         },
+        email: {
+            type: 'string',
+            maxLength: 255,
+            format: 'email',
+            title: 'Email'
+        },
         password: {
             type: 'string',
             maxLength: 128,
@@ -2195,7 +2277,7 @@ export const UtenteRegisterSchema = {
         }
     },
     type: 'object',
-    required: ['username', 'password'],
+    required: ['username', 'email', 'password'],
     title: 'UtenteRegister'
 } as const;
 

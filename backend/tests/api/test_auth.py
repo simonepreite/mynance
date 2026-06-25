@@ -23,11 +23,17 @@ def test_register_returns_one_time_recovery_code_and_stores_only_hashes(
     password = "una-password-robusta"
     r = client.post(
         f"{settings.API_V1_STR}/auth/register",
-        json={"username": username, "password": password},
+        json={
+            "username": username,
+            "email": f"{username}@example.com",
+            "password": password,
+        },
     )
     assert r.status_code == 201
     body = r.json()
     assert body["utente"]["username"] == username
+    assert body["utente"]["email"] == f"{username}@example.com"
+    assert body["utente"]["email_verified"] is False
     assert body["utente"]["session_timeout_days"] == 30
     assert "id" in body["utente"]
     recovery_code = body["recovery_code"]
@@ -46,7 +52,11 @@ def test_register_duplicate_username_is_conflict_problem_json(
     client: TestClient,
 ) -> None:
     username = _unique_username()
-    payload = {"username": username, "password": "una-password-robusta"}
+    payload = {
+        "username": username,
+        "email": f"{username}@example.com",
+        "password": "una-password-robusta",
+    }
     first = client.post(f"{settings.API_V1_STR}/auth/register", json=payload)
     assert first.status_code == 201
     second = client.post(f"{settings.API_V1_STR}/auth/register", json=payload)
@@ -59,7 +69,11 @@ def test_recover_with_correct_code_sets_new_password(client: TestClient) -> None
     username = _unique_username()
     reg = client.post(
         f"{settings.API_V1_STR}/auth/register",
-        json={"username": username, "password": "vecchia-password"},
+        json={
+            "username": username,
+            "email": f"{username}@example.com",
+            "password": "vecchia-password",
+        },
     )
     recovery_code = reg.json()["recovery_code"]
     r = client.post(
@@ -78,7 +92,11 @@ def test_recover_with_wrong_code_is_generic_problem_json(client: TestClient) -> 
     username = _unique_username()
     client.post(
         f"{settings.API_V1_STR}/auth/register",
-        json={"username": username, "password": "una-password-robusta"},
+        json={
+            "username": username,
+            "email": f"{username}@example.com",
+            "password": "una-password-robusta",
+        },
     )
     r = client.post(
         f"{settings.API_V1_STR}/auth/recover",

@@ -1,3 +1,4 @@
+import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -59,3 +60,17 @@ def hash_recovery_code(code: str) -> str:
 def verify_recovery_code(code: str, code_hash: str) -> bool:
     valid, _ = password_hash.verify_and_update(code, code_hash)
     return valid
+
+
+def generate_url_token() -> str:
+    """A high-entropy URL-safe token for email-verification / reset links."""
+    return secrets.token_urlsafe(32)
+
+
+def hash_url_token(token: str) -> str:
+    """Deterministic sha256 of a URL token, so it can be looked up by hash.
+
+    The token is already ~256 bits of randomness, so a fast hash is sufficient
+    (no need for a slow password hash) and lets us query by ``token_hash``.
+    """
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()

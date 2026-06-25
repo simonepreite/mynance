@@ -5,6 +5,7 @@ import uuid
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
+from tests.utils.utente import verify_in_db
 
 PW = "una-password-robusta"
 PROBLEM_JSON = "application/problem+json"
@@ -20,8 +21,9 @@ def _auth(client: TestClient) -> dict[str, str]:
     username = f"pat_{uuid.uuid4().hex[:12]}"
     client.post(
         f"{settings.API_V1_STR}/auth/register",
-        json={"username": username, "password": PW},
+        json={"username": username, "email": f"{username}@example.com", "password": PW},
     )
+    verify_in_db(username)
     token = client.post(
         f"{settings.API_V1_STR}/auth/login",
         json={"username": username, "password": PW},
