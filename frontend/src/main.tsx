@@ -13,7 +13,14 @@ import { Toaster } from "./components/ui/sonner"
 import "./index.css"
 import { routeTree } from "./routeTree.gen"
 
-OpenAPI.BASE = import.meta.env.VITE_API_URL
+// VITE_API_URL is injected as a Docker build-arg in real builds. In native dev
+// (`vite`) it may be unset; without a guard `OpenAPI.BASE` would be `undefined`,
+// making every request URL `"undefined/api/v1/..."` -> 404. Fall back to the
+// local backend in dev only; keep prod strict ("") so a missing build-arg fails
+// loudly instead of silently pointing at localhost.
+OpenAPI.BASE =
+  import.meta.env.VITE_API_URL ??
+  (import.meta.env.DEV ? "http://localhost:8000" : "")
 OpenAPI.TOKEN = async () => {
   return localStorage.getItem("access_token") || ""
 }
