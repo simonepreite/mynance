@@ -77,7 +77,7 @@ def test_cuscinetto_from_complete_months_and_below_flag(client: TestClient) -> N
     cat = _spesa_cat(client, headers)
     # Two complete prior months (current month excluded), 100000 each.
     for data in ("2026-04-10", "2026-05-12"):
-        client.post(
+        seeded = client.post(
             MOV,
             headers=headers,
             json={
@@ -87,6 +87,7 @@ def test_cuscinetto_from_complete_months_and_below_flag(client: TestClient) -> N
                 "categoria_id": cat,
             },
         )
+        assert seeded.status_code == 201
     a = client.get(ALLOC, headers=headers, params={"mesi": 6}).json()
     assert a["spesa_media_mensile_cents"] == 100000  # mean over the 2 available
     assert a["cuscinetto_cents"] == 600000  # 6 × media
@@ -108,6 +109,8 @@ def test_cuscinetto_mesi_default_and_update(client: TestClient) -> None:
     assert client.get(CUSC, headers=headers).json()["mesi_cuscinetto"] == 6
     ok = client.put(CUSC, headers=headers, json={"mesi_cuscinetto": 3})
     assert ok.status_code == 200 and ok.json()["mesi_cuscinetto"] == 3
+    # Re-GET confirms the PUT persisted (not just echoed in the response).
+    assert client.get(CUSC, headers=headers).json()["mesi_cuscinetto"] == 3
     bad = client.put(CUSC, headers=headers, json={"mesi_cuscinetto": 0})
     assert bad.status_code == 422
 
@@ -116,7 +119,7 @@ def test_allocazione_uses_stored_mesi(client: TestClient) -> None:
     headers = _auth(client)
     cat = _spesa_cat(client, headers)
     for data in ("2026-04-10", "2026-05-12"):
-        client.post(
+        seeded = client.post(
             MOV,
             headers=headers,
             json={
@@ -126,7 +129,11 @@ def test_allocazione_uses_stored_mesi(client: TestClient) -> None:
                 "categoria_id": cat,
             },
         )
-    client.put(CUSC, headers=headers, json={"mesi_cuscinetto": 3})
+        assert seeded.status_code == 201
+    assert (
+        client.put(CUSC, headers=headers, json={"mesi_cuscinetto": 3}).status_code
+        == 200
+    )
     a = client.get(ALLOC, headers=headers).json()  # no mesi override
     assert a["mesi_cuscinetto"] == 3
     assert a["cuscinetto_cents"] == 300000  # 3 × media(100000)

@@ -46,6 +46,7 @@ import {
   type CategoriaTipo,
   CategorieService,
 } from "@/lib/api"
+import { cn } from "@/lib/utils"
 import { handleError } from "@/utils"
 
 function categorieQueryOptions() {
@@ -131,9 +132,11 @@ function CategoriaGroup({
             <Fragment key={parent.id}>
               <CategoriaRow categoria={parent} />
               {childrenOf(parent.id).map((child) => (
-                <li key={child.id} className="ml-6 list-none">
-                  <CategoriaRow categoria={child} />
-                </li>
+                <CategoriaRow
+                  key={child.id}
+                  categoria={child}
+                  className="ml-6"
+                />
               ))}
             </Fragment>
           ))}
@@ -143,9 +146,20 @@ function CategoriaGroup({
   )
 }
 
-function CategoriaRow({ categoria }: { categoria: CategoriaPublic }) {
+function CategoriaRow({
+  categoria,
+  className,
+}: {
+  categoria: CategoriaPublic
+  className?: string
+}) {
   return (
-    <li className="flex items-center justify-between gap-2 rounded-md border px-4 py-3">
+    <li
+      className={cn(
+        "flex items-center justify-between gap-2 rounded-md border px-4 py-3",
+        className,
+      )}
+    >
       <span className="truncate">{categoria.nome}</span>
       <div className="flex items-center gap-1">
         <RenameCategoria categoria={categoria} />

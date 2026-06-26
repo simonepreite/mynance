@@ -28,16 +28,17 @@
   template superuser `changethis` (the backend logs a warning at boot) before any
   deployment.
 
-### Sub-categories feature — follow-ups (from whole-branch review, non-blocking)
+### Sub-categories feature — follow-ups (from whole-branch review)
 
-- **Quick-add chips don't label children `Padre › Figlia`** — the design spec
-  (§Frontend) called for parent-prefixed child labels in the quick-add; the plan's
-  Task 7 only mandated the note field, so chips list flat `nome`. Two children with
-  the same name under different parents are indistinguishable. [QuickAdd.tsx]
-- **Categorie tree renders nested `<li>`** — child rows are an `<li>` indent wrapper
-  around `CategoriaRow` (itself an `<li>`); DOM-tolerant but invalid HTML. Clean fix:
-  give `CategoriaRow` a className/indent prop so a child is a single
-  `<li className="ml-6">`. [frontend/src/routes/_layout/categorie.tsx]
-- **Minor test-coverage nits** — tipo-mismatch tested one direction only; a few POST
-  responses not status-asserted; cuscinetto-mesi PUT not re-GET'd (covered
-  transitively). Add when convenient.
+All three resolved (2026-06-26, branch feat/story-1-1-scaffold):
+
+- ~~**Quick-add chips don't label children `Padre › Figlia`**~~ — RESOLVED: `QuickAdd`
+  now resolves a child's parent within the flat option list and renders
+  `Padre › Figlia`, so same-named children under different parents stay
+  distinguishable. [frontend/src/components/Common/QuickAdd.tsx]
+- ~~**Categorie tree renders nested `<li>`**~~ — RESOLVED: `CategoriaRow` takes an
+  optional `className`; child rows render as a single `<li className="ml-6">` instead
+  of an `<li>`-wrapped `<li>`. [frontend/src/routes/_layout/categorie.tsx]
+- ~~**Minor test-coverage nits**~~ — RESOLVED: subcategoria tipo-mismatch now asserts
+  both directions; cuscinetto-mesi PUT is re-GET'd to confirm persistence; seeding
+  POSTs in the allocazione tests are status-asserted.
