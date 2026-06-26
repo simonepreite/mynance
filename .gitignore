@@ -22,3 +22,6 @@ __pycache__/
 # Transient OpenAPI dump produced by scripts/generate_client.sh
 /openapi.json
 /frontend/openapi.json
+
+# Root uses bun.lock; the root-level npm lockfile is a stray artifact
+/package-lock.json
