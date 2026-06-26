@@ -7,6 +7,7 @@ from sqlmodel import Session, select
 
 from app.core.config import settings
 from app.models import RebaselineAudit
+from tests.utils.utente import verify_in_db
 
 PW = "una-password-robusta"
 PROBLEM_JSON = "application/problem+json"
@@ -17,8 +18,9 @@ def _register_and_auth(client: TestClient) -> tuple[dict[str, str], uuid.UUID]:
     username = f"liq_{uuid.uuid4().hex[:12]}"
     reg = client.post(
         f"{settings.API_V1_STR}/auth/register",
-        json={"username": username, "password": PW},
+        json={"username": username, "email": f"{username}@example.com", "password": PW},
     ).json()
+    verify_in_db(username)
     token = client.post(
         f"{settings.API_V1_STR}/auth/login",
         json={"username": username, "password": PW},

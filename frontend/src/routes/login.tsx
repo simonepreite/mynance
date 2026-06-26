@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import {
   createFileRoute,
   Link as RouterLink,
@@ -7,6 +8,8 @@ import {
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { AuthLayout } from "@/components/Common/AuthLayout"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -19,10 +22,11 @@ import { Input } from "@/components/ui/input"
 import { LoadingButton } from "@/components/ui/loading-button"
 import { PasswordInput } from "@/components/ui/password-input"
 import useAuth, { isLoggedIn } from "@/hooks/useAuth"
-import type { UtenteLogin } from "@/lib/api"
+import useCustomToast from "@/hooks/useCustomToast"
+import { ApiError, AuthService, type UtenteLogin } from "@/lib/api"
 
 const formSchema = z.object({
-  username: z.string().min(1, { message: "Inserisci il tuo username" }),
+  username: z.string().min(1, { message: "Inserisci username o email" }),
   password: z.string().min(1, { message: "Inserisci la password" }),
 }) satisfies z.ZodType<UtenteLogin>
 
@@ -48,6 +52,7 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const { loginMutation } = useAuth()
+  const { showSuccessToast } = useCustomToast()
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -56,6 +61,21 @@ function Login() {
       username: "",
       password: "",
     },
+  })
+
+  // A 403 means the account exists but its email isn't verified yet — offer to
+  // resend the verification link instead of just toasting the error.
+  const notVerified =
+    loginMutation.error instanceof ApiError &&
+    loginMutation.error.status === 403
+
+  const resendMutation = useMutation({
+    mutationFn: (identifier: string) =>
+      AuthService.resendVerification({ requestBody: { identifier } }),
+    onSuccess: () =>
+      showSuccessToast(
+        "Email di verifica inviata. Controlla la posta (anche lo spam).",
+      ),
   })
 
   const onSubmit = (data: FormData) => {
@@ -80,11 +100,11 @@ function Login() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Username o email</FormLabel>
                   <FormControl>
                     <Input
                       data-testid="username-input"
-                      placeholder="il-tuo-username"
+                      placeholder="username o tu@esempio.it"
                       type="text"
                       autoComplete="username"
                       {...field}
@@ -103,7 +123,7 @@ function Login() {
                   <div className="flex items-center">
                     <FormLabel>Password</FormLabel>
                     <RouterLink
-                      to="/recover-password"
+                      to="/forgot-password"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
                       Password dimenticata?
@@ -124,6 +144,29 @@ function Login() {
             <LoadingButton type="submit" loading={loginMutation.isPending}>
               Accedi
             </LoadingButton>
+
+            {notVerified && (
+              <Alert>
+                <AlertTitle>Email non verificata</AlertTitle>
+                <AlertDescription className="flex flex-col items-start gap-2">
+                  <span>
+                    Conferma il link che ti abbiamo inviato per email prima di
+                    accedere.
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={resendMutation.isPending}
+                    onClick={() =>
+                      resendMutation.mutate(form.getValues("username"))
+                    }
+                  >
+                    Reinvia email di verifica
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
 
           <div className="text-center text-sm">

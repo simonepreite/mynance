@@ -142,10 +142,12 @@ class NewPassword(SQLModel):
 # Properties received on registration
 class UtenteRegister(SQLModel):
     username: str = Field(min_length=3, max_length=255)
+    email: EmailStr = Field(max_length=255)
     password: str = Field(min_length=8, max_length=128)
 
 
-# Properties received on login
+# Properties received on login. ``identifier`` carries the JSON key ``username``
+# for backward compatibility but accepts a username *or* an email.
 class UtenteLogin(SQLModel):
     username: str = Field(min_length=3, max_length=255)
     password: str = Field(min_length=8, max_length=128)
@@ -164,6 +166,12 @@ class Utente(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     username: str = Field(unique=True, index=True, max_length=255)
+    # Nullable only to grandfather pre-feature accounts (which have no email);
+    # required for new registrations (enforced at the API boundary).
+    email: str | None = Field(default=None, unique=True, index=True, max_length=255)
+    # False until the verification link is clicked; pre-feature rows are
+    # backfilled True by the migration so they keep logging in.
+    email_verified: bool = Field(default=False)
     # argon2 salted hashes — plaintext is never persisted or logged
     password_hash: str
     recovery_code_hash: str
@@ -195,6 +203,8 @@ class Utente(SQLModel, table=True):
 class UtentePublic(SQLModel):
     id: uuid.UUID
     username: str
+    email: str | None = None
+    email_verified: bool = False
     session_timeout_days: int
     created_at: datetime | None = None
 
@@ -204,6 +214,52 @@ class UtentePublic(SQLModel):
 class UtenteRegisterResponse(SQLModel):
     utente: UtentePublic
     recovery_code: str
+
+
+# ---------------------------------------------------------------------------
+# mynance — email verification + password reset (single-use hashed tokens).
+# ---------------------------------------------------------------------------
+
+# Token purposes are stored as plain strings (no DB enum type to migrate).
+TOKEN_PURPOSE_EMAIL_VERIFY = "email_verify"
+TOKEN_PURPOSE_PASSWORD_RESET = "password_reset"
+
+
+class EmailVerifyRequest(SQLModel):
+    token: str = Field(min_length=1)
+
+
+class ResendVerificationRequest(SQLModel):
+    identifier: str = Field(min_length=1, max_length=255)
+
+
+class ForgotPasswordRequest(SQLModel):
+    email: EmailStr = Field(max_length=255)
+
+
+class ResetPasswordRequest(SQLModel):
+    token: str = Field(min_length=1)
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+# Single-use, hashed, expiring token. Only the sha256 hash of the random token
+# is stored; the plaintext lives only in the emailed link.
+class UtenteToken(SQLModel, table=True):
+    __tablename__ = "utente_token"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    utente_id: uuid.UUID = Field(foreign_key="utenti.id", index=True)
+    token_hash: str = Field(index=True, max_length=64)
+    purpose: str = Field(max_length=32)
+    expires_at: datetime = Field(sa_type=DateTime(timezone=True))  # type: ignore
+    used_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
+    created_at: datetime | None = Field(
+        default_factory=get_datetime_utc,
+        sa_type=DateTime(timezone=True),  # type: ignore
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -115,6 +115,14 @@ export type DriftPreview = {
     drift_percent: (number | null);
 };
 
+export type EmailVerifyRequest = {
+    token: string;
+};
+
+export type ForgotPasswordRequest = {
+    email: string;
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -292,6 +300,15 @@ export type RegoleRicorrentiList = {
     offset: number;
 };
 
+export type ResendVerificationRequest = {
+    identifier: string;
+};
+
+export type ResetPasswordRequest = {
+    token: string;
+    new_password: string;
+};
+
 export type RiconciliazioneCreate = {
     liquidita_reale_cents: number;
     esito: RiconciliazioneEsito;
@@ -425,6 +442,8 @@ export type UtenteLogin = {
 export type UtentePublic = {
     id: string;
     username: string;
+    email?: (string | null);
+    email_verified?: boolean;
     session_timeout_days: number;
     created_at?: (string | null);
 };
@@ -437,6 +456,7 @@ export type UtenteRecover = {
 
 export type UtenteRegister = {
     username: string;
+    email: string;
     password: string;
 };
 
@@ -494,6 +514,30 @@ export type AuthRecoverData = {
 };
 
 export type AuthRecoverResponse = (Message);
+
+export type AuthVerifyEmailData = {
+    requestBody: EmailVerifyRequest;
+};
+
+export type AuthVerifyEmailResponse = (Message);
+
+export type AuthResendVerificationData = {
+    requestBody: ResendVerificationRequest;
+};
+
+export type AuthResendVerificationResponse = (Message);
+
+export type AuthForgotPasswordData = {
+    requestBody: ForgotPasswordRequest;
+};
+
+export type AuthForgotPasswordResponse = (Message);
+
+export type AuthResetPasswordData = {
+    requestBody: ResetPasswordRequest;
+};
+
+export type AuthResetPasswordResponse = (Message);
 
 export type CategorieListCategorieResponse = (CategorieList);
 

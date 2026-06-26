@@ -37,6 +37,7 @@ const formSchema = z
       .string()
       .min(3, { message: "L'username deve avere almeno 3 caratteri" })
       .max(50, { message: "L'username è troppo lungo" }),
+    email: z.string().email({ message: "Inserisci un'email valida" }),
     password: z
       .string()
       .min(8, { message: "La password deve avere almeno 8 caratteri" }),
@@ -78,6 +79,7 @@ function SignUp() {
     criteriaMode: "all",
     defaultValues: {
       username: "",
+      email: "",
       password: "",
       confirm_password: "",
     },
@@ -134,6 +136,26 @@ function SignUp() {
                       placeholder="scegli-un-username"
                       type="text"
                       autoComplete="username"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      data-testid="email-input"
+                      placeholder="tu@esempio.it"
+                      type="email"
+                      autoComplete="email"
                       {...field}
                     />
                   </FormControl>
@@ -227,15 +249,17 @@ function RecoveryCodePanel({
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Salva il codice di recupero</h1>
         <p className="text-muted-foreground text-sm">
-          Account creato. Questo codice è l'unico modo per recuperare l'accesso
-          se dimentichi la password.
+          Account creato. Ti abbiamo inviato un'email per verificare il tuo
+          indirizzo: <strong>conferma il link prima di accedere</strong>.
         </p>
       </div>
 
       <Alert variant="destructive">
         <AlertTitle>Lo vedrai solo questa volta</AlertTitle>
         <AlertDescription>
-          Non viene inviata alcuna email: conservalo in un posto sicuro adesso.
+          Questo codice ti permette di recuperare l'accesso se non ricevi
+          l'email o dimentichi la password. Conservalo in un posto sicuro
+          adesso.
         </AlertDescription>
       </Alert>
 

@@ -65,10 +65,56 @@ def generate_test_email(email_to: str) -> EmailData:
     return EmailData(html_content=html_content, subject=subject)
 
 
+def verify_email_link(token: str) -> str:
+    return f"{settings.FRONTEND_HOST}/verify-email?token={token}"
+
+
+def reset_password_link(token: str) -> str:
+    return f"{settings.FRONTEND_HOST}/reset-password?token={token}"
+
+
+def generate_verify_email(email_to: str, username: str, token: str) -> EmailData:
+    """Email verifying the address for a freshly-registered Utente."""
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Verifica il tuo indirizzo email"
+    html_content = render_email_template(
+        template_name="verify_email.html",
+        context={
+            "project_name": settings.PROJECT_NAME,
+            "username": username,
+            "email": email_to,
+            "valid_hours": settings.EMAIL_VERIFY_TOKEN_EXPIRE_HOURS,
+            "link": verify_email_link(token),
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)
+
+
+def deliver_email(*, email_to: str, email_data: EmailData, dev_link: str) -> None:
+    """Send via SMTP when configured; otherwise (dev) log the actionable link.
+
+    Lets local dev complete the verification / reset flow by clicking the link
+    printed in the backend logs — no SMTP server (or corporate proxy) needed.
+    """
+    if settings.emails_enabled:
+        send_email(
+            email_to=email_to,
+            subject=email_data.subject,
+            html_content=email_data.html_content,
+        )
+    else:
+        logger.info(
+            "EMAIL (dev, not sent) to %s — %s — link: %s",
+            email_to,
+            email_data.subject,
+            dev_link,
+        )
+
+
 def generate_reset_password_email(email_to: str, email: str, token: str) -> EmailData:
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {email}"
-    link = f"{settings.FRONTEND_HOST}/reset-password?token={token}"
+    link = reset_password_link(token)
     html_content = render_email_template(
         template_name="reset_password.html",
         context={
