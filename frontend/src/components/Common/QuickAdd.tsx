@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet"
 import useCustomToast from "@/hooks/useCustomToast"
 import {
+  type CategoriaPublic,
   type CategoriaTipo,
   CategorieService,
   type LiquiditaPublic,
@@ -57,6 +58,14 @@ export function QuickAdd({
   })
   const options =
     tipo === "spesa" ? (categorie?.spesa ?? []) : (categorie?.entrata ?? [])
+
+  // Children share a flat list with their parents; prefix a child chip with its
+  // parent ("Padre › Figlia") so same-named children stay distinguishable.
+  const chipLabel = (c: CategoriaPublic): string => {
+    if (c.parent_id == null) return c.nome
+    const parent = options.find((o) => o.id === c.parent_id)
+    return parent ? `${parent.nome} › ${c.nome}` : c.nome
+  }
 
   const reset = () => {
     setAmount("")
@@ -211,7 +220,7 @@ export function QuickAdd({
                     selected={categoriaId === c.id}
                     onClick={() => setCategoriaId(c.id)}
                   >
-                    {c.nome}
+                    {chipLabel(c)}
                   </Chip>
                 ))}
               </div>

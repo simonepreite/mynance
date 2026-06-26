@@ -144,16 +144,28 @@ def test_subcategoria_one_level_only(client: TestClient) -> None:
 
 def test_subcategoria_tipo_must_match_parent(client: TestClient) -> None:
     headers = _auth_headers(client)
-    parent = client.post(
+    # Entrata child under a Spesa parent.
+    spesa_parent = client.post(
         BASE, headers=headers, json={"nome": "Casa", "tipo": "spesa"}
     ).json()
     r = client.post(
         BASE,
         headers=headers,
-        json={"nome": "X", "tipo": "entrata", "parent_id": parent["id"]},
+        json={"nome": "X", "tipo": "entrata", "parent_id": spesa_parent["id"]},
     )
     assert r.status_code == 422
     assert r.headers["content-type"].startswith(PROBLEM_JSON)
+    # ...and the reverse: a Spesa child under an Entrata parent.
+    entrata_parent = client.post(
+        BASE, headers=headers, json={"nome": "Stipendio", "tipo": "entrata"}
+    ).json()
+    r2 = client.post(
+        BASE,
+        headers=headers,
+        json={"nome": "Y", "tipo": "spesa", "parent_id": entrata_parent["id"]},
+    )
+    assert r2.status_code == 422
+    assert r2.headers["content-type"].startswith(PROBLEM_JSON)
 
 
 def test_subcategoria_parent_must_be_owned_and_non_system(client: TestClient) -> None:
